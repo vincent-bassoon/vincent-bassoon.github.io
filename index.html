@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Rhymer</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+div.scrollBox {
+  width: 500px;
+  height: 300px;
+  overflow: auto;
+  border: 1px solid black;
+  padding: 1%;
+}
+.match {
+  color: red;
+}
+</style>
+</head>
+<body>
+
+<input id="searchField">
+<button id="searchButton" onclick="generateRhyme()">Search</button>
+
+<p></p>
+
+<div class = "scrollBox" id="searchResults"></div>
+
+<script>
+var field = document.getElementById("searchField");
+var button = document.getElementById("searchButton");
+var searchResults = document.getElementById("searchResults");
+
+function generateRhyme(){
+  var address = 'https://api.datamuse.com/words?rel_rhy=forgetful&md=r'
+  var x = new XMLHttpRequest();
+  x.open("GET", address);
+  x.onreadystatechange = function(){
+    if(x.readyState == 4 && x.status == 200){
+      var data = JSON.parse(x.responseText);
+      console.log(data);
+    }
+  };
+  x.send(null);
+}
+
+function getStress(d){
+  d = "pron:F R EH1 T F AH0 L ";
+  d = d.replace("pron:", "").replace(/[^01]/g, "");
+  console.log(d.split(""));
+  return d.split("");
+}
+</script>
+
+</body>
+</html>
