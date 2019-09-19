@@ -32,6 +32,7 @@ function generateFollowingPost(data){
 
 function generatePoem(rhyme){
 	console.log(rhyme);
+	searchResults.value = rhyme;
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
 }
