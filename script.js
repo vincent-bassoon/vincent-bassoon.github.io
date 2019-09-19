@@ -1,6 +1,6 @@
 var field = document.getElementById("searchField");
 var button = document.getElementById("searchButton");
-var searchResults = document.getElementById("searchResults");
+var display = document.getElementById("searchResults");
 
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
@@ -31,13 +31,12 @@ function generateFollowingPost(data){
 }
 
 function generatePoem(rhyme){
-	console.log(rhyme);
-	searchResults.value = rhyme;
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
 }
 
 function generateRandom(){
+	display.innerText = "Initializing...";
 	var code = 'sp=' + CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length)) + '*&md=r';
 	accessURL(code, generateRandomPost);
 }
@@ -47,7 +46,7 @@ function generateRandomPost(data){
 	while(!isStrictlyIambic(word.tags[0])){
 		word = data[Math.floor(Math.random() * data.length)];
 	}
-	console.log("RANDOM WORD:", word.word);
+	display.innerText = "/nTesting root rhyme word: " + word.word;
 	findRhymes(word.word);
 }
 
@@ -63,11 +62,12 @@ function findRhymesPost(data){
 			i--;
 		}
 	}
-	console.log("ATTEMPT (filtered):", data);
 	if(data.length > 10){
+		display.innerText = "/nTest successful, generating poem...";
 		generatePoem(data);
 	}
 	else{
+		display.innerText = "/nTest failed, searching for new root rhyme word...";
 		generateRandom();
 	}
 }
