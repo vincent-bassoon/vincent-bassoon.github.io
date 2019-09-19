@@ -12,7 +12,7 @@ function accessURL(code, function_of_data){
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
-			setTimeout(function_of_data(data), 100);
+			setTimeout(function_of_data(data), 10f);
  		}
 	};
 	x.send(null);
@@ -46,7 +46,7 @@ function generateRandomPost(data){
 	while(!isStrictlyIambic(word.tags[0])){
 		word = data[Math.floor(Math.random() * data.length)];
 	}
-	display.innerText = "/nTesting root rhyme word: " + word.word;
+	display.innerText += "\nTesting root rhyme word: " + word.word;
 	findRhymes(word.word);
 }
 
@@ -63,11 +63,11 @@ function findRhymesPost(data){
 		}
 	}
 	if(data.length > 10){
-		display.innerText = "/nTest successful, generating poem...";
+		display.innerText += "\nTest successful, generating poem...";
 		generatePoem(data);
 	}
 	else{
-		display.innerText = "/nTest failed, searching for new root rhyme word...";
+		display.innerText += "\nTest failed, searching for new root rhyme word...";
 		generateRandom();
 	}
 }
