@@ -6,7 +6,7 @@ var poem = [];
 
 function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
-	x.open("GET", 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?' + code);
+	x.open("GET", 'https://api.datamuse.com/words?' + code);
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
@@ -29,6 +29,9 @@ function generateFollowingPost(data){
 }
 
 function generatePoem(rhyme){
+	for(var i = 0; i < rhyme.length; i++){
+		display.innerText += rhyme[i].word;
+	}
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
 }
