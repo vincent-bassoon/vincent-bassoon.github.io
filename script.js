@@ -12,7 +12,7 @@ function accessURL(code, function_of_data){
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
-			setTimeout(function_of_data(data), 10f);
+			setTimeout(function_of_data(data), 100);
  		}
 	};
 	x.send(null);
