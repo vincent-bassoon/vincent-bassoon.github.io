@@ -21,12 +21,14 @@ function accessURL(address, function_of_data){
 
 function generateFollowing(word){
 	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?lc=' + word;
-	accessURL(address, function(data){
-		word = data[0].word;
-		poem.push(word);
-		console.log(poem);
-		generateFollowing(word);
-  	});
+	accessURL(address, generateFollowingPost);
+}
+
+function generateFollowingPost(data){
+	word = data[0].word;
+	poem.push(word);
+	console.log(poem);
+	generateFollowing(word);
 }
 
 function generatePoem(rhyme){
@@ -37,29 +39,33 @@ function generatePoem(rhyme){
 
 function generateRandom(){
 	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?sp=' + characters.charAt(Math.floor(Math.random() * characters.length)) + '*&md=sr';
-	accessURL(address, function(data){
-		var word = data[Math.floor(Math.random() * data.length)];
-		while(!isIambic(word.tags[0])){
-			console.log("RETRYING:", word.word);
-			word = data[Math.floor(Math.random() * data.length)];
-		}
-		console.log("RANDOM WORD:", word.word);
-		generateRhyme(word.word);
-	});
+	accessURL(address, generateRandomPost);
 }
 
-function generateRhyme(word){
+function generateRandomPost(data){
+	var word = data[Math.floor(Math.random() * data.length)];
+	while(!isIambic(word.tags[0])){
+		console.log("RETRYING:", word.word);
+		word = data[Math.floor(Math.random() * data.length)];
+	}
+	console.log("RANDOM WORD:", word.word);
+	findRhymes(word.word);
+}
+
+function findRhymes(word){
 	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?rel_rhy=' + word + '&md=r';
-	accessURL(address, function(data){
-		//console.log("ATTEMPT:", data);
-		if(data.length > 10 && !(data[9].score === undefined)){
-			//maybe remove items that don't have a score at all
-			generatePoem(data);
-		}
-		else{
-			generateRandom();
-		}
-	});
+	accessURL(address, findRhymesPost);
+}
+
+function findRhymesPost(data){
+	console.log("ATTEMPT:", data);
+	if(data.length > 10 && !(data[9].score === undefined)){
+		//maybe remove items that don't have a score at all
+		generatePoem(data);
+	}
+	else{
+		generateRandom();
+	}
 }
 
 function getStress(d){
