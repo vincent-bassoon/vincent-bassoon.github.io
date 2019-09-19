@@ -1,5 +1,3 @@
-var field = document.getElementById("searchField");
-var button = document.getElementById("searchButton");
 var display = document.getElementById("searchResults");
 
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
