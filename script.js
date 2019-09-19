@@ -42,7 +42,7 @@ function run(){
 	button.enabled = false;
 	poem = [];
 	display.innerText = "Initializing...";
-	generateRandom();
+	setTimeout(generateRandom, 100);
 }
 
 function generateRandom(){
