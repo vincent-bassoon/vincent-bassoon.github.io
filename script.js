@@ -35,11 +35,11 @@ function generatePoem(rhyme){
 	}
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
-	button.enabled = true;
+	button.disabled = false;
 }
 
 function run(){
-	button.enabled = false;
+	button.disabled = true;
 	poem = [];
 	display.innerText = "Initializing...";
 	setTimeout(generateRandom, 10000);
