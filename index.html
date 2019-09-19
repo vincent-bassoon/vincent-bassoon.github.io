@@ -78,7 +78,7 @@
 			function generateRhyme(word){
 		  		var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?rel_rhy=' + word + '&md=r';
 				accessURL(address, function(){
-		      		//console.log("ATTEMPT:", data);
+		      		console.log("ATTEMPT:", data);
 		      		if(data.length > 10 && !(data[9].score === undefined)){
 		        		//maybe remove items that don't have a score at all
 		        		generatePoem(data);
