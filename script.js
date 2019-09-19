@@ -1,4 +1,5 @@
-var display = document.getElementById("searchResults");
+var display = document.getElementById("display");
+var button = document.getElementById("startButton");
 
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
@@ -34,9 +35,12 @@ function generatePoem(rhyme){
 	}
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
+	button.enabled = true;
 }
 
 function run(){
+	button.enabled = false;
+	poem = [];
 	display.innerText = "Initializing...";
 	generateRandom();
 }
