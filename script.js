@@ -12,8 +12,7 @@ function accessURL(address, function_of_data){
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
-			setTimeout(printCounter, 200);
- 			function_of_data(data);
+			setTimeout(function_of_data(data), 200);
  		}
 	};
 	x.send(null);
