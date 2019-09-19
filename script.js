@@ -44,7 +44,6 @@ function generateRandom(){
 function generateRandomPost(data){
 	var word = data[Math.floor(Math.random() * data.length)];
 	while(!isIambic(word.tags[0])){
-		console.log("RETRYING:", word.word);
 		word = data[Math.floor(Math.random() * data.length)];
 	}
 	console.log("RANDOM WORD:", word.word);
@@ -57,9 +56,14 @@ function findRhymes(word){
 }
 
 function findRhymesPost(data){
-	console.log("ATTEMPT:", data);
-	if(data.length > 10 && !(data[9].score === undefined)){
-		//maybe remove items that don't have a score at all
+	for(var i = 0; i < data.length; i++){
+		if(data[i].score === undefined || !isIambic(data[i].tags[0])){
+			data.splice(i, 1);
+			i--;
+		}
+	}
+	console.log("ATTEMPT (filtered):", data);
+	if(data.length > 10){
 		generatePoem(data);
 	}
 	else{
