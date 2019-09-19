@@ -35,8 +35,12 @@ function generatePoem(rhyme){
 	getStress(rhyme[0].tags[0]);
 }
 
-function generateRandom(){
+function run(){
 	display.innerText = "Initializing...";
+	generateRandom();
+}
+
+function generateRandom(){
 	var code = 'sp=' + CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length)) + '*&md=r';
 	accessURL(code, generateRandomPost);
 }
