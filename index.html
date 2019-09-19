@@ -48,7 +48,7 @@
 			
 			function generateFollowing(word){
 				var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?lc=' + word;
-				accessURL(address, function(){
+				accessURL(address, function(data){
 					word = data[0].word;
 		      		poem.push(word);
 		      		console.log(poem);
@@ -64,7 +64,7 @@
 		
 			function generateRandom(){
 		  		var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?sp=' + characters.charAt(Math.floor(Math.random() * characters.length)) + '*&md=sr';
-	  			accessURL(address, function(){
+	  			accessURL(address, function(data){
 		      		var word = data[Math.floor(Math.random() * data.length)];
 		      		while(!isIambic(word.tags[0])){
 		        		console.log("RETRYING:", word.word);
@@ -77,7 +77,7 @@
 		
 			function generateRhyme(word){
 		  		var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?rel_rhy=' + word + '&md=r';
-				accessURL(address, function(){
+				accessURL(address, function(data){
 		      		//console.log("ATTEMPT:", data);
 		      		if(data.length > 10 && !(data[9].score === undefined)){
 		        		//maybe remove items that don't have a score at all
