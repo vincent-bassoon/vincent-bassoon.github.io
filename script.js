@@ -2,25 +2,25 @@ var field = document.getElementById("searchField");
 var button = document.getElementById("searchButton");
 var searchResults = document.getElementById("searchResults");
 
-var characters = "qwertyuiopasdfghjklzxcvbnm";
+var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
 var poem = [];
 
-function accessURL(address, function_of_data){
+function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
-	x.open("GET", address);
+	x.open("GET", 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?' + code);
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
-			setTimeout(function_of_data(data), 200);
+			setTimeout(function_of_data(data), 100);
  		}
 	};
 	x.send(null);
 }
 
 function generateFollowing(word){
-	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?lc=' + word;
-	accessURL(address, generateFollowingPost);
+	var code = 'lc=' + word;
+	accessURL(code, generateFollowingPost);
 }
 
 function generateFollowingPost(data){
@@ -37,8 +37,8 @@ function generatePoem(rhyme){
 }
 
 function generateRandom(){
-	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?sp=' + characters.charAt(Math.floor(Math.random() * characters.length)) + '*&md=sr';
-	accessURL(address, generateRandomPost);
+	var code = 'sp=' + CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length)) + '*&md=r';
+	accessURL(code, generateRandomPost);
 }
 
 function generateRandomPost(data){
@@ -52,8 +52,8 @@ function generateRandomPost(data){
 }
 
 function findRhymes(word){
-	var address = 'https://cors-anywhere.herokuapp.com/https://api.datamuse.com/words?rel_rhy=' + word + '&md=r';
-	accessURL(address, findRhymesPost);
+	var code = 'rel_rhy=' + word + '&md=r';
+	accessURL(code, findRhymesPost);
 }
 
 function findRhymesPost(data){
