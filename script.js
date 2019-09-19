@@ -11,7 +11,8 @@ function accessURL(address, function_of_data){
 	x.open("GET", address);
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
-  		var data = JSON.parse(x.responseText);
+  			var data = JSON.parse(x.responseText);
+			setTimeout(printCounter, 200);
  			function_of_data(data);
  		}
 	};
