@@ -30,7 +30,7 @@ function generateFollowingPost(data){
 
 function generatePoem(rhyme){
 	for(var i = 0; i < rhyme.length; i++){
-		display.innerText += rhyme[i].word;
+		display.innerText += "\n" + rhyme[i].word;
 	}
 	var order = getRandomOrder(rhyme.length);
 	getStress(rhyme[0].tags[0]);
