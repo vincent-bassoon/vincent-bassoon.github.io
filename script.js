@@ -43,7 +43,7 @@ function generateRandom(){
 
 function generateRandomPost(data){
 	var word = data[Math.floor(Math.random() * data.length)];
-	while(!isIambic(word.tags[0])){
+	while(!isStrictlyIambic(word.tags[0])){
 		word = data[Math.floor(Math.random() * data.length)];
 	}
 	console.log("RANDOM WORD:", word.word);
@@ -84,6 +84,12 @@ function isIambic(d){
 			return (d.length - i - 1) % 2 == 0;
 		}
 	}
+}
+
+function isStrictlyIambic(d){
+	d = d.replace("pron:", "").replace(/[^01]/g, "");
+	d = d.split("");
+	return d.length > 1 && d[d.length - 1] == 1
 }
 
 function getRandomOrder(length){
