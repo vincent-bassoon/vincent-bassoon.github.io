@@ -1,6 +1,7 @@
 var display = document.getElementById("display");
 var button = document.getElementById("startButton");
 
+var LINE = 10;
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
 var poem = [];
@@ -17,23 +18,11 @@ function accessURL(code, function_of_data){
 	x.send(null);
 }
 
-function generateFollowing(word){
-	var code = 'lc=' + word;
-	accessURL(code, generateFollowingPost);
-}
-
-function generateFollowingPost(data){
-	word = data[0].word;
-	poem.push(word);
-	console.log(poem);
-	generateFollowing(word);
-}
-
 function buildRhymeList(rhyme){
 	var order = getRandomOrder(rhyme.length);
 	var rhyme_list = [];
 	for(var i = 0; i < rhyme.length; i++){
-		rhyme_list.append({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables,"pre":[],"post":[]});
+		rhyme_list.push({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables,"pre":[],"post":[]});
 	}
 	return rhyme_list;
 }
@@ -43,12 +32,14 @@ function generatePoem(rhyme_list){
 	for(var i = 0; i < rhyme_list.length; i++){
 		display.innerText += "\n" + rhyme_list[i].word;
 	}
-	var order_counter = 0;
+	//dictionary with keys being number of syllables away from beginning/end of line, value being the word to go to in order to move
+	//towards that end of the sentence.
+	var rhyme_list_counter = 0;
 	var finished = false;
 	var filler_words_indices = {};
 	var filler_words = [];
-	while(order_counter < order.length && !finished){
-		
+	while(rhyme_list_counter < rhyme_list.length && !finished){
+		finished = true;
 	}
 	button.disabled = false;
 }
