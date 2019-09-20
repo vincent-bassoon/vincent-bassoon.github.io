@@ -18,6 +18,20 @@ function accessURLPost(x){
  	}
 }
 
+function accessURL(code, function_of_data, word_dict, word, syllables){
+	var x = new XMLHttpRequest();
+	x.open("GET", 'https://api.datamuse.com/words?' + code);
+	x.onreadystatechange = accessURLPost(x, word_dict, word, syllables, code);
+	x.send(null);
+}
+
+function accessURLPost(x, word_dict, word, syllables, code){
+	if(x.readyState == 4 && x.status == 200){
+  		var data = JSON.parse(x.responseText);
+		setTimeout(function_of_data(data, word_dict, word, syllables, code), 1);
+ 	}
+}
+
 function buildRhymeList(rhyme){
 	var order = getRandomOrder(rhyme.length);
 	var rhyme_list = [];
@@ -36,16 +50,30 @@ function startDict(rhyme){
 }
 
 function buildTree(word_dict, word, syllables, code){
-	var code = code + "=" word + '*&md=r';
+	var code = code + "=" + word + '*&md=rfs';
+	accessTreeURL(code, buildTreePost, word_dict, word, syllables);
 }
 
-function buildTreePost(data){
-	var new_word = 
-	if(new_word in word_dict){
-		word_dict[new_word].code[/*syllables to get to end/beginning*/] = /*previous word*/;
-	}
-	else{
-		word_dict[new_word] = {code:{/*syllables to get to end/beginning*/:/*previous word*/}};
+function buildTreePost(data, word_dict, word, syllables, code){
+	var new_word, new_syllables;
+	for(var i = 0; i < data.length / 2; i++){
+		new_word = data[i].word;
+		if(isIambic(data[i].tags[0]) == (syllables % 2 == 0)){
+			new_syllables = syllables + data[i].numSyllables
+			if(new_word in word_dict){
+				if(code in word_dict[new_word]){
+					if(!(new_syllables in word_dict[new_word][code])){
+						word_dict[new_word][code][new_syllables] = word;
+					}
+				}
+				else{
+					word_dict[new_word][code] = {new_syllables:word};
+				}
+			}
+			else{
+				word_dict[new_word] = {code:{new_syllables:word}};
+			}
+		}
 	}
 }
 
