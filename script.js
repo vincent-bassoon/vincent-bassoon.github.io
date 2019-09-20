@@ -83,7 +83,7 @@ function invalid(data_element){
 	if(data_element.score === undefined || data_element.score < 20 || !isIambic(data_element.tags[0])){
 		return true;
 	}
-	return parseFloat(data_element.tags[1].replace("f:", "")) > .5;
+	return parseFloat(data_element.tags[1].replace("f:", "")) < .5;
 }
 
 function findRhymesPost(data){
