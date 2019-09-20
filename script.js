@@ -4,27 +4,49 @@ var button = document.getElementById("startButton");
 var LINE = 10;
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
-var poem = [];
-
 function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
 	x.open("GET", 'https://api.datamuse.com/words?' + code);
-	x.onreadystatechange = function(){
-		if(x.readyState == 4 && x.status == 200){
-  			var data = JSON.parse(x.responseText);
-			setTimeout(function_of_data(data), 1);
- 		}
-	};
+	x.onreadystatechange = accessURLPost(x);
 	x.send(null);
+}
+
+function accessURLPost(x){
+	if(x.readyState == 4 && x.status == 200){
+  		var data = JSON.parse(x.responseText);
+		setTimeout(function_of_data(data), 1);
+ 	}
 }
 
 function buildRhymeList(rhyme){
 	var order = getRandomOrder(rhyme.length);
 	var rhyme_list = [];
 	for(var i = 0; i < rhyme.length; i++){
-		rhyme_list.push({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables,"pre":[],"post":[]});
+		rhyme_list.push({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables});
 	}
 	return rhyme_list;
+}
+
+function startDict(rhyme){
+	var rhyme_dict = {};
+	for(var i = 0; i < rhyme.length; i++){
+		rhyme_dict[rhyme[i].word] = {"syllables":rhyme[i].syllables,"rhyme":true});
+	}
+	return rhyme_dict;
+}
+
+function buildTree(word_dict, word, syllables, code){
+	var code = code + "=" word + '*&md=r';
+}
+
+function buildTreePost(data){
+	var new_word = 
+	if(new_word in word_dict){
+		word_dict[new_word].code[/*syllables to get to end/beginning*/] = /*previous word*/;
+	}
+	else{
+		word_dict[new_word] = {code:{/*syllables to get to end/beginning*/:/*previous word*/}};
+	}
 }
 
 function generatePoem(rhyme_list){
@@ -32,21 +54,16 @@ function generatePoem(rhyme_list){
 	for(var i = 0; i < rhyme_list.length; i++){
 		display.innerText += "\n" + rhyme_list[i].word;
 	}
+	var word_dict = startDict(rhyme_list);
+	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "lc");
+	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "rc");
 	//dictionary with keys being number of syllables away from beginning/end of line, value being the word to go to in order to move
 	//towards that end of the sentence.
-	var rhyme_list_counter = 0;
-	var finished = false;
-	var filler_words_indices = {};
-	var filler_words = [];
-	while(rhyme_list_counter < rhyme_list.length && !finished){
-		finished = true;
-	}
 	button.disabled = false;
 }
 
 function run(){
 	button.disabled = true;
-	poem = [];
 	display.innerText = "Initializing...";
 	generateRandom();
 }
