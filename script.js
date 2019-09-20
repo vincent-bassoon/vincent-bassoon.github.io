@@ -29,12 +29,27 @@ function generateFollowingPost(data){
 	generateFollowing(word);
 }
 
-function generatePoem(rhyme){
-	for(var i = 0; i < rhyme.length; i++){
-		display.innerText += "\n" + rhyme[i].word;
-	}
+function buildRhymeList(rhyme){
 	var order = getRandomOrder(rhyme.length);
-	getStress(rhyme[0].tags[0]);
+	var rhyme_list = [];
+	for(var i = 0; i < rhyme.length; i++){
+		rhyme_list.append({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables,"pre":[],"post":[]});
+	}
+	return rhyme_list;
+}
+
+function generatePoem(rhyme_list){
+	rhyme_list = buildRhymeList(rhyme_list);
+	for(var i = 0; i < rhyme_list.length; i++){
+		display.innerText += "\n" + rhyme_list[i].word;
+	}
+	var order_counter = 0;
+	var finished = false;
+	var filler_words_indices = {};
+	var filler_words = [];
+	while(order_counter < order.length && !finished){
+		
+	}
 	button.disabled = false;
 }
 
@@ -52,7 +67,7 @@ function generateRandom(){
 
 function generateRandomPost(data){
 	var word = data[Math.floor(Math.random() * data.length)];
-	while(!isStrictlyIambic(word.tags[0])){
+	while(!isIambic(word.tags[0])){
 		word = data[Math.floor(Math.random() * data.length)];
 	}
 	display.innerText += "\nTesting root rhyme word: " + word.word;
@@ -60,13 +75,20 @@ function generateRandomPost(data){
 }
 
 function findRhymes(word){
-	var code = 'rel_rhy=' + word + '&md=r';
+	var code = 'rel_rhy=' + word + '&md=rfs';
 	accessURL(code, findRhymesPost);
+}
+
+function invalid(data_element){
+	if(data_element.score === undefined || data_element.score < 20 || !isIambic(data_element.tags[0])){
+		return true;
+	}
+	return parseFloat(data_element.tags[1].replace("f:", "")) > .5;
 }
 
 function findRhymesPost(data){
 	for(var i = 0; i < data.length; i++){
-		if(data[i].score === undefined || !isIambic(data[i].tags[0])){
+		if(invalid(data[i])){
 			data.splice(i, 1);
 			i--;
 		}
@@ -94,12 +116,6 @@ function isIambic(d){
 			return (d.length - i - 1) % 2 == 0;
 		}
 	}
-}
-
-function isStrictlyIambic(d){
-	d = d.replace("pron:", "").replace(/[^01]/g, "");
-	d = d.split("");
-	return d.length > 1 && d[d.length - 1] == 1
 }
 
 function getRandomOrder(length){
