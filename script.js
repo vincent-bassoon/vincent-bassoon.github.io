@@ -85,8 +85,6 @@ function generatePoem(rhyme_list){
 	var word_dict = startDict(rhyme_list);
 	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "lc");
 	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "rc");
-	//dictionary with keys being number of syllables away from beginning/end of line, value being the word to go to in order to move
-	//towards that end of the sentence.
 	button.disabled = false;
 }
 
