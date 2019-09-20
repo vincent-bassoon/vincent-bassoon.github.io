@@ -2,6 +2,7 @@ var display = document.getElementById("display");
 var button = document.getElementById("startButton");
 
 var LINE = 10;
+var OPPOSITE_CODE = {"lc":"rc", "rc":"lc"};
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
 function accessURL(code, function_of_data){
@@ -49,27 +50,38 @@ function buildTree(word_dict, word, syllables, code){
 	accessTreeURL(code, buildTreePost, word_dict, word, syllables);
 }
 
-function buildTreePost(data, word_dict, word, syllables, code){
-	var new_word, new_syllables;
-	for(var i = 0; i < data.length / 2; i++){
-		new_word = data[i].word;
-		if(isIambic(data[i].tags[0]) == (syllables % 2 == 0)){
-			new_syllables = syllables + data[i].numSyllables
-			if(new_word in word_dict){
-				if(code in word_dict[new_word]){
-					if(!(new_syllables in word_dict[new_word][code])){
-						word_dict[new_word][code][new_syllables] = word;
-					}
-				}
-				else{
-					word_dict[new_word][code] = {};
-					word_dict[new_word][code][new_syllables] = word;
-				}
+function updateWordDict(new_word, new_syllables, sum_syllables, word, word_dict, code){
+	if(new_word in word_dict){
+		if(code in word_dict[new_word]){
+			if(!(sum_syllables in word_dict[new_word][code])){
+				word_dict[new_word][code][sum_syllables] = word;
 			}
-			else{
-				word_dict[new_word] = {"syllables":data[i].numSyllables};
-				word_dict[new_word][code] = {};
-				word_dict[new_word][code][new_syllables] = word;
+		}
+		else{
+			word_dict[new_word][code] = {};
+			word_dict[new_word][code][sum_syllables] = word;
+		}
+	}
+	else{
+		word_dict[new_word] = {"syllables":new_syllables};
+		word_dict[new_word][code] = {};
+		word_dict[new_word][code][sum_syllables] = word;
+	}
+}
+
+function buildTreePost(data, word_dict, word, syllables, code){
+	var sum_syllables;
+	var dict;
+	for(var i = 0; i < data.length / 2; i++){
+		if(isIambic(data[i].tags[0]) == (syllables % 2 == 0)){
+			sum_syllables = syllables + data[i].numSyllables;
+			updateWordDict(data[i].word, data[i].numSyllables, sum_syllables, word, word_dict, code);
+			dict = word_dict[data[i].word];
+			if(OPPOSITE_CODE[code] in dict && LINE - sum_syllables in dict[OPPOSITE_CODE[code]]){
+				console.log("MATCH FOUND");
+			}
+			if(sum_syllables < LINE){
+				buildTree(word_dict, data[i].word, sum_syllables, code);
 			}
 		}
 	}
