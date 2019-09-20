@@ -7,29 +7,25 @@ var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
 	x.open("GET", 'https://api.datamuse.com/words?' + code);
-	x.onreadystatechange = accessURLPost(x, function_of_data);
+	x.onreadystatechange = function(){
+		if(x.readyState == 4 && x.status == 200){
+  			var data = JSON.parse(x.responseText);
+			setTimeout(function(){function_of_data(data)}, 1);
+ 		}
+	};
 	x.send(null);
-}
-
-function accessURLPost(x, function_of_data){
-	if(x.readyState == 4 && x.status == 200){
-  		var data = JSON.parse(x.responseText);
-		setTimeout(function_of_data(data), 1);
- 	}
 }
 
 function accessTreeURL(code, function_of_data, word_dict, word, syllables){
 	var x = new XMLHttpRequest();
-	x.open("GET", 'https://api.datamuse.com/words?' + code);
-	x.onreadystatechange = accessTreeURLPost(x, function_of_data, word_dict, word, syllables, code);
+	x.open("GET", 'https://api.datamuse.com/words?' + code + "=" + word + '&md=rfs');
+	x.onreadystatechange = function(){
+		if(x.readyState == 4 && x.status == 200){
+  			var data = JSON.parse(x.responseText);
+			setTimeout(function(){function_of_data(data, word_dict, word, syllables, code)}, 1);
+ 		}
+	}
 	x.send(null);
-}
-
-function accessTreeURLPost(x, function_of_data, word_dict, word, syllables, code){
-	if(x.readyState == 4 && x.status == 200){
-  		var data = JSON.parse(x.responseText);
-		setTimeout(function_of_data(data, word_dict, word, syllables, code), 1);
- 	}
 }
 
 function buildRhymeList(rhyme){
@@ -50,7 +46,6 @@ function startDict(rhyme){
 }
 
 function buildTree(word_dict, word, syllables, code){
-	var code = code + "=" + word + '*&md=rfs';
 	accessTreeURL(code, buildTreePost, word_dict, word, syllables);
 }
 
@@ -67,11 +62,14 @@ function buildTreePost(data, word_dict, word, syllables, code){
 					}
 				}
 				else{
-					word_dict[new_word][code] = {new_syllables:word};
+					word_dict[new_word][code] = {};
+					word_dict[new_word][code][new_syllables] = word;
 				}
 			}
 			else{
-				word_dict[new_word] = {code:{new_syllables:word}};
+				word_dict[new_word] = {"syllables":data[i].numSyllables};
+				word_dict[new_word][code] = {};
+				word_dict[new_word][code][new_syllables] = word;
 			}
 		}
 	}
@@ -83,7 +81,7 @@ function generatePoem(rhyme_list){
 		display.innerText += "\n" + rhyme_list[i].word;
 	}
 	var word_dict = startDict(rhyme_list);
-	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "lc");
+	buildTree(word_dict, rhyme_list[0].word, 0, "lc");
 	buildTree(word_dict, rhyme_list[0].word, rhyme_list[0].syllables, "rc");
 	button.disabled = false;
 }
