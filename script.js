@@ -156,7 +156,12 @@ function buildTreePost(data, lines, word_dict, queue){
 			i = data.length;
 		}
 	}
-	buildTree(lines, word_dict, queue);
+	if(queue.length > 0){
+		buildTree(lines, word_dict, queue);
+	}
+	else{
+		console.log("FINISHED");
+	}
 }
 
 function generatePoem(rhyme_list){
