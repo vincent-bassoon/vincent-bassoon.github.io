@@ -17,13 +17,13 @@ function accessURL(code, function_of_data){
 	x.send(null);
 }
 
-function accessTreeURL(code, function_of_data, lines, word_dict, word, syllables){
+function accessTreeURL(function_of_data, lines, word_dict, queue){
 	var x = new XMLHttpRequest();
-	x.open("GET", 'https://api.datamuse.com/words?' + code + "=" + word + '&md=rfs');
+	x.open("GET", 'https://api.datamuse.com/words?' + queue[0].code + "=" + queue[0].word + '&md=rfs');
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
-			setTimeout(function(){function_of_data(data, lines, word_dict, word, syllables, code)}, 1);
+			setTimeout(function(){function_of_data(data, lines, word_dict, queue)}, 1);
  		}
 	}
 	x.send(null);
@@ -47,31 +47,32 @@ function startDict(rhyme){
 	return rhyme_dict;
 }
 
-function buildTree(lines, word_dict, word, syllables, code){
-	accessTreeURL(code, buildTreePost, lines, word_dict, word, syllables);
+function buildTree(lines, word_dict, queue){
+	accessTreeURL(buildTreePost, lines, word_dict, queue);
 }
 
 function updateWordDict(new_word, new_syllables, sum_syllables, word, word_dict, code){
 	if(new_word in word_dict){
 		if(code in word_dict[new_word]){
 			if(!(sum_syllables in word_dict[new_word][code])){
-				word_dict[new_word][code][sum_syllables] = word;
+				word_dict[new_word][code][sum_syllables] = [word];
 				return true;
 			}
 			else{
+				word_dict[new_word][code][sum_syllables].push(word);
 				return false;
 			}
 		}
 		else{
 			word_dict[new_word][code] = {};
-			word_dict[new_word][code][sum_syllables] = word;
+			word_dict[new_word][code][sum_syllables] = [word];
 			return true;
 		}
 	}
 	else{
 		word_dict[new_word] = {"syllables":new_syllables};
 		word_dict[new_word][code] = {};
-		word_dict[new_word][code][sum_syllables] = word;
+		word_dict[new_word][code][sum_syllables] = [word];
 		return true;
 	}
 }
@@ -81,7 +82,7 @@ function addToLine(line, word_dict, word, syllable, code){
 	while(syllable != word_dict[word].syllables){
 		temp = word_dict[word][code][syllable];
 		syllable -= word_dict[word].syllables;
-		word = temp;
+		word = temp[Math.floor(Math.random() * temp.length)];
 		if(code == "lc"){
 			line.push(word);
 		}
@@ -90,7 +91,8 @@ function addToLine(line, word_dict, word, syllable, code){
 		}
 	}
 	if(code == "rc"){
-		line.unshift(word_dict[word][code][word_dict[word].syllables]);
+		temp = word_dict[word][code][word_dict[word].syllables];
+		line.unshift(temp[Math.floor(Math.random() * temp.length)]);
 	}
 }
 
@@ -126,7 +128,10 @@ function valid_meter(data, syllables, code){
 	}
 }
 
-function buildTreePost(data, lines, word_dict, word, syllables, code){
+function buildTreePost(data, lines, word_dict, queue){
+	var word = queue[0].word;
+	var syllables = queue[0].syllables;
+	var code = queue[0].code;
 	var sum_syllables;
 	var new_counter = 0;
 	var dict_temp;
@@ -141,7 +146,7 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 					addToLines(lines, word_dict, data[i].word, data[i].numSyllables, sum_syllables, OPPOSITE_CODE[code]);
 				}
 				else if(sum_syllables < LINE){
-					buildTree(lines, word_dict, data[i].word, sum_syllables, code);
+					queue.push({"word":data[i].word, "syllables":sum_syllables, "code":code});
 				}
 			}
 		}
@@ -150,6 +155,7 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 			i = data.length;
 		}
 	}
+	buildTree(lines, word_dict, queue);
 }
 
 function generatePoem(rhyme_list){
@@ -157,12 +163,12 @@ function generatePoem(rhyme_list){
 	console.log(rhyme_list);
 	var word_dict = startDict(rhyme_list);
 	var lines = {};
-	for(var i = 0; i < 10; i++){
-		//this is an arbitrary number**********************************************************************
-		//make this loop recursive so that it can be stopped***********************************************
-		buildTree(lines, word_dict, rhyme_list[i].word, 0, "lc");
-		buildTree(lines, word_dict, rhyme_list[i].word, rhyme_list[i].syllables, "rc");
+	var queue = [];
+	for(var i = 0; i < rhyme_list.length; i++){
+		queue.push({"word":rhyme_list[i].word, "syllables":0, "code":"lc"});
+		queue.push({"word":rhyme_list[i].word, "syllables":rhyme_list[i].syllables, "code":"rc"});
 	}
+	buildTree(lines, word_dict, queue);
 	button.disabled = false;
 }
 
