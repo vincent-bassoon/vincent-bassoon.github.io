@@ -97,19 +97,28 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	var line = [word_start];
 	addToLine(line, word_dict, word_start, syllable_sum, code);
 	addToLine(line, word_dict, word_start, LINE + syllable_start - syllable_sum, OPPOSITE_CODE[code]);
-	lines.push(line);
-	console.log(line);
+	if(!(line[0] in lines)){
+		lines[line[0]] = line[1:];
+		console.log("SUCCESS:", line);
+	}
+	else if(lines[line[0]].length > line.length - 1){
+		lines[line[0]] = line[1:];
+		console.log("SUCCESS:", line);
+	}
+	else{
+		console.log("FAILED:", line);
+	}
 }
 
-function valid_meter(data, code){
-	if(data[i].numSyllables == 1){
+function valid_meter(data, syllables, code){
+	if(data.numSyllables == 1){
 		return true;
 	}
 	else if(code == "lc"){
-		return isIambicEnd(data[i].tags[0]) == (syllables % 2 == 0)
+		return isIambicEnd(data.tags[0]) == (syllables % 2 == 0)
 	}
 	else{
-		return isIambicStart(data[i].tags[0]) == (syllables % 2 == 0)
+		return isIambicStart(data.tags[0]) == (syllables % 2 == 0)
 	}
 }
 
@@ -118,7 +127,7 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 	var new_counter = 0;
 	var dict_temp;
 	for(var i = 0; i < data.length; i++){
-		if(valid_meter(data[i], OPPOSITE_CODE[code])){
+		if(valid_meter(data[i], syllables, OPPOSITE_CODE[code])){
 			new_counter++;
 			sum_syllables = syllables + data[i].numSyllables;
 			if(updateWordDict(data[i].word, data[i].numSyllables, sum_syllables, word, word_dict, OPPOSITE_CODE[code])){
