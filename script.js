@@ -101,10 +101,12 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	previous_rhyme = line.shift();
 	if(!(previous_rhyme in lines)){
 		lines[previous_rhyme] = line;
+		display.innerText += "\n" + line.join(" ");
 		console.log("SUCCESS:", line);
 	}
 	else if(lines[previous_rhyme].length > line.length){
 		lines[previous_rhyme] = line;
+		display.innerText += "\n" + line.join(" ");
 		console.log("SUCCESS:", line);
 	}
 	else{
@@ -129,6 +131,7 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 	var new_counter = 0;
 	var dict_temp;
 	for(var i = 0; i < data.length; i++){
+		//evaluate results in some order similar to choosing a good order of rhyme_list******************
 		if(valid_meter(data[i], syllables, OPPOSITE_CODE[code])){
 			new_counter++;
 			sum_syllables = syllables + data[i].numSyllables;
