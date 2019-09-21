@@ -31,6 +31,7 @@ function accessTreeURL(code, function_of_data, lines, word_dict, word, syllables
 
 function buildRhymeList(rhyme){
 	var order = getRandomOrder(rhyme.length);
+	//this is an arbitrary order*****************************************************************************
 	var rhyme_list = [];
 	for(var i = 0; i < rhyme.length; i++){
 		rhyme_list.push({"word":rhyme[order[i]].word,"syllables":rhyme[order[i]].numSyllables});
@@ -134,14 +135,14 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 				dict_temp = word_dict[data[i].word];
 				if(code in dict_temp && LINE + data[i].numSyllables - sum_syllables in dict_temp[code]){
 					addToLines(lines, word_dict, data[i].word, data[i].numSyllables, sum_syllables, OPPOSITE_CODE[code]);
-					console.log("MATCH");
 				}
-				if(sum_syllables < LINE){
+				else if(sum_syllables < LINE){
 					buildTree(lines, word_dict, data[i].word, sum_syllables, code);
 				}
 			}
 		}
 		if(new_counter > 5){
+			//this is an arbitrary number***************************************
 			i = data.length;
 		}
 	}
@@ -152,7 +153,9 @@ function generatePoem(rhyme_list){
 	console.log(rhyme_list);
 	var word_dict = startDict(rhyme_list);
 	var lines = {};
-	for(var i = 0; i < 10/*rhyme_list.length*/; i++){
+	for(var i = 0; i < 10; i++){
+		//this is an arbitrary number**********************************************************************
+		//make this loop recursive so that it can be stopped***********************************************
 		buildTree(lines, word_dict, rhyme_list[i].word, 0, "lc");
 		buildTree(lines, word_dict, rhyme_list[i].word, rhyme_list[i].syllables, "rc");
 	}
