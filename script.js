@@ -98,12 +98,13 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	var line = [word_start];
 	addToLine(line, word_dict, word_start, syllable_sum, code);
 	addToLine(line, word_dict, word_start, LINE + syllable_start - syllable_sum, OPPOSITE_CODE[code]);
-	if(!(line[0] in lines)){
-		lines[line[0]] = line[1:];
+	previous_rhyme = line.shift();
+	if(!(previous_rhyme in lines)){
+		lines[previous_rhyme] = line;
 		console.log("SUCCESS:", line);
 	}
-	else if(lines[line[0]].length > line.length - 1){
-		lines[line[0]] = line[1:];
+	else if(lines[previous_rhyme].length > line.length){
+		lines[previous_rhyme] = line;
 		console.log("SUCCESS:", line);
 	}
 	else{
