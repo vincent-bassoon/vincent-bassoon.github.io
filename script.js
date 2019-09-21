@@ -101,12 +101,24 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	console.log(line);
 }
 
+function valid_meter(data, code){
+	if(data[i].numSyllables == 1){
+		return true;
+	}
+	else if(code == "lc"){
+		return isIambicEnd(data[i].tags[0]) == (syllables % 2 == 0)
+	}
+	else{
+		return isIambicStart(data[i].tags[0]) == (syllables % 2 == 0)
+	}
+}
+
 function buildTreePost(data, lines, word_dict, word, syllables, code){
 	var sum_syllables;
 	var new_counter = 0;
 	var dict_temp;
 	for(var i = 0; i < data.length; i++){
-		if(data[i].numSyllables == 1 || isIambic(data[i].tags[0]) == (syllables % 2 == 0)){
+		if(valid_meter(data[i], OPPOSITE_CODE[code])){
 			new_counter++;
 			sum_syllables = syllables + data[i].numSyllables;
 			if(updateWordDict(data[i].word, data[i].numSyllables, sum_syllables, word, word_dict, OPPOSITE_CODE[code])){
@@ -151,7 +163,7 @@ function generateRandom(){
 
 function generateRandomPost(data){
 	var word = data[Math.floor(Math.random() * data.length)];
-	while(!isIambic(word.tags[0])){
+	while(!isIambicEnd(word.tags[0])){
 		word = data[Math.floor(Math.random() * data.length)];
 	}
 	findRhymes(word.word);
@@ -163,7 +175,7 @@ function findRhymes(word){
 }
 
 function invalid(data_element){
-	if(data_element.score === undefined || data_element.score < 20 || !isIambic(data_element.tags[0])){
+	if(data_element.score === undefined || data_element.score < 20 || !isIambicEnd(data_element.tags[0])){
 		return true;
 	}
 	return parseFloat(data_element.tags[1].replace("f:", "")) < .5;
@@ -190,12 +202,22 @@ function getStress(d){
 	return d.split("");
 }
 	
-function isIambic(d){
+function isIambicEnd(d){
 	d = d.replace("pron:", "").replace(/[^01]/g, "");
 	d = d.split("");
 	for(var i = 0; i < d.length; i++){
 		if(d[i] === "1"){
 			return (d.length - i - 1) % 2 == 0;
+		}
+	}
+}
+
+function isIambicStart(d){
+	d = d.replace("pron:", "").replace(/[^01]/g, "");
+	d = d.split("");
+	for(var i = 0; i < d.length; i++){
+		if(d[i] === "1"){
+			return i % 2 != 0;
 		}
 	}
 }
