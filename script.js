@@ -55,23 +55,29 @@ function updateWordDict(new_word, new_syllables, sum_syllables, word, word_dict,
 		if(code in word_dict[new_word]){
 			if(!(sum_syllables in word_dict[new_word][code])){
 				word_dict[new_word][code][sum_syllables] = word;
+				return true;
+			}
+			else{
+				return false;
 			}
 		}
 		else{
 			word_dict[new_word][code] = {};
 			word_dict[new_word][code][sum_syllables] = word;
+			return true;
 		}
 	}
 	else{
 		word_dict[new_word] = {"syllables":new_syllables};
 		word_dict[new_word][code] = {};
 		word_dict[new_word][code][sum_syllables] = word;
+		return true;
 	}
 }
 
 function addToLine(line, word_dict, word, syllable, code){
 	var temp;
-	while(syllable != 0){
+	while(syllable != word_dict[word].syllables){
 		temp = word_dict[word][code][syllable];
 		syllable -= word_dict[word].syllables;
 		word = temp;
@@ -82,12 +88,15 @@ function addToLine(line, word_dict, word, syllable, code){
 			line.unshift(word);
 		}
 	}
+	if(code == "rc"){
+		line.unshift(word_dict[word][code][word_dict[word].syllables]);
+	}
 }
 
-function addToLines(lines, word_dict, word_start, syllable_start, code){
+function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, code){
 	var line = [word_start];
-	addToLine(line, word_dict, word_start, syllable_start, code);
-	addToLine(line, word_dict, word_start, LINE - syllable_start, OPPOSITE_CODE[code]);
+	addToLine(line, word_dict, word_start, syllable_sum, code);
+	addToLine(line, word_dict, word_start, LINE + syllable_start - syllable_sum, OPPOSITE_CODE[code]);
 	lines.push(line);
 	console.log(line);
 }
@@ -100,13 +109,15 @@ function buildTreePost(data, lines, word_dict, word, syllables, code){
 		if(data[i].numSyllables == 1 || isIambic(data[i].tags[0]) == (syllables % 2 == 0)){
 			new_counter++;
 			sum_syllables = syllables + data[i].numSyllables;
-			updateWordDict(data[i].word, data[i].numSyllables, sum_syllables, word, word_dict, code);
-			dict_temp = word_dict[data[i].word];
-			if(OPPOSITE_CODE[code] in dict_temp && LINE - sum_syllables in dict_temp[OPPOSITE_CODE[code]]){
-				addToLines(lines, word_dict, data[i].word, sum_syllables, code);
-			}
-			if(sum_syllables < LINE){
-				buildTree(lines, word_dict, data[i].word, sum_syllables, code);
+			if(updateWordDict(data[i].word, data[i].numSyllables, sum_syllables, word, word_dict, OPPOSITE_CODE[code])){
+				dict_temp = word_dict[data[i].word];
+				if(code in dict_temp && LINE + data[i].numSyllables - sum_syllables in dict_temp[code]){
+					addToLines(lines, word_dict, data[i].word, data[i].numSyllables, sum_syllables, OPPOSITE_CODE[code]);
+					console.log("MATCH");
+				}
+				if(sum_syllables < LINE){
+					buildTree(lines, word_dict, data[i].word, sum_syllables, code);
+				}
 			}
 		}
 		if(new_counter > 5){
@@ -120,7 +131,7 @@ function generatePoem(rhyme_list){
 	console.log(rhyme_list);
 	var word_dict = startDict(rhyme_list);
 	var lines = {};
-	for(var i = 0; i < rhyme_list.length; i++){
+	for(var i = 0; i < 10/*rhyme_list.length*/; i++){
 		buildTree(lines, word_dict, rhyme_list[i].word, 0, "lc");
 		buildTree(lines, word_dict, rhyme_list[i].word, rhyme_list[i].syllables, "rc");
 	}
