@@ -132,6 +132,7 @@ function buildTreePost(data, lines, word_dict, queue){
 	var word = queue[0].word;
 	var syllables = queue[0].syllables;
 	var code = queue[0].code;
+	queue.shift();
 	var sum_syllables;
 	var new_counter = 0;
 	var dict_temp;
