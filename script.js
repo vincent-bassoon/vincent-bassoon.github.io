@@ -22,11 +22,25 @@ function accessTreeURL(function_of_data, lines, word_dict, queue){
 	x.open("GET", 'https://api.datamuse.com/words?' + queue[0].code + "=" + queue[0].word + '&md=rfs');
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
-  			var data = JSON.parse(x.responseText);
+  			var data = basicFilterData(JSON.parse(x.responseText));
 			setTimeout(function(){function_of_data(data, lines, word_dict, queue)}, 1);
  		}
 	}
 	x.send(null);
+}
+
+function basicFilterData(data){
+	for(var i = 0; i < data.length; i++){
+		if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
+			i--;
+			console.log("REMOVED:", data.splice(i, 1));
+		}
+		else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
+			i--;
+			console.log("REMOVED:", data.splice(i, 1));
+		}
+	}
+	return data;
 }
 
 function buildRhymeList(rhyme){
@@ -160,7 +174,7 @@ function buildTreePost(data, lines, word_dict, queue){
 		buildTree(lines, word_dict, queue);
 	}
 	else{
-		console.log("FINISHED");
+		console.log("FINISHED", word_dict);
 	}
 }
 
