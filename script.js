@@ -7,7 +7,7 @@ var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
 
 function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
-	x.open("GET", 'https://api.datamuse.com/words?' + code);
+	x.open("GET", 'https://api.datamuse.com/words?' + code + "&v=enwiki");
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			var data = JSON.parse(x.responseText);
@@ -19,28 +19,14 @@ function accessURL(code, function_of_data){
 
 function accessTreeURL(function_of_data, lines, word_dict, queue){
 	var x = new XMLHttpRequest();
-	x.open("GET", 'https://api.datamuse.com/words?' + queue[0].code + "=" + queue[0].word + '&md=rfs');
+	x.open("GET", 'https://api.datamuse.com/words?' + queue[0].code + "=" + queue[0].word + '&v=enwiki&md=rfs');
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
-  			var data = basicFilterData(JSON.parse(x.responseText));
+  			var data = JSON.parse(x.responseText);
 			setTimeout(function(){function_of_data(data, lines, word_dict, queue)}, 1);
  		}
 	}
 	x.send(null);
-}
-
-function basicFilterData(data){
-	for(var i = 0; i < data.length; i++){
-		if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
-			i--;
-			console.log("REMOVED:", data.splice(i, 1));
-		}
-		else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
-			i--;
-			console.log("REMOVED:", data.splice(i, 1));
-		}
-	}
-	return data;
 }
 
 function buildRhymeList(rhyme){
@@ -134,12 +120,32 @@ function valid_meter(data, syllables, code){
 	if(data.numSyllables == 1){
 		return true;
 	}
+	else if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
+		return false;
+	}
+	else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
+		return false;
+	}
 	else if(code == "lc"){
 		return isIambicEnd(data.tags[0]) == (syllables % 2 == 0)
 	}
 	else{
 		return isIambicStart(data.tags[0]) == (syllables % 2 == 0)
 	}
+}
+
+function basicFilterData(data){
+	for(var i = 0; i < data.length; i++){
+		if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
+			data.splice(i, 1);
+			i--;
+		}
+		else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
+			data.splice(i, 1);
+			i--;
+		}
+	}
+	return data;
 }
 
 function buildTreePost(data, lines, word_dict, queue){
