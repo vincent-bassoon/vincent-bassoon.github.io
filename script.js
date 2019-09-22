@@ -4,6 +4,7 @@ var button = document.getElementById("startButton");
 var LINE = 10;
 var OPPOSITE_CODE = {"lc":"rc", "rc":"lc"};
 var CHARACTERS = "qwertyuiopasdfghjklzxcvbnm";
+var NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
 function accessURL(code, function_of_data){
 	var x = new XMLHttpRequest();
@@ -77,7 +78,7 @@ function updateWordDict(new_word, new_syllables, sum_syllables, word, word_dict,
 	}
 }
 
-function addToLine(line, word_dict, word, syllable, code){
+function addToLine(line, syllable_values, word_dict, word, syllable, code){
 	var temp;
 	while(syllable != word_dict[word].syllables){
 		temp = word_dict[word][code][syllable];
@@ -85,9 +86,11 @@ function addToLine(line, word_dict, word, syllable, code){
 		word = temp[Math.floor(Math.random() * temp.length)];
 		if(code == "lc"){
 			line.push(word);
+			syllable_values.push(word_dict[word].syllables);
 		}
 		else{
 			line.unshift(word);
+			syllable_values.unshift(word_dict[word].syllables);
 		}
 	}
 	if(code == "rc"){
@@ -98,33 +101,60 @@ function addToLine(line, word_dict, word, syllable, code){
 
 function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, code){
 	var line = [word_start];
-	addToLine(line, word_dict, word_start, syllable_sum, code);
-	addToLine(line, word_dict, word_start, LINE + syllable_start - syllable_sum, OPPOSITE_CODE[code]);
-	previous_rhyme = line.shift();
-	if(!(previous_rhyme in lines)){
-		lines[previous_rhyme] = line;
-		display.innerText += "\n" + line.join(" ");
-		console.log("SUCCESS:", line);
+	var syllable_values = [word_dict[word_start].syllables];
+	addToLine(line, syllable_values, word_dict, word_start, syllable_sum, code);
+	addToLine(line, syllable_values, word_dict, word_start, LINE + syllable_start - syllable_sum, OPPOSITE_CODE[code]);
+	var previous_rhyme = line.shift();
+	var score = 0;
+	var consecutive = 0;
+	var sum = 0;
+	for(var i = 0; i < line.length; i++){
+		sum += syllable_values[i];
+		if(syllable_values[i] == 1){
+			if(sum % 2 == 0){
+				score += 2;
+			}
+			consecutive++;
+		}
+		else{
+			consecutive = 0;
+		}
+		if(consecutive > 2){
+			score += consecutive;
+		}
+		if(syllable_values[i] > 4){
+			score += syllable_values[i];
+		}
 	}
-	else if(lines[previous_rhyme].length > line.length){
-		lines[previous_rhyme] = line;
+	if(!(previous_rhyme in lines)){
+		lines[previous_rhyme] = {"line":line,"score":score};
 		display.innerText += "\n" + line.join(" ");
-		console.log("SUCCESS:", line);
+		console.log("SUCCESS:", syllable_sum, score, line);
+	}
+	else if(score < lines[previous_rhyme].score){
+		lines[previous_rhyme] = {"line":line,"score":score};
+		display.innerText += "\n" + line.join(" ");
+		console.log("SUCCESS:", syllable_sum, score, line);
 	}
 	else{
-		console.log("FAILED:", line);
+		console.log("FAILED:", syllable_sum, score, line);
 	}
 }
 
 function valid_meter(data, syllables, code){
-	if(data.numSyllables == 1){
-		return true;
+	for(var i = 0; i < 10; i++){
+		if(data.word.includes(NUMBERS[i])){
+			return false;
+		}
+	}
+	if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
+		return false;
 	}
 	else if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
 		return false;
 	}
-	else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
-		return false;
+	else if(data.numSyllables == 1){
+		return true;
 	}
 	else if(code == "lc"){
 		return isIambicEnd(data.tags[0]) == (syllables % 2 == 0)
@@ -134,19 +164,6 @@ function valid_meter(data, syllables, code){
 	}
 }
 
-function basicFilterData(data){
-	for(var i = 0; i < data.length; i++){
-		if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
-			data.splice(i, 1);
-			i--;
-		}
-		else if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
-			data.splice(i, 1);
-			i--;
-		}
-	}
-	return data;
-}
 
 function buildTreePost(data, lines, word_dict, queue){
 	var word = queue[0].word;
@@ -166,7 +183,7 @@ function buildTreePost(data, lines, word_dict, queue){
 				if(code in dict_temp && LINE + data[i].numSyllables - sum_syllables in dict_temp[code]){
 					addToLines(lines, word_dict, data[i].word, data[i].numSyllables, sum_syllables, OPPOSITE_CODE[code]);
 				}
-				else if(sum_syllables < LINE){
+				else if(sum_syllables < LINE - 1){
 					queue.push({"word":data[i].word, "syllables":sum_syllables, "code":code});
 				}
 			}
@@ -181,6 +198,8 @@ function buildTreePost(data, lines, word_dict, queue){
 	}
 	else{
 		console.log("FINISHED", word_dict);
+		console.log(lines);
+		button.disabled = false;
 	}
 }
 
@@ -195,7 +214,6 @@ function generatePoem(rhyme_list){
 		queue.push({"word":rhyme_list[i].word, "syllables":rhyme_list[i].syllables, "code":"rc"});
 	}
 	buildTree(lines, word_dict, queue);
-	button.disabled = false;
 }
 
 function run(){
