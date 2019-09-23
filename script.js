@@ -128,9 +128,12 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	}
 	if(!(previous_rhyme in lines)){
 		lines[previous_rhyme] = {"line":line,"score":score};
+		display.innerText += ".";
+		
 	}
 	else if(score < lines[previous_rhyme].score){
 		lines[previous_rhyme] = {"line":line,"score":score};
+		display.innerText += ".";
 	}
 	else{
 		console.log("FAILED:", syllable_sum, score, line);
@@ -184,7 +187,7 @@ function buildTreePost(data, lines, word_dict, queue){
 				}
 			}
 		}
-		if(new_counter > 5){
+		if(new_counter > 4){
 			//this is an arbitrary number***************************************
 			i = data.length;
 		}
