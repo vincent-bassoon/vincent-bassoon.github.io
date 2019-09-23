@@ -128,13 +128,9 @@ function addToLines(lines, word_dict, word_start, syllable_start, syllable_sum, 
 	}
 	if(!(previous_rhyme in lines)){
 		lines[previous_rhyme] = {"line":line,"score":score};
-		display.innerText += "\n" + line.join(" ");
-		console.log("SUCCESS:", syllable_sum, score, line);
 	}
 	else if(score < lines[previous_rhyme].score){
 		lines[previous_rhyme] = {"line":line,"score":score};
-		display.innerText += "\n" + line.join(" ");
-		console.log("SUCCESS:", syllable_sum, score, line);
 	}
 	else{
 		console.log("FAILED:", syllable_sum, score, line);
@@ -147,10 +143,10 @@ function valid_meter(data, syllables, code){
 			return false;
 		}
 	}
-	if(data[i].word.length == 1 && data[i].word != "a" && data[i].word != "i"){
+	if(data.word.length == 1 && data.word != "a" && data.word != "i"){
 		return false;
 	}
-	else if(parseFloat(data[i].tags[1].replace("f:", "")) < .5){
+	else if(parseFloat(data.tags[1].replace("f:", "")) < .5){
 		return false;
 	}
 	else if(data.numSyllables == 1){
@@ -183,7 +179,7 @@ function buildTreePost(data, lines, word_dict, queue){
 				if(code in dict_temp && LINE + data[i].numSyllables - sum_syllables in dict_temp[code]){
 					addToLines(lines, word_dict, data[i].word, data[i].numSyllables, sum_syllables, OPPOSITE_CODE[code]);
 				}
-				else if(sum_syllables < LINE - 1){
+				else if(sum_syllables < LINE - 2){
 					queue.push({"word":data[i].word, "syllables":sum_syllables, "code":code});
 				}
 			}
@@ -199,6 +195,11 @@ function buildTreePost(data, lines, word_dict, queue){
 	else{
 		console.log("FINISHED", word_dict);
 		console.log(lines);
+		var keys = Object.keys(lines);
+		display.innerText = "";
+		for(var i = 0; i < keys.length; i++){
+			display.innerText += lines[keys[i]].line.join(" ") + "\n";
+		}
 		button.disabled = false;
 	}
 }
