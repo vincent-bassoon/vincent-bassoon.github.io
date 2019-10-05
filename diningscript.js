@@ -1,7 +1,7 @@
 function Pdf2TextClass(){
      var self = this;
      this.complete = 0;
-     this.pdfToText = function("http://dining.rice.edu/wp-content/uploads/2019/09/Baker-Menu-WEB-9.30.19.pdf", callbackPageDone, callbackAllDone){
+     this.pdfToText = function(URL("http://dining.rice.edu/wp-content/uploads/2019/09/Baker-Menu-WEB-9.30.19.pdf"), callbackPageDone, callbackAllDone){
      console.assert( data  instanceof ArrayBuffer  || typeof data == 'string' );
      PDFJS.getDocument( data ).then( function(pdf) {
      var div = document.getElementById('viewer');
