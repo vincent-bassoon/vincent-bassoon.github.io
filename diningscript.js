@@ -63,8 +63,11 @@ function valid_menu_item(text){
 	return true;
 }
 
-function update_all(meal){
-	
+function update_all(meal, element){
+	element.classList.toggle("active");
+	for(var i = 0; i < SERERIES.length; i++){
+		update_panel(SERVERIES[i], meal);
+	}
 }
 
 function update_panel(servery, meal){
