@@ -1,3 +1,19 @@
+function initialize(){
+	var acc = document.getElementsByClassName("accordion");
+	for(var i = 0; i < acc.length; i++) {
+		acc[i].addEventListener("click", function() {
+			this.classList.toggle("active");
+			var panel = this.nextElementSibling;
+			if (panel.style.display === "block") {
+				panel.style.display = "none";
+			}
+			else {
+				panel.style.display = "block";
+			}
+		});
+	}
+}
+
 function accessWeb(){
  	var x = new XMLHttpRequest();
 	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
@@ -122,4 +138,5 @@ function accessMenu(url){
 	});
 }
 
+initialize();
 accessWeb();
