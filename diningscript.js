@@ -23,7 +23,7 @@ function valid_menu_item(item){
 	if(item.length <= 3){
 		return false;
 	}
-	if(item == "Lunch" || item == "Dinner")
+	if(item == "Lunch" || item == "Dinner"){
 		return false;
 	}
 	for(var j = 0; j < 7; j++){
