@@ -135,8 +135,15 @@ function accessMenu(url){
 							}
 						}
 					}
+					var temp = [];
+					for(var i = 0; i < menu.length; i++){
+						temp.push([]);
+						for(var j = 0; j < menu[i].length; j++){
+							temp[i].push(menu[i][j].str);
+						}
+					}
 					FINAL_MENU[servery] = {};
-					FINAL_MENU[servery][meal] = menu
+					FINAL_MENU[servery][meal] = temp;
 					update_panel(servery, meal);
 				});
 			});
