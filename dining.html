@@ -1,28 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<head>
   		<title>Dining</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<style>
-			div.scrollBox {
-				width: 500px;
-				height: 300px;
-		  		overflow: auto;
-  				border: 1px solid black;
- 				padding: 1%;
+			.accordion{
+				background-color: #eee;
+				color: #444;
+				cursor: pointer;
+				padding: 18px;
+				width: 100%;
+				border: none;
+				text-align: center;
+				outline: none;
+				font-size: 15px;
+				transition: 0.4s;
 			}
-			.match {
-  				color: red;
+			.active, .accordion:hover{
+				background-color: #ccc; 
+			}
+			.panel {
+				padding: 0 18px;
+				display: none;
+				background-color: white;
+				overflow: hidden;
 			}
 		</style>
 	</head>
 	<body>
-		<button id="startButton" onclick="accessWeb()">Generate Poem</button>
+		<button class="accordion" id="West">West</button>
+		<div class="panel" id="West panel">
+			<p></p>
+		</div>
 
-		<p>
-		</p>
-
-		<div class = "scrollBox" id="display"></div>
+		<button class="accordion" id="South">South</button>
+		<div class="panel" id="South panel">
+			<p></p>
+		</div>
+		
+		<button class="accordion" id="Seibel">Seibel</button>
+		<div class="panel" id="Seibel panel">
+			<p></p>
+		</div>
+		
+		<button class="accordion" id="Baker">Baker</button>
+		<div class="panel" id="Baker panel">
+			<p></p>
+		</div>
+		
+		<button class="accordion" id="North">North</button>
+		<div class="panel" id="North panel">
+			<p></p>
+		</div>
+		
+		<button class="accordion" id="Sid Rich">Sid Rich</button>
+		<div class="panel" id="Sid Rich panel">
+			<p></p>
+		</div>
 		
 		<script src = "//mozilla.github.io/pdf.js/build/pdf.js"></script>
 		<script src = "diningscript.js"></script>
