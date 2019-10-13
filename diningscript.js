@@ -63,6 +63,10 @@ function valid_menu_item(text){
 	return true;
 }
 
+function update_all(meal){
+	
+}
+
 function update_panel(servery, meal){
 	if(meal == "Lunch"){
 		PANELS[servery].innerHTML = FINAL_MENU[servery][meal][0].join("<br />");
