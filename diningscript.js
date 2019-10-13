@@ -34,6 +34,8 @@ var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", 
 var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
 var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
 
+var FINAL_MENU = {};
+
 function valid_menu_item(text){
 	text = text.trim();
 	if(text.includes("=")){
@@ -129,7 +131,8 @@ function accessMenu(url){
 							}
 						}
 					}
-					console.log(servery + " " + meal + ": ", menu);
+					FINAL_MENU[servery] = {};
+					FINAL_MENU[servery][meal] = menu
 				});
 			});
 		}
