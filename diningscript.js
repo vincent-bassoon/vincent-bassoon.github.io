@@ -65,7 +65,7 @@ function valid_menu_item(text){
 
 function update_panel(servery, meal){
 	if(meal == "Lunch"){
-		PANELS[servery].innerHTML = FINAL_MENU[servery][meal].join("<br />");
+		PANELS[servery].innerHTML = FINAL_MENU[servery][meal][0].join("<br />");
 	}
 }
 
