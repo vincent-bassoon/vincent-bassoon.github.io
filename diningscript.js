@@ -16,18 +16,18 @@ function accessWeb(){
 
 var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-function valid_menu_item(item){
-	if(item.contains("=")){
+function valid_menu_item(text){
+	if(text.includes("=")){
 		return false;
 	}
-	if(item.length <= 3){
+	if(text.length <= 3){
 		return false;
 	}
-	if(item == "Lunch" || item == "Dinner"){
+	if(text == "Lunch" || text == "Dinner"){
 		return false;
 	}
 	for(var j = 0; j < 7; j++){
-		if(text.str == DAYS[j]){
+		if(text == DAYS[j]){
 			return false;
 		}
 	}
@@ -46,9 +46,11 @@ function accessMenu(url){
 		for(var pageNumber = 2; pageNumber <= 3; pageNumber++){
 			pdf.getPage(pageNumber).then(function(page){
 				page.getTextContent().then(function(textContent){
+					textContent = textContent.items;
 					var menu = [[], [], [], [], [], [], []];
 					var x = [];
 					var y = [];
+					console.log(textContent);
 					for(var i = 0; i < textContent.length; i++){
 						var text = textContent[i];
 						for(var j = 0; j < 7; j++){
@@ -60,6 +62,7 @@ function accessMenu(url){
 					}
 					for(var i = 0; i < textContent.length; i++){
 						if(valid_menu_item(textContent[i].str)){
+							console.log("VALID: ", textContent[i].str);
 							for(var j = 0; j < 7; j++){
 								if(textContent[i].transform[5] < y[j] && textContent[i].transform[4] < x[j]){
 									var insert_index = 0;
@@ -75,6 +78,9 @@ function accessMenu(url){
 									
 								}
 							}
+						}
+						else{
+							console.log("INVALID: ", textContent[i].str);
 						}
 					}
 					console.log(menu);
