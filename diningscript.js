@@ -8,7 +8,7 @@ var FINAL_MENU = {};
 
 function initialize(){
 	for(var i = 0; i < SERVERIES.length; i++){
-		PANELS[SERVERIES[i]] = document.getELementById(SERVERIES[i] + " panel");
+		PANELS[SERVERIES[i]] = document.getElementById(SERVERIES[i] + " panel");
 	}
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
