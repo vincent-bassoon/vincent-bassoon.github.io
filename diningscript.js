@@ -23,7 +23,17 @@ function valid_menu_item(item){
 	if(item.length <= 3){
 		return false;
 	}
-	//make sure item isn't a day of the week or Lunch or whatever
+	if(item == "Lunch" || item == "Dinner")
+		return false;
+	}
+	for(var j = 0; j < 7; j++){
+		if(text.str == DAYS[j]){
+			return false;
+		}
+	}
+	if(!/[a-z]/i.test(text)){
+		return false;
+	}
 	return true;
 }
 
@@ -52,7 +62,17 @@ function accessMenu(url){
 						if(valid_menu_item(textContent[i].str)){
 							for(var j = 0; j < 7; j++){
 								if(textContent[i].transform[5] < y[j] && textContent[i].transform[4] < x[j]){
-									//iterate over menu[j], add item in order with items of menu[j]
+									var insert_index = 0;
+									for(var h = 0; h < menu[j].length; h++){
+										if(menu[j][h].y > textContent[i].transform[5]){
+											insert_index += 1;
+										}
+										else{
+											h = menu[j].length;
+										}
+									}
+									menu[j].splice(insert_index, 0, {str:textContent[i].str, y:textContent[i].transform[5]});
+									
 								}
 							}
 						}
