@@ -5,6 +5,26 @@
   		<title>Dining</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<style>
+			* {box-sizing: border-box}
+			body, html {
+				height: 100%;
+				margin: 0;
+				font-family: Arial;
+			}
+			.tablink {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 50%;
+			}
+			.tablink:hover {
+				background-color: #777;
+			}
 			.accordion{
 				background-color: #eee;
 				color: #444;
@@ -30,6 +50,8 @@
 		</style>
 	</head>
 	<body>
+		<button class="tablink" onclick="update_all('Lunch')">Lunch</button>
+		<button class="tablink" onclick="update_all('Dinner')">Dinner</button>
 		<button class="accordion" id="west">West</button>
 		<div class="panel" id="west panel" style="display: block">
 			<p>Initializing...</p>
