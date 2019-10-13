@@ -7,6 +7,7 @@ var FINAL_MENU = {};
 
 
 function initialize(){
+	document.getElementById("Lunch").classList.toggle("active");
 	for(var i = 0; i < SERVERIES.length; i++){
 		PANELS[SERVERIES[i]] = document.getElementById(SERVERIES[i] + " panel");
 	}
@@ -65,7 +66,7 @@ function valid_menu_item(text){
 
 function update_all(meal, element){
 	element.classList.toggle("active");
-	for(var i = 0; i < SERERIES.length; i++){
+	for(var i = 0; i < SERVERIES.length; i++){
 		update_panel(SERVERIES[i], meal);
 	}
 }
