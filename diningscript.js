@@ -1,4 +1,15 @@
+var PANELS = {};
+var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
+var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
+
+var FINAL_MENU = {};
+
+
 function initialize(){
+	for(var i = 0; i < SERVERIES.length; i++){
+		PANELS[SERVERIES[i]] = document.getELementById(SERVERIES[i] + " panel");
+	}
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
 		acc[i].addEventListener("click", function() {
@@ -30,12 +41,6 @@ function accessWeb(){
 	x.send(null);
 }
 
-var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
-var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
-
-var FINAL_MENU = {};
-
 function valid_menu_item(text){
 	text = text.trim();
 	if(text.includes("=")){
@@ -58,20 +63,19 @@ function valid_menu_item(text){
 	return true;
 }
 
-function capitalizeFirstLetter(string){
-	return string.charAt(0).toUpperCase() + string.slice(1);
+function update_panel(servery, meal){
+	if(meal == "Lunch"){
+		PANELS[servery].innerHTML = FINAL_MENU[servery][meal].join("<br />");
+	}
 }
 
 function accessMenu(url){
 	var servery;
 	for(var i = 0; i < SERVERIES.length; i++){
 		if(url.toLowerCase().includes(SERVERIES[i])){
-			servery = capitalizeFirstLetter(SERVERIES[i]);
+			servery = SERVERIES[i];
 			i = SERVERIES.length;
 		}
-	}
-	if(servery == "Sid"){
-		servery = "Sid Rich";
 	}
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
@@ -133,6 +137,7 @@ function accessMenu(url){
 					}
 					FINAL_MENU[servery] = {};
 					FINAL_MENU[servery][meal] = menu
+					update_panel(servery, meal);
 				});
 			});
 		}
