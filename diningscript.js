@@ -87,12 +87,14 @@ function update_all(meal, element){
 	var day = current_day;
 	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("activeTab")){
 		LUNCH_BUTTON.classList.toggle("activeTab");
+		DINNER_BUTTON.classList.toggle("activeTab");
 		for(var i = 0; i < SERVERIES.length; i++){
 			update_panel(SERVERIES[i], meal, day);
 		}
 	}
 	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("activeTab")){
 		DINNER_BUTTON.classList.toggle("activeTab");
+		LUNCH_BUTTON.classList.toggle("activeTab");
 		for(var i = 0; i < SERVERIES.length; i++){
 			update_panel(SERVERIES[i], meal, day);
 		}
@@ -100,7 +102,7 @@ function update_all(meal, element){
 }
 
 function update_panel(servery, meal, day){
-	if(FINAL_MENU[servery][meal][day].length = 0){
+	if(FINAL_MENU[servery][meal][day].length == 0){
 		PANELS[servery].innerHTML = "Closed";
 	}
 	else{
