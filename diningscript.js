@@ -22,8 +22,8 @@ function initialize(){
 	DAY_BUTTONS[current_day].classList.toggle("activeTab");
 	for(var i = 0; i < SERVERIES.length; i++){
 		FINAL_MENU[SERVERIES[i]] = {};
-		FINAL_MENU[SERVERIES[i]]["Lunch"] = [];
-		FINAL_MENU[SERVERIES[i]]["Dinner"] = [];
+		FINAL_MENU[SERVERIES[i]]["Lunch"] = [[], [], [], [], [], [], []];
+		FINAL_MENU[SERVERIES[i]]["Dinner"] = [[], [], [], [], [], [], []];
 	}
 	LUNCH_BUTTON.classList.toggle("activeTab");
 	for(var i = 0; i < SERVERIES.length; i++){
