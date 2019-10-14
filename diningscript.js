@@ -4,11 +4,22 @@ var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
 var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
 var LUNCH_BUTTON = document.getElementById("Lunch");
 var DINNER_BUTTON = document.getElementById("Dinner");
+var DAY_BUTTONS = [];
 
 var FINAL_MENU = {};
-
+var current_day;
 
 function initialize(){
+	for(var i = 0; i < 7; i++){
+		DAY_BUTTONS[i] = document.getElementById(i + "Button");
+		DAY_BUTTONS[i].addEventListener("click", function() {
+  			DAY_BUTTONS[current_day].classList.toggle("activeTab");
+			this.classList.toggle("activeTab");
+			current_day = parseInt(this.id.charAt(0));
+  		});
+	}
+	current_day = 0;
+	DAY_BUTTONS[current_day].classList.toggle("activeTab");
 	for(var i = 0; i < SERVERIES.length; i++){
 		FINAL_MENU[SERVERIES[i]] = {};
 		FINAL_MENU[SERVERIES[i]]["Lunch"] = [];
@@ -73,7 +84,7 @@ function valid_menu_item(text){
 }
 
 function update_all(meal, element){
-	var day = 0;
+	var day = current_day;
 	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("activeTab")){
 		LUNCH_BUTTON.classList.toggle("activeTab");
 		for(var i = 0; i < SERVERIES.length; i++){
@@ -98,7 +109,7 @@ function update_panel(servery, meal, day){
 }
 
 function initialize_panel(servery, meal){
-	var day = 0;
+	var day = current_day;
 	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("activeTab")){
 		update_panel(servery, meal, day);
 	}
