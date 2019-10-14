@@ -11,6 +11,17 @@
 				margin: 0;
 				font-family: Arial;
 			}
+			.tabdaylink {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 14.2857142857%;
+			}
 			.tablink {
 				background-color: #555;
 				color: white;
@@ -50,6 +61,14 @@
 		</style>
 	</head>
 	<body>
+		<button class="tabdaylink" id="0Button">M</button>
+		<button class="tabdaylink" id="1Button">T</button>
+		<button class="tabdaylink" id="2Button">W</button>
+		<button class="tabdaylink" id="3Button">T</button>
+		<button class="tabdaylink" id="4Button">F</button>
+		<button class="tabdaylink" id="5Button">S</button>
+		<button class="tabdaylink" id="6Button">S</button>
+		<div></div>
 		<button class="tablink" onclick="update_all('Lunch', this)" id="Lunch">Lunch</button>
 		<button class="tablink" onclick="update_all('Dinner', this)" id="Dinner">Dinner</button>
 		<button class="accordion" id="west">West</button>
