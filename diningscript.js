@@ -2,17 +2,25 @@ var PANELS = {};
 var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
 var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
+var LUNCH_BUTTON = document.getElementById("Lunch");
+var DINNER_BUTTON = document.getElementById("Dinner");
 
 var FINAL_MENU = {};
 
 
 function initialize(){
-	document.getElementById("Lunch").classList.toggle("active");
+	for(var i = 0; i < SERVERIES.length; i++){
+		FINAL_MENU[SERVERIES[i]] = {};
+		FINAL_MENU[SERVERIES[i]]["Lunch"] = [];
+		FINAL_MENU[SERVERIES[i]]["Dinner"] = [];
+	}
+	LUNCH_BUTTON.classList.toggle("active");
 	for(var i = 0; i < SERVERIES.length; i++){
 		PANELS[SERVERIES[i]] = document.getElementById(SERVERIES[i] + " panel");
 	}
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
+		acc[i].classList.toggle("active");
 		acc[i].addEventListener("click", function() {
 			this.classList.toggle("active");
 			var panel = this.nextElementSibling;
@@ -65,15 +73,37 @@ function valid_menu_item(text){
 }
 
 function update_all(meal, element){
-	element.classList.toggle("active");
-	for(var i = 0; i < SERVERIES.length; i++){
-		update_panel(SERVERIES[i], meal);
+	var day = 0;
+	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("active")){
+		LUNCH_BUTTON.classList.toggle("active");
+		for(var i = 0; i < SERVERIES.length; i++){
+			update_panel(SERVERIES[i], meal, day);
+		}
+	}
+	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("active")){
+		DINNER_BUTTON.classList.toggle("active");
+		for(var i = 0; i < SERVERIES.length; i++){
+			update_panel(SERVERIES[i], meal, day);
+		}
 	}
 }
 
-function update_panel(servery, meal){
-	if(meal == "Lunch"){
-		PANELS[servery].innerHTML = FINAL_MENU[servery][meal][0].join("<br />");
+function update_panel(servery, meal, day){
+	if(FINAL_MENU[servery][meal][day].length = 0){
+		PANELS[servery].innerHTML = "Closed";
+	}
+	else{
+		PANELS[servery].innerHTML = FINAL_MENU[servery][meal][day].join("<br />");
+	}
+}
+
+function initialize_panel(servery, meal){
+	var day = 0;
+	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("active")){
+		update_panel(servery, meal, day);
+	}
+	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("active")){
+		update_panel(servery, meal, day);
 	}
 }
 
@@ -150,9 +180,8 @@ function accessMenu(url){
 							temp[i].push(menu[i][j].str);
 						}
 					}
-					FINAL_MENU[servery] = {};
 					FINAL_MENU[servery][meal] = temp;
-					update_panel(servery, meal);
+					initialize_panel(servery, meal);
 				});
 			});
 		}
