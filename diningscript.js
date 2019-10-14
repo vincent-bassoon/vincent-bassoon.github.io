@@ -14,15 +14,15 @@ function initialize(){
 		FINAL_MENU[SERVERIES[i]]["Lunch"] = [];
 		FINAL_MENU[SERVERIES[i]]["Dinner"] = [];
 	}
-	LUNCH_BUTTON.classList.toggle("active");
+	LUNCH_BUTTON.classList.toggle("activeTab");
 	for(var i = 0; i < SERVERIES.length; i++){
 		PANELS[SERVERIES[i]] = document.getElementById(SERVERIES[i] + " panel");
 	}
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
-		acc[i].classList.toggle("active");
+		acc[i].classList.toggle("activeAcc");
 		acc[i].addEventListener("click", function() {
-			this.classList.toggle("active");
+			this.classList.toggle("activeAcc");
 			var panel = this.nextElementSibling;
 			if (panel.style.display === "block") {
 				panel.style.display = "none";
@@ -74,14 +74,14 @@ function valid_menu_item(text){
 
 function update_all(meal, element){
 	var day = 0;
-	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("active")){
-		LUNCH_BUTTON.classList.toggle("active");
+	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("activeTab")){
+		LUNCH_BUTTON.classList.toggle("activeTab");
 		for(var i = 0; i < SERVERIES.length; i++){
 			update_panel(SERVERIES[i], meal, day);
 		}
 	}
-	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("active")){
-		DINNER_BUTTON.classList.toggle("active");
+	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("activeTab")){
+		DINNER_BUTTON.classList.toggle("activeTab");
 		for(var i = 0; i < SERVERIES.length; i++){
 			update_panel(SERVERIES[i], meal, day);
 		}
@@ -99,10 +99,10 @@ function update_panel(servery, meal, day){
 
 function initialize_panel(servery, meal){
 	var day = 0;
-	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("active")){
+	if(meal == "Lunch" && !LUNCH_BUTTON.classList.contains("activeTab")){
 		update_panel(servery, meal, day);
 	}
-	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("active")){
+	else if(meal == "Dinner" && !DINNER_BUTTON.classList.contains("activeTab")){
 		update_panel(servery, meal, day);
 	}
 }
