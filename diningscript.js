@@ -13,9 +13,7 @@ function initialize(){
 	for(var i = 0; i < 7; i++){
 		DAY_BUTTONS[i] = document.getElementById(i + "Button");
 		DAY_BUTTONS[i].addEventListener("click", function() {
-  			DAY_BUTTONS[current_day].classList.toggle("activeTab");
-			this.classList.toggle("activeTab");
-			current_day = parseInt(this.id.charAt(0));
+			update_all_day(this);
   		});
 	}
 	current_day = 0;
@@ -81,6 +79,20 @@ function valid_menu_item(text){
 		return false;
 	}
 	return true;
+}
+
+function update_all_day(element){
+  	DAY_BUTTONS[current_day].classList.toggle("activeTab");
+	element.classList.toggle("activeTab");
+	current_day = parseInt(element.id.charAt(0));
+	var day = current_day;
+	var meal = "Lunch";
+	if(DINNER_BUTTON.classList.contains("activeTab")){
+		meal = "Dinner";
+	}
+	for(var i = 0; i < SERVERIES.length; i++){
+		update_panel(SERVERIES[i], meal, day);
+	}
 }
 
 function update_all(meal, element){
