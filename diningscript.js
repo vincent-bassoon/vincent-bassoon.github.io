@@ -245,7 +245,7 @@ function accessMenu(url){
 }
 
 firebase.database().ref('/.info/serverTimeOffset').once('value').then(function stv(data){
-	console.log(data.val() + Date.now());
+	current_time = data.val() + Date.now();
 	initialize();
 	accessWeb();
   }, function (err) {
