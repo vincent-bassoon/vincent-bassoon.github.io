@@ -244,5 +244,10 @@ function accessMenu(url){
 	});
 }
 
-initialize();
-accessWeb();
+firebase.database().ref('/.info/serverTimeOffset').once('value').then(function stv(data){
+	console.log(data.val() + Date.now());
+	initialize();
+	accessWeb();
+  }, function (err) {
+	return err;
+});
