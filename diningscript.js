@@ -1,3 +1,32 @@
+var firebaseConfig = {
+	apiKey: "AIzaSyAdcYmXMFmCUsOW1_Nr1jJwk_qmwN70bzw",
+	authDomain: "rice-dining.firebaseapp.com",
+	databaseURL: "https://rice-dining.firebaseio.com",
+	projectId: "rice-dining",
+	storageBucket: "rice-dining.appspot.com",
+	messagingSenderId: "956318821917",
+	appId: "1:956318821917:web:d5e61fd5ad9b1a585220f4",
+	measurementId: "G-8104NPVNCC"
+};
+
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
+function saveToFirebase(final_menu) {
+    var menuObject = {
+        menu: final_menu
+    };
+
+    firebase.database().ref('menu-ref').set(menuObject)
+        .then(function(snapshot) {
+            console.log("successful firebase storage");
+        }, function(error) {
+            console.log('error' + error);
+        });
+}
+
+saveToFirebase("gunk");
+
 var PANELS = {};
 var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
