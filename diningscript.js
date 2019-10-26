@@ -12,46 +12,100 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-function saveToFirebase(final_menu) {
-    var menuObject = {
-        menu: final_menu
-    };
-
-    firebase.database().ref('menu-ref').set(menuObject)
-        .then(function(snapshot) {
-            console.log("successful firebase storage");
-        }, function(error) {
-            console.log('error' + error);
+function saveToFirebase(final_menu, current_time) {
+	var menuObject = {
+		time: current_time,
+		menu: final_menu
+	};
+	firebase.database().ref('menu-ref').set(menuObject).then(function(snapshot){
+		console.log("successful firebase storage");
+        }, function(error){
+		console.log('error' + error);
         });
 }
 
-saveToFirebase("gunk");
+function get_validated_menu(success, fail){
+	var post_time = function(current_time){
+		firebase.database().ref('menu-ref').once('value').then(function(snapshot){
+			var data = snapshot.val();
+			if(data.date != undefined && (current_time - data.date) / (1000 * 60 * 60 * 24) <= 7){
+				success(data.menu);
+			}
+			else{
+				fail();
+			}
+		}, function(error){
+			console.log("Could not obtain menu from server");
+			fail();
+		});
+	};
+	firebase.database().ref('/.info/serverTimeOffset').once('value').then(function(snapshot){
+		post_time(snapshot.val() + Date.now());
+	}, function(error){
+		console.log("Could not obtain time from server, using client time");
+		post_time(Date.now());
+	});
+}
+	
+function set_menu(final_menu, date, success){
+	var menuObject = {
+		date: date,
+		menu: final_menu
+	};
+	firebase.database().ref('menu-ref').set(menuObject).then(function(snapshot){
+		console.log("Successful firebase storage");
+		success(final_menu);
+     	   }, function(error){
+		console.log('Failed firebase storage, error: ' + error);
+		success(final_menu);
+        });
+}
 
-var PANELS = {};
-var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-var SERVERIES = ["baker", "north", "west", "south", "seibel", "sid"];
-var TEST_ORDER = [3, 4, 5, 6, 0, 1, 2];
-var LUNCH_BUTTON = document.getElementById("Lunch");
-var DINNER_BUTTON = document.getElementById("Dinner");
-var DAY_BUTTONS = [];
 
-var FINAL_MENU = {};
-var current_day;
 
-function initialize(){
-	for(var i = 0; i < 7; i++){
-		DAY_BUTTONS[i] = document.getElementById(i + "Button");
-		DAY_BUTTONS[i].addEventListener("click", function() {
-			update_all_day(this);
-  		});
+function scrape_menu(url, menu){
+	
+}
+
+function scrape_all_menus(){
+	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
+	var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+	var test_order = [3, 4, 5, 6, 0, 1, 2];
+	
+	var final_menu = {};
+	var finished = {};
+	for(var i = 0; i < serveries.length; i++){
+		finished[serveries[i]] = false;
+		final_menu[serveries[i]] = {"Lunch": [[], [], [], [], [], [], []], "Dinner": [[], [], [], [], [], [], []]};
 	}
+	
+	
+	var x = new XMLHttpRequest();
+	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
+	x.onreadystatechange = function(){
+		if(x.readyState == 4 && x.status == 200){
+  			var links = new DOMParser().parseFromString(x.responseText, "text/html").links;
+  			for(var i = 0; i < links.length; i++){
+  				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
+					for(var i = 0; i < serveries.length; i++){
+						if(links[i].href.toLowerCase().includes(serveries[i])){
+							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href;
+							scrape_menu(url, final_menu[serveries[i]], finished, serveries[i]);
+							i = serveries.length;
+						}
+					}
+				}
+			}
+		}
+	};
+	x.send(null);
+}
+	
+	
+	
+function configure_ui(final_menu){
 	current_day = 0;
 	DAY_BUTTONS[current_day].classList.toggle("activeTab");
-	for(var i = 0; i < SERVERIES.length; i++){
-		FINAL_MENU[SERVERIES[i]] = {};
-		FINAL_MENU[SERVERIES[i]]["Lunch"] = [[], [], [], [], [], [], []];
-		FINAL_MENU[SERVERIES[i]]["Dinner"] = [[], [], [], [], [], [], []];
-	}
 	LUNCH_BUTTON.classList.toggle("activeTab");
 	for(var i = 0; i < SERVERIES.length; i++){
 		PANELS[SERVERIES[i]] = document.getElementById(SERVERIES[i] + " panel");
@@ -70,22 +124,6 @@ function initialize(){
 			}
 		});
 	}
-}
-
-function accessWeb(){
- 	var x = new XMLHttpRequest();
-	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
-	x.onreadystatechange = function(){
-		if(x.readyState == 4 && x.status == 200){
-  			links = new DOMParser().parseFromString(x.responseText, "text/html").links;
-  			for(var i = 0; i < links.length; i++){
-  				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
-					accessMenu("https://cors-anywhere.herokuapp.com/" + links[i].href);
-				}
-			}
-		}
-	};
-	x.send(null);
 }
 
 function valid_menu_item(text){
@@ -244,10 +282,4 @@ function accessMenu(url){
 	});
 }
 
-firebase.database().ref('/.info/serverTimeOffset').once('value').then(function stv(data){
-	current_time = data.val() + Date.now();
-	initialize();
-	accessWeb();
-  }, function (err) {
-	return err;
-});
+get_validated_menu(configure_ui, scrape_all_menus);
