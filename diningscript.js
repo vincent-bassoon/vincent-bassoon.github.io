@@ -300,4 +300,5 @@ function update_all_day(final_menu, current_day, current_meal, serveries, schedu
 	}
 }
 
-get_validated_menu(configure_ui, scrape_all_menus);
+console.log("uh");
+//get_validated_menu(configure_ui, scrape_all_menus);
