@@ -246,10 +246,10 @@ function configure_ui(final_menu){
 	
 	var day_buttons = [];
 	for(var i = 0; i < 7; i++){
-		day_buttons[i] = document.getElementById(i + "Button");
+		day_buttons[i] = document.getElementById(i + "_day_button");
 		day_buttons[i].addEventListener("click", function(){
 			day_buttons[current_day].classList.toggle("activeTab");
-			current_day = parseInt(this.classList.index);
+			current_day = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
 			update_all(final_menu, current_day, meals[current_meal], serveries, schedule, panels);
 		});
@@ -258,10 +258,10 @@ function configure_ui(final_menu){
 	
 	var meal_buttons = [];
 	for(var i = 0; i < meals.length; i++){
-		meal_buttons[i] = document.getElementById(meals[i]);
+		meal_buttons[i] = document.getElementById(i + "_meal_button");
 		meal_buttons[i].addEventListener("click", function(){
 			meal_buttons[current_meal].classList.toggle("activeTab");
-			current_meal = parseInt(this.classList.index);
+			current_meal = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
 			update_all(final_menu, current_day, meals[current_meal], serveries, schedule, panels);
 		});
