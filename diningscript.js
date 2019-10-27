@@ -63,7 +63,7 @@ function valid_menu_item(text){
 	return true;
 }
 
-function process_text(final_menu, finished, servery, text_content){
+function process_text(final_menu, finished, servery, text_content, date){
 	var x = [];
 	var y = [];
 	var meal = null;
@@ -139,11 +139,12 @@ function process_text(final_menu, finished, servery, text_content){
 		}
 	}
 	if(done){
+		set_menu(final_menu, date);
 		configure_ui(final_menu);
 	}
 }
 
-function scrape_menu(url, final_menu, finished, servery){
+function scrape_menu(url, final_menu, finished, servery, date){
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 	var loadingTask = pdfjsLib.getDocument(url);
@@ -152,7 +153,7 @@ function scrape_menu(url, final_menu, finished, servery){
 		for(var pageNumber = 2; pageNumber <= 3; pageNumber++){
 			pdf.getPage(pageNumber).then(function(page){
 				page.getTextContent().then(function(textContent){
-					process_text(final_menu, finished, servery, textContent.items);
+					process_text(final_menu, finished, servery, textContent.items, date);
 				}, function(reason){
 					console.error(reason);
 				});
@@ -184,18 +185,39 @@ function scrape_all_menus(){
 	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
+			var date = null;
   			var links = new DOMParser().parseFromString(x.responseText, "text/html").links;
+			var valid_links = [];
   			for(var i = 0; i < links.length; i++){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
-					var regex = /[0-9]{1,}.[0-9]{1,}.[0-9]{2,}/;
+					if(date == null){
+						var regex = /[0-9]{1,2}[^0-9][0-9]{1,2}[^0-9][0-9]{2,4}/;
+						var result = regex.exec(links[i].href)[0].split(/[^0-9]/);
+						if(result.length == 3){
+							if(result[2].length == 2){
+								result[2] = "20" + result[2];
+							}
+							for(var j = 0; j < 3; j++){
+								result[j] = parseInt(result[j]);
+							}
+							date = new Date(result[2], result[0], result[1]).getTime();
+						}
+					}
 					for(var j = 0; j < serveries.length; j++){
 						if(links[i].href.toLowerCase().includes(serveries[j])){
-							console.log(links[i].href.toLowerCase());
 							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href;
-							scrape_menu(url, final_menu, finished, serveries[j]);
+							valid_links.push({"url":url, "servery":serveries[j]});
 							j = serveries.length;
 						}
 					}
+				}
+			}
+			if(date == null){
+				console.log("No date found in url");
+			}
+			else{
+				for(var i = 0; i < valid_links.length; i++){
+					scrape_menu(valid_links[i].url, final_menu, finished, valid_links[i].servery, date);
 				}
 			}
 		}
