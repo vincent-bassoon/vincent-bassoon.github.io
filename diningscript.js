@@ -200,12 +200,12 @@ function scrape_all_menus(){
 		finished[serveries[i]][1] = false;
 		finished[serveries[i]][2] = false;
 		final_menu[serveries[i]] = [];
-		final_menu[serveries[i]][0] = [[], [], [], [], []];
+		final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
 		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
 		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 	}
-	final_menu["seibel"][0][5] = [];
-	final_menu["north"][0][5] = [];
+	final_menu["seibel"][0][5] = [0];
+	final_menu["north"][0][5] = [0];
 	var x = new XMLHttpRequest();
 	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
 	x.onreadystatechange = function(){
@@ -354,10 +354,7 @@ function configure_ui(final_menu){
 function update_all(final_menu, current_day, current_meal, serveries, schedule, panels){
 	for(var i = 0; i < serveries.length; i++){
 		if(current_meal == 0){
-			if(final_menu[serveries[i]][current_meal] == undefined){
-				panels[serveries[i]].innerHTML = "Closed";
-			}
-			else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
+			if(final_menu[serveries[i]][current_meal][current_day] == undefined){
 				panels[serveries[i]].innerHTML = "Closed";
 			}
 			else{
