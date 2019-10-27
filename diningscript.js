@@ -63,10 +63,16 @@ function valid_menu_item(text){
 	return true;
 }
 
+function not_preposition(text){
+	return text != "and" && text != "with";
+}
+
 function title_case(str) {
 	var splitStr = str.trim().toLowerCase().split(' ');
 	for (var i = 0; i < splitStr.length; i++) {
-		splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+		if(not_preposition(splitStr[i])){
+			splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+		}
 	}
 	return splitStr.join(' '); 
 }
