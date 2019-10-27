@@ -66,8 +66,12 @@ function valid_menu_item(text){
 function process_text(final_menu, finished, servery, text_content){
 	var x = [];
 	var y = [];
-	var meal = "NONE";
-	var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+	var meal = null;
+	var temp = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+	var days = [];
+	for(var i = 0; i < 7; i++){
+		days[i] = {day:temp[i], index:i};
+	}
 	var menu_temp = [[], [], [], [], [], [], []]
 	for(var i = 0; i < text_content.length; i++){
 		var text = text_content[i];
@@ -79,23 +83,23 @@ function process_text(final_menu, finished, servery, text_content){
 				j = 7;
 				text_content.splice(i, 1);
 				i -= 1;
-				if(days.length == 0 && meal != "NONE"){
+				if(days.length == 0 && meal != null){
 					i = text_content.length;
 				}
 			}
 		}
 		if(text.str.includes("Menu")){
 			if(text.str.toLowerCase().trim() == "lunch menu"){
-				meal = "Lunch";
+				meal = 1;
 				text_content.splice(i, 1);
 				i -= 1;
 			}
 			else if(text.str.toLowerCase().trim() == "dinner menu"){
-				meal = "Dinner";
+				meal = 2;
 				text_content.splice(i, 1);
 				i -= 1;
 			}
-			if(days.length == 0 && meal != "NONE"){
+			if(days.length == 0 && meal != null){
 				i = text_content.length;
 			}
 		}
@@ -130,7 +134,7 @@ function process_text(final_menu, finished, servery, text_content){
 	finished[servery][meal] = true;
 	var done = true;
 	for(var servery in finished){
-		if(!finished[servery]["Lunch"] || !finished[servery]["Dinner"]){
+		if(!finished[servery][1] || !finished[servery][2]){
 			done = false;
 		}
 	}
@@ -163,12 +167,19 @@ function scrape_menu(url, final_menu, finished, servery){
 
 function scrape_all_menus(){
 	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
-	var final_menu = {};
-	var finished = {};
+	var final_menu = [];
+	var finished = [];
 	for(var i = 0; i < serveries.length; i++){
-		finished[serveries[i]] = {"Lunch": false, "Dinner": false};
-		final_menu[serveries[i]] = {"Lunch": [[], [], [], [], [], [], []], "Dinner": [[], [], [], [], [], [], []]};
+		finished[serveries[i]] = [];
+		finished[serveries[i]][1] = false;
+		finished[serveries[i]][2] = false;
+		final_menu[serveries[i]] = [];
+		final_menu[serveries[i]][0] = [[], [], [], [], []];
+		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
+		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 	}
+	final_menu["seibel"][0][5] = [];
+	final_menu["north"][0][5] = [];
 	var x = new XMLHttpRequest();
 	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
 	x.onreadystatechange = function(){
@@ -176,8 +187,10 @@ function scrape_all_menus(){
   			var links = new DOMParser().parseFromString(x.responseText, "text/html").links;
   			for(var i = 0; i < links.length; i++){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
+					var regex = /[0-9]{1,}.[0-9]{1,}.[0-9]{2,}/;
 					for(var j = 0; j < serveries.length; j++){
 						if(links[i].href.toLowerCase().includes(serveries[j])){
+							console.log(links[i].href.toLowerCase());
 							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href;
 							scrape_menu(url, final_menu, finished, serveries[j]);
 							j = serveries.length;
@@ -215,25 +228,24 @@ function create_schedule(){
 	var sunday_dinner = {str: "5:00 PM to 7:00 PM", end: new Time(19, 0)};
 	
 	for(var day = 0; day < 4; day++){
-		schedule[day] = {"Breakfast": week_breakfast, "Lunch": week_lunch, "Dinner": week_dinner};
+		schedule[day] = [week_breakfast, week_lunch, week_dinner];
 	}
-	schedule[4] = {"Breakfast": week_breakfast, "Lunch": week_lunch, "Dinner": friday_dinner};
-	schedule[5] = {"Breakfast": weekend_breakfast, "Lunch": weekend_lunch, "Dinner": saturday_dinner};
-	schedule[6] = {"Breakfast": {str: "ERROR", end: new Time(0, 0)}, "Lunch": weekend_lunch, "Dinner": sunday_dinner};
+	schedule[4] = [week_breakfast, week_lunch, friday_dinner];
+	schedule[5] = [weekend_breakfast, weekend_lunch, saturday_dinner];
+	schedule[6] = [{str: "ERROR", end: new Time(0, 0)}, weekend_lunch, sunday_dinner];
 	
 	return schedule;
 }
 	
 function configure_ui(final_menu){
 	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
-	var meals = ["Breakfast", "Lunch", "Dinner"];
 	var schedule = create_schedule();
 	
 	var now = new Date();
 	var current_day = (now.getDay() - 1) % 7;
 	var current_meal = 2;
 	for(var i = 0; i < 3; i++){
-		if(schedule[current_day][meals[i]].end.is_after(now)){
+		if(schedule[current_day][i].end.is_after(now)){
 			current_meal = i;
 			i = 3;
 		}
@@ -251,19 +263,19 @@ function configure_ui(final_menu){
 			day_buttons[current_day].classList.toggle("activeTab");
 			current_day = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
-			update_all(final_menu, current_day, meals[current_meal], serveries, schedule, panels);
+			update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
 		});
 	}	
 	day_buttons[current_day].classList.toggle("activeTab");
 	
 	var meal_buttons = [];
-	for(var i = 0; i < meals.length; i++){
+	for(var i = 0; i < 3; i++){
 		meal_buttons[i] = document.getElementById(i + "_meal_button");
 		meal_buttons[i].addEventListener("click", function(){
 			meal_buttons[current_meal].classList.toggle("activeTab");
 			current_meal = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
-			update_all(final_menu, current_day, meals[current_meal], serveries, schedule, panels);
+			update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
 		});
 	}
 	meal_buttons[current_meal].classList.toggle("activeTab");
@@ -283,19 +295,27 @@ function configure_ui(final_menu){
 		});
 	}
 	
-	update_all(final_menu, current_day, meals[current_meal], serveries, schedule, panels);
+	update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
 }
 
 
 
 function update_all(final_menu, current_day, current_meal, serveries, schedule, panels){
 	for(var i = 0; i < serveries.length; i++){
-		if(final_menu[serveries[i]][current_meal][current_day].length == 0){
+		if(current_meal == 0){
+			if(final_menu[serveries[i]][current_meal][current_day] != undefined){
+				panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str;
+			}
+			else{
+				panels[serveries[i]].innerHTML = "Closed";
+			}
+		}
+		else if(final_menu[serveries[i]][current_meal][current_day].length == 0){
 			panels[serveries[i]].innerHTML = "Closed";
 		}
 		else{
 			panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str + "<br />" +
-			    final_menu[serveries[i]][current_day][current_meal].join("<br />");
+			    final_menu[serveries[i]][current_meal][current_day].join("<br />");
 		}
 	}
 }
