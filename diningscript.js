@@ -325,11 +325,14 @@ function configure_ui(final_menu){
 function update_all(final_menu, current_day, current_meal, serveries, schedule, panels){
 	for(var i = 0; i < serveries.length; i++){
 		if(current_meal == 0){
-			if(final_menu[serveries[i]][current_meal][current_day] != undefined){
-				panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str;
+			if(final_menu[serveries[i]][current_meal] == undefined){
+				panels[serveries[i]].innerHTML = "Closed";
+			}
+			else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
+				panels[serveries[i]].innerHTML = "Closed";
 			}
 			else{
-				panels[serveries[i]].innerHTML = "Closed";
+				panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str;
 			}
 		}
 		else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
