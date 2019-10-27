@@ -113,20 +113,23 @@ function process_text(final_menu, finished, servery, text_content, date){
 			}
 		}
 		if(text.str.toLowerCase().includes("available")){
-			final_menu[servery][meal] = menu_temp;
-			finished[servery][meal] = true;
-			var done = true;
-			for(var servery in finished){
-				if(!finished[servery][1] || !finished[servery][2]){
-					done = false;
-				}
-			}
-			if(done){
-				set_menu(final_menu, date);
-				configure_ui(final_menu);
-			}
-			return;
+			closed = true;
 		}
+	}
+	if(closed){
+		final_menu[servery][meal] = menu_temp;
+		finished[servery][meal] = true;
+		var done = true;
+		for(var servery in finished){
+			if(!finished[servery][1] || !finished[servery][2]){
+				done = false;
+			}
+		}
+		if(done){
+			set_menu(final_menu, date);
+			configure_ui(final_menu);
+		}
+		return;
 	}
 	var test_order = [3, 4, 5, 6, 0, 1, 2];
 	for(var i = 0; i < text_content.length; i++){
