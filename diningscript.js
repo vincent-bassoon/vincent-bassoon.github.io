@@ -298,7 +298,7 @@ function configure_ui(final_menu){
 	var schedule = create_schedule();
 	
 	var now = new Date();
-	var current_day = (now.getDay() - 1) % 7;
+	var current_day = (now.getDay() + 6) % 7;
 	var current_meal = 2;
 	for(var i = 0; i < 3; i++){
 		if(schedule[current_day][i].end.is_after(now)){
