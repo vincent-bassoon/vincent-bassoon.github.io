@@ -16,7 +16,7 @@ function get_validated_menu(success, fail){
 	var post_time = function(current_time){
 		firebase.database().ref('menu-ref').once('value').then(function(snapshot){
 			var data = snapshot.val();
-			if(data.date != undefined && (current_time - data.date) / (1000 * 60 * 60 * 24) <= 7){
+			if(data != null && data.date != undefined && (current_time - data.date) / (1000 * 60 * 60 * 24) <= 7){
 				success(data.menu);
 			}
 			else{
@@ -176,11 +176,11 @@ function scrape_all_menus(){
   			var links = new DOMParser().parseFromString(x.responseText, "text/html").links;
   			for(var i = 0; i < links.length; i++){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
-					for(var i = 0; i < serveries.length; i++){
-						if(links[i].href.toLowerCase().includes(serveries[i])){
+					for(var j = 0; j < serveries.length; j++){
+						if(links[i].href.toLowerCase().includes(serveries[j])){
 							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href;
-							scrape_menu(url, final_menu, finished, serveries[i]);
-							i = serveries.length;
+							scrape_menu(url, final_menu, finished, serveries[j]);
+							j = serveries.length;
 						}
 					}
 				}
@@ -288,7 +288,7 @@ function configure_ui(final_menu){
 
 
 
-function update_all_day(final_menu, current_day, current_meal, serveries, schedule, panels){
+function update_all(final_menu, current_day, current_meal, serveries, schedule, panels){
 	for(var i = 0; i < serveries.length; i++){
 		if(final_menu[serveries[i]][current_meal][current_day].length == 0){
 			panels[serveries[i]].innerHTML = "Closed";
