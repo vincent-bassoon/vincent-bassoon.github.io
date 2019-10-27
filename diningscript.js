@@ -35,17 +35,15 @@ function get_validated_menu(success, fail){
 	});
 }
 	
-function set_menu(final_menu, date, success){
+function set_menu(final_menu, date){
 	var menuObject = {
 		date: date,
 		menu: final_menu
 	};
 	firebase.database().ref('menu-ref').set(menuObject).then(function(snapshot){
 		console.log("Successful firebase storage");
-		success(final_menu);
      	   }, function(error){
 		console.log('Failed firebase storage, error: ' + error);
-		success(final_menu);
         });
 }
 
