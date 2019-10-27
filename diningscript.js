@@ -35,17 +35,18 @@ function get_validated_menu(success, fail){
 	});
 }
 	
-function set_menu(final_menu, date){
+function set_menu(final_menu, date, success){
 	var menuObject = {
 		date: date,
 		menu: final_menu
 	};
 	firebase.database().ref('menu-ref').set(menuObject).then(function(snapshot){
 		console.log("Successful firebase storage");
-	}, function(error){
+		success(final_menu);
+     	   }, function(error){
 		console.log('Failed firebase storage, error: ' + error);
 		success(final_menu);
-	});
+        });
 }
 
 function valid_menu_item(text){
@@ -331,6 +332,9 @@ function update_all(final_menu, current_day, current_meal, serveries, schedule, 
 				panels[serveries[i]].innerHTML = "Closed";
 			}
 		}
+		else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
+			panels[serveries[i]].innerHTML = "Closed";
+		}
 		else if(final_menu[serveries[i]][current_meal][current_day].length == 0){
 			panels[serveries[i]].innerHTML = "Closed";
 		}
@@ -341,5 +345,4 @@ function update_all(final_menu, current_day, current_meal, serveries, schedule, 
 	}
 }
 
-console.log("uh");
-//get_validated_menu(configure_ui, scrape_all_menus);
+get_validated_menu(configure_ui, scrape_all_menus);
