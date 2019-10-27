@@ -63,6 +63,14 @@ function valid_menu_item(text){
 	return true;
 }
 
+function title_case(str) {
+	var splitStr = str.trim().toLowerCase().split(' ');
+	for (var i = 0; i < splitStr.length; i++) {
+		splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+	}
+	return splitStr.join(' '); 
+}
+
 function process_text(final_menu, finished, servery, text_content, date){
 	var x = [];
 	var y = [];
@@ -73,6 +81,7 @@ function process_text(final_menu, finished, servery, text_content, date){
 		days[i] = {day:temp[i], index:i};
 	}
 	var menu_temp = [[], [], [], [], [], [], []]
+	var closed = false;
 	for(var i = 0; i < text_content.length; i++){
 		var text = text_content[i];
 		for(var j = 0; j < days.length; j++){
@@ -88,7 +97,7 @@ function process_text(final_menu, finished, servery, text_content, date){
 				}
 			}
 		}
-		if(text.str.includes("Menu")){
+		if(text.str.toLowerCase().includes("menu")){
 			if(text.str.toLowerCase().trim() == "lunch menu"){
 				meal = 1;
 				text_content.splice(i, 1);
@@ -103,10 +112,25 @@ function process_text(final_menu, finished, servery, text_content, date){
 				i = text_content.length;
 			}
 		}
+		if(text.str.toLowerCase().includes("available")){
+			finished[servery][meal] = true;
+			var done = true;
+			for(var servery in finished){
+				if(!finished[servery][1] || !finished[servery][2]){
+					done = false;
+				}
+			}
+			if(done){
+				set_menu(final_menu, date);
+				configure_ui(final_menu);
+			}
+			return;
+		}
 	}
 	var test_order = [3, 4, 5, 6, 0, 1, 2];
 	for(var i = 0; i < text_content.length; i++){
 		if(valid_menu_item(text_content[i].str)){
+			text_content[i].str = title_case(text_content[i].str);
 			for(var j = 0; j < 7; j++){
 				var day_index = test_order[j]
 				if(text_content[i].transform[5] < y[day_index] && text_content[i].transform[4] < x[day_index]){
