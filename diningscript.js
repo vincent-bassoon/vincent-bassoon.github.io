@@ -113,6 +113,7 @@ function process_text(final_menu, finished, servery, text_content, date){
 			}
 		}
 		if(text.str.toLowerCase().includes("available")){
+			final_menu[servery][meal] = menu_temp;
 			finished[servery][meal] = true;
 			var done = true;
 			for(var servery in finished){
