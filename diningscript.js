@@ -315,7 +315,7 @@ function configure_ui(final_menu){
 	}	
 	day_buttons[current_day].classList.toggle("activeTab");
 	var temp = day_buttons[current_day].innerText;
-	day_buttons[current_day].innerText = "<b>" + temp + "</b>";
+	day_buttons[current_day].innerHTML = "<b>" + temp + "</b>";
 	
 	var meal_buttons = [];
 	for(var i = 0; i < 3; i++){
@@ -329,7 +329,7 @@ function configure_ui(final_menu){
 	}
 	meal_buttons[current_meal].classList.toggle("activeTab");
 	var temp = meal_buttons[current_meal].innerText;
-	meal_buttons[current_meal].innerText = "<b>" + temp + "</b>";
+	meal_buttons[current_meal].innerHTML = "<b>" + temp + "</b>";
 	
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
