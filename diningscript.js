@@ -116,42 +116,35 @@ function process_text(final_menu, finished, servery, text_content, date){
 				i = text_content.length;
 			}
 		}
-		if(text.str.toLowerCase().includes("available")){
-			closed = true;
-		}
-	}
-	if(closed){
-		final_menu[servery][meal] = menu_temp;
-		finished[servery][meal] = true;
-		var done = true;
-		for(var servery in finished){
-			if(!finished[servery][1] || !finished[servery][2]){
-				done = false;
-			}
-		}
-		if(done){
-			set_menu(final_menu, date);
-			configure_ui(final_menu);
-		}
-		return;
 	}
 	var test_order = [3, 4, 5, 6, 0, 1, 2];
+	var closed_days = [false, false, false, false, false, false, false];
 	for(var i = 0; i < text_content.length; i++){
 		if(valid_menu_item(text_content[i].str)){
+			closed = false;
+			if(text_content[i].str.toLowerCase().includes("available")){
+				closed = true;
+			}
 			text_content[i].str = title_case(text_content[i].str);
 			for(var j = 0; j < 7; j++){
 				var day_index = test_order[j]
 				if(text_content[i].transform[5] < y[day_index] && text_content[i].transform[4] < x[day_index]){
-					var insert_index = 0;
-					for(var h = 0; h < menu_temp[day_index].length; h++){
-						if(menu_temp[day_index][h].y > text_content[i].transform[5]){
-							insert_index += 1;
-						}
-						else{
-							h = menu_temp[day_index].length;
-						}
+					if(closed){
+						menu_temp[day_index] = [];
+						closed_days[day_index] = closed;
 					}
-					menu_temp[day_index].splice(insert_index, 0, {str:text_content[i].str, y:text_content[i].transform[5]});
+					else if(!closed_days[day_index]){
+						var insert_index = 0;
+						for(var h = 0; h < menu_temp[day_index].length; h++){
+							if(menu_temp[day_index][h].y > text_content[i].transform[5]){
+								insert_index += 1;
+							}
+							else{
+								h = menu_temp[day_index].length;
+							}
+						}
+						menu_temp[day_index].splice(insert_index, 0, {str:text_content[i].str, y:text_content[i].transform[5]});
+					}
 					j = 7;
 				}
 			}
