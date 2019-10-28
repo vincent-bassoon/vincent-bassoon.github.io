@@ -225,7 +225,7 @@ function scrape_all_menus(){
 							for(var j = 0; j < 3; j++){
 								result[j] = parseInt(result[j]);
 							}
-							date = new Date(result[2], result[0], result[1]).getTime();
+							date = new Date(result[2], result[0] - 1, result[1]).getTime();
 						}
 					}
 					for(var j = 0; j < serveries.length; j++){
@@ -374,4 +374,5 @@ function update_all(final_menu, current_day, current_meal, serveries, schedule, 
 	}
 }
 
+//console.log("start");
 get_validated_menu(configure_ui, scrape_all_menus);
