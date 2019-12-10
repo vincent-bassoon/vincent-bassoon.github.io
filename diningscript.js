@@ -208,7 +208,7 @@ function scrape_all_menus(){
 	final_menu["seibel"][0][5] = [0];
 	final_menu["north"][0][5] = [0];
 	var x = new XMLHttpRequest();
-	x.open("GET", "https://cors-anywhere.herokuapp.com/http://dining.rice.edu/undergraduate-dining/college-serveries/weekly-menus/");
+	x.open("GET", "https://cors-anywhere.herokuapp.com/https://dining.rice.edu/undergraduate-dining");
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
 			var date = null;
@@ -217,21 +217,13 @@ function scrape_all_menus(){
   			for(var i = 0; i < links.length; i++){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
 					if(date == null){
-						var regex = /[0-9]{1,2}[^0-9][0-9]{1,2}[^0-9][0-9]{2,4}/;
-						var result = regex.exec(links[i].href)[0].split(/[^0-9]/);
-						if(result.length == 3){
-							if(result[2].length == 2){
-								result[2] = "20" + result[2];
-							}
-							for(var j = 0; j < 3; j++){
-								result[j] = parseInt(result[j]);
-							}
-							date = new Date(result[2], result[0] - 1, result[1]).getTime();
-						}
+						var date_string = /[0-9]{8}/.exec(links[i].href)[0];
+						var result = [date_string.substring(0, 2), date_string.substring(2, 4), date_string.substring(4, 8)];
+						date = new Date(parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1])).getTime();
 					}
 					for(var j = 0; j < serveries.length; j++){
 						if(links[i].href.toLowerCase().includes(serveries[j])){
-							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href;
+							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href.replace(/.+io/, "dining.rice.edu");
 							valid_links.push({"url":url, "servery":serveries[j]});
 							j = serveries.length;
 						}
