@@ -170,6 +170,7 @@ function process_text(final_menu, finished, servery, text_content, date){
 }
 
 function scrape_menu(url, final_menu, finished, servery, date){
+	document.getElementById(servery + " panel").innerText = "Retrieving menu...";
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 	var loadingTask = pdfjsLib.getDocument(url);
