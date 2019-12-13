@@ -1,19 +1,14 @@
 function byte_pairs(dict){
-    
+    console.log(dict);
 }
 
 function process(text, dict, done, letter_index){
-	var start = 0;
-	var end = 0;
-	var line;
-	var letter = String.fromCharCode(letter_index + 97);
-	while((end = text.indexOf("\n", start)) !== -1){
-		line = text.substring(start, end);
-		if(text.charAt(0) == letter){
-			var index = text.indexOf(" (");
-			dict[text.substring(0, index)] = parseInt(text.substring(index + 2, text.length - 1));
-		}
-		start = end + 1;
+	var data = text.split(")");
+	var temp;
+	data.splice(data.length - 1, 1);
+	for(var i = 0; i < data.length; i++){
+		temp = data[i].split(" (");
+		dict[temp[0]] = parseInt(temp[1]);
 	}
 	done[letter_index] = true;
 	for(var i = 0; i < 26; i++){
@@ -27,16 +22,19 @@ function process(text, dict, done, letter_index){
 function get_words(){
 	var dict = {};
 	var done = [];
-	var search_key = "Numbers indicate the total occurences of each word form.";
+	var start_key = "of each word form.";
+	var end_key = "Back to the concordance menu";
 	for(var i = 0; i < 26; i++){
 		done[i] = false;
 		var x = new XMLHttpRequest();
 		x.open("GET", "https://cors-anywhere.herokuapp.com/https://www.opensourceshakespeare.org/concordance/wordformlist.php?Letter=" + 
 			   String.fromCharCode(i + 65) + "&pleasewait=1&msg=sr");
 		x.onreadystatechange = function(){
+			console.log(String.fromCharCode(i + 65), "ATTEMPT");
 			if(x.readyState == 4 && x.status == 200){
+				console.log(String.fromCharCode(i + 65), "SUCCESS");
 				var text = new DOMParser().parseFromString(x.responseText, "text/html").documentElement.innerText;
-				text = text.substring(text.indexOf(search_key) + search_key.length);
+				text = text.substring(text.indexOf(start_key) + start_key.length, text.indexOf(end_key)).trim();
                 process(text, dict, done, i);
 	    	}
 	    };
