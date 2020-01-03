@@ -1,12 +1,12 @@
 var firebaseConfig = {
-	apiKey: "AIzaSyAdcYmXMFmCUsOW1_Nr1jJwk_qmwN70bzw",
-	authDomain: "rice-dining.firebaseapp.com",
-	databaseURL: "https://rice-dining.firebaseio.com",
-	projectId: "rice-dining",
-	storageBucket: "rice-dining.appspot.com",
-	messagingSenderId: "956318821917",
-	appId: "1:956318821917:web:d5e61fd5ad9b1a585220f4",
-	measurementId: "G-8104NPVNCC"
+	apiKey: "AIzaSyAdNM2uoacPc9U5NL0JUwkIiLbVVtz-cBw",
+	authDomain: "rice-dining-5385e.firebaseapp.com",
+	databaseURL: "https://rice-dining-5385e.firebaseio.com",
+	projectId: "rice-dining-5385e",
+	storageBucket: "rice-dining-5385e.appspot.com",
+	messagingSenderId: "47441205715",
+	appId: "1:47441205715:web:2d1df72e915e88a0e67726",
+	measurementId: "G-J1X5JGY8RK"
 };
 
 firebase.initializeApp(firebaseConfig);
