@@ -56,7 +56,7 @@ class HMM {
             for(var i = 0; i < this.state_num; i++){
                 alpha[t][i] = 0;
                 for(var j = 0; j < this.state_num; j++){
-                    alpha[t][i] += alpha[t - 1][j] * alpha[j][i];
+                    alpha[t][i] += alpha[t - 1][j] * this.state_prob[j][i];
                 }
                 alpha[t][i] *= this.observed_prob[i][observations[t]];
                 scale[t] += alpha[t][i];
@@ -144,11 +144,20 @@ class HMM {
     }
     
     run(observations){
-        var alpha = new Array();
-        var beta = new Array();
-        var scale = new Array();
-        var y_probs = new Array();
-        var y_sums = new Array();
+        var alpha = new Array(observations.length);
+        var beta = new Array(observations.length);
+        var y_sums = new Array(observations.length);
+        var y_probs = new Array(observations.length);
+        for(var i = 0; i < observations.length; i++){
+            alpha[i] = new Array(this.state_num);
+            beta[i] = new Array(this.state_num);
+            y_sums[i] = new Array(this.state_num);
+            y_probs[i] = new Array(this.state_num);
+            for(var j = 0; j < this.state_num; j++){
+                y_probs[i][j] = new Array(this.state_num);
+            }
+        }
+        var scale = new Array(observations.length);
         var iters = 0;
         var log_prob = Number.NEGATIVE_INFINITY;
         var old_log_prob;
