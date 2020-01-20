@@ -208,7 +208,7 @@ function scrape_all_menus(){
 	final_menu["seibel"][0][5] = [0];
 	final_menu["north"][0][5] = [0];
 	var x = new XMLHttpRequest();
-	x.open("GET", "https://cors-anywhere.herokuapp.com/https://dining.rice.edu/undergraduate-dining");
+	x.open("GET", "https://cors-anywhere.herokuapp.com/https://dining.rice.edu");
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
 			var date = null;
@@ -217,7 +217,8 @@ function scrape_all_menus(){
   			for(var i = 0; i < links.length; i++){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
 					if(date == null){
-						var date_string = /[0-9]{8}/.exec(links[i].href)[0];
+						var link_temp = links[i].href.substring(links[i].href.lastIndexOf("/"))
+						var date_string = /\d{1,2}.?\d{1,2}.?\d{2}/.exec(link_temp)[0];
 						var result = [date_string.substring(0, 2), date_string.substring(2, 4), date_string.substring(4, 8)];
 						date = new Date(parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1])).getTime();
 					}
