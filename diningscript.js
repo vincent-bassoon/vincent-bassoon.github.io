@@ -218,8 +218,8 @@ function scrape_all_menus(){
   				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
 					if(date == null){
 						var link_temp = links[i].href.substring(links[i].href.lastIndexOf("/"))
-						var date_string = /\d{1,2}.?\d{1,2}.?\d{2}/.exec(link_temp)[0];
-						var result = [date_string.substring(0, 2), date_string.substring(2, 4), date_string.substring(4, 8)];
+						var date_string = /\d{1,2}\.\d{1,2}\.\d{2}/.exec(link_temp)[0];
+						var result = date_string.split(".");
 						date = new Date(parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1])).getTime();
 					}
 					for(var j = 0; j < serveries.length; j++){
