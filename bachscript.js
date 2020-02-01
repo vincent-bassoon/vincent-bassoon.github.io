@@ -1,5 +1,13 @@
 function run(){
-	create_score(beat_num);
+	//create_score(beat_num);
+	VF = Vex.Flow;
+	var div = document.getElementById("staff")
+	var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+	renderer.resize(500, 500);
+	var context = renderer.getContext();
+	var stave = new VF.Stave(10, 40, 400);
+	stave.addClef("treble").addTimeSignature("4/4");
+	stave.setContext(context).draw();
 }
 
 function create_score(beat_num){
