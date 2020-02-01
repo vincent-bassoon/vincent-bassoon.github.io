@@ -1,3 +1,51 @@
+function 
+
+class Chord {
+	constructer(type, key, inversion){
+		this.type = type;
+		this.key = key;
+		this.inversion = inversion;
+	}
+	get_type(){return this.type;}
+	get_key(){return this.key;}
+	get_inversion(){return this.inversion;}
+}
+
+class Note {
+	constructer(pitch, name, octave){
+		this.pitch = pitch;
+		this.name = name;
+		this.octave = octave;
+		var string = pitch
+	}
+	get_pitch(){return this.pitch}
+	get_name(){return this.name}
+	get_octave(){return this.octave}
+	get_value(){
+		return this.pitch + 12 * this.octave;
+	}
+	to_string(){
+		
+	}
+	get_inversion(){return this.inversion;}
+}
+
+class Score {
+	constructor(length){
+		this.harmony = [];
+		for(var i = 0; i < length; i++){
+			this.harmony[i] = {};
+			this.harmony[i].voice = [[], [], [], []];
+			this.harmony[i].chord = null;
+		}
+	}
+	get_chord(chord_index){
+		return this.harmony[chord_index].chord;
+	}
+	get_note(chord_index){
+	}
+}
+
 function run(){
 	//create_score(beat_num);
 	VF = Vex.Flow;
@@ -8,24 +56,4 @@ function run(){
 	var stave = new VF.Stave(10, 40, 400);
 	stave.addClef("treble").addTimeSignature("4/4");
 	stave.setContext(context).draw();
-}
-
-function create_score(beat_num){
-	var score = [];
-	for(var i = 0; i < beat_num; i++){
-		score[i] = [];
-		for(var j = 0; j < 4; j++){
-			score[i][j] = [];
-		}
-	}
-	return score;
-}
-
-function create_note(pitch, octave, accidental, fermata){
-	var note = {};
-	note.pitch = pitch;
-	note.octave = octave;
-	note.accidental = accidental;
-	note.fermata = fermata;
-	return note;
 }
