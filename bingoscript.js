@@ -1,3 +1,17 @@
+var firebaseConfig = {
+	apiKey: "AIzaSyDLaFMHhQ8uEr6_jQm7xFp3vMe9CM-dQ8k",
+	authDomain: "bingo-1a701.firebaseapp.com",
+	databaseURL: "https://bingo-1a701.firebaseio.com",
+	projectId: "bingo-1a701",
+	storageBucket: "bingo-1a701.appspot.com",
+	messagingSenderId: "147839705128",
+	appId: "1:147839705128:web:3e5b336258561124ef151d",
+	measurementId: "G-NE327E9M0P"
+};
+
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
 function openOverlay() {
 	document.getElementById("overlay").style.display = "block";
 }
@@ -31,9 +45,30 @@ function check_win(buttons){
 	if(check_line(buttons, 4, 4)){
 		return true;
 	}
+	return false;
 }
 
-function run(){
+function fail(){
+	document.getElementsByClassName("overlay-content")[0].children[0].innerText = "FAILURE";
+	openOverlay();
+}
+
+function get_data(){
+	firebase.database().ref('spaces').once('value').then(function(snapshot){
+		var data = snapshot.val();
+		if(data != null){
+			run(data);
+		}
+		else{
+			fail();
+		}
+	}, function(error){
+		console.log("Could not obtain menu from server");
+		fail();
+	});
+}
+
+function run(data){
 	var buttons = [];
 	for(var x = 0; x < 5; x++){
 		for(var y = 0; y < 5; y++){
@@ -53,4 +88,4 @@ function run(){
 	}
 }
 
-run();
+get_data();
