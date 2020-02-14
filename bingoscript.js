@@ -48,8 +48,8 @@ function check_win(buttons){
 	return false;
 }
 
-function fail(){
-	document.getElementsByClassName("overlay-content")[0].children[0].innerText = "FAILURE";
+function fail(text){
+	document.getElementsByClassName("overlay-content")[0].children[0].innerText = text;
 	openOverlay();
 }
 
@@ -60,11 +60,10 @@ function get_data(){
 			run(data);
 		}
 		else{
-			fail();
+			fail("No Data Found");
 		}
 	}, function(error){
-		console.log("Could not obtain menu from server");
-		fail();
+		fail("Cannot Access Data");
 	});
 }
 
@@ -74,9 +73,11 @@ function run(data){
 		for(var y = 0; y < 5; y++){
 			buttons[5 * x + y] = document.getElementById(x + "" + y + "button");
 			if(x == 2 && y == 2){
+				buttons[5 * x + y].innerText = "Free Space";
 				buttons[5 * x + y].classList.toggle("activeCenter");
 			}
 			else{
+				buttons[5 * x + y].innerText = data.splice(Math.floor(Math.random() * data.length), 1);
 				buttons[5 * x + y].addEventListener("click", function(){
 					this.classList.toggle("activeSpace");
 					if(check_win(buttons)){
