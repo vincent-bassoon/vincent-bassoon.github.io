@@ -22,7 +22,7 @@ function closeOverlay() {
 
 function check_line(buttons, start, increment){
 	for(var i = 0; i < 5; i++){
-		if(start != 12 && buttons[start].classList.contains("activeSpace")){
+		if(start != 12 && !buttons[start].classList.contains("activeSpace")){
 			return false;
 		}
 		start += increment;
