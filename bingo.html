@@ -1,1 +1,68 @@
-
+<!DOCTYPE html>
+<html lang="en">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+  		<title>Bingo</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
+		<style>
+			* {box-sizing: border-box}
+			body, html {
+				height: 100%;
+				margin: 0;
+				font-family: Arial;
+			}
+			.boardSpace {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 20%;
+			}
+			.activeSpace {
+				background-color: #777;
+			}
+		</style>
+	</head>
+	<body>
+		<button class="boardSpace" id="00button"></button>
+		<button class="boardSpace" id="10button"></button>
+		<button class="boardSpace" id="20button"></button>
+		<button class="boardSpace" id="30button"></button>
+		<button class="boardSpace" id="40button"></button>
+		<div></div>
+		<button class="boardSpace" id="01button"></button>
+		<button class="boardSpace" id="11button"></button>
+		<button class="boardSpace" id="21button"></button>
+		<button class="boardSpace" id="31button"></button>
+		<button class="boardSpace" id="41button"></button>
+		<div></div>
+    <button class="boardSpace" id="02button"></button>
+		<button class="boardSpace" id="12button"></button>
+		<button class="boardSpace" id="22button"></button>
+		<button class="boardSpace" id="32button"></button>
+		<button class="boardSpace" id="42button"></button>
+		<div></div>
+    <button class="boardSpace" id="03button"></button>
+		<button class="boardSpace" id="13button"></button>
+		<button class="boardSpace" id="23button"></button>
+		<button class="boardSpace" id="33button"></button>
+		<button class="boardSpace" id="43button"></button>
+		<div></div>
+    <button class="boardSpace" id="04button"></button>
+		<button class="boardSpace" id="14button"></button>
+		<button class="boardSpace" id="24button"></button>
+		<button class="boardSpace" id="34button"></button>
+		<button class="boardSpace" id="44button"></button>
+		<div></div>
+		
+		<script src = "//mozilla.github.io/pdf.js/build/pdf.js"></script>
+		<script src = "diningscript.js"></script>
+	</body>
+</html>
