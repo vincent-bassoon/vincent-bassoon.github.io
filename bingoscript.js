@@ -77,18 +77,18 @@ function run(data){
 	var buttons = [];
 	for(var x = 0; x < 5; x++){
 		for(var y = 0; y < 5; y++){
-			buttons[5 * x + y] = document.getElementById(x + "" + y + "button");
+			buttons[5 * y + x] = document.getElementById(x + "" + y + "button");
 			if(x == 2 && y == 2){
 				var container = document.createElement("span");
 				container.innerText = "Free Space";
-				buttons[5 * x + y].appendChild(container);
-				buttons[5 * x + y].classList.toggle("activeCenter");
+				buttons[5 * y + x].appendChild(container);
+				buttons[5 * y + x].classList.toggle("activeCenter");
 			}
 			else{
 				var container = document.createElement("span");
 				container.innerText = data.splice(Math.floor(Math.random() * data.length), 1);
-				buttons[5 * x + y].appendChild(container);
-				buttons[5 * x + y].addEventListener("click", function(){
+				buttons[5 * y + x].appendChild(container);
+				buttons[5 * y + x].addEventListener("click", function(){
 					this.classList.toggle("activeSpace");
 					if(check_win(buttons, this.dataset.num)){
 						openOverlay();
