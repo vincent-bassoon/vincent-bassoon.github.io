@@ -79,11 +79,15 @@ function run(data){
 		for(var y = 0; y < 5; y++){
 			buttons[5 * x + y] = document.getElementById(x + "" + y + "button");
 			if(x == 2 && y == 2){
-				buttons[5 * x + y].innerText = "Free Space";
+				var container = document.createElement("span");
+				container.innerText = "Free Space";
+				buttons[5 * x + y].appendChild(container);
 				buttons[5 * x + y].classList.toggle("activeCenter");
 			}
 			else{
-				buttons[5 * x + y].innerText = data.splice(Math.floor(Math.random() * data.length), 1);
+				var container = document.createElement("span");
+				container.innerText = data.splice(Math.floor(Math.random() * data.length), 1);
+				buttons[5 * x + y].appendChild(container);
 				buttons[5 * x + y].addEventListener("click", function(){
 					this.classList.toggle("activeSpace");
 					if(check_win(buttons, this.num)){
@@ -93,6 +97,7 @@ function run(data){
 			}
 		}
 	}
+	$('.boardSpace').textfill({});
 }
 
 get_data();
