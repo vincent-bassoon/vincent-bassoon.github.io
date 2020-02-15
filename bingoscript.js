@@ -90,7 +90,7 @@ function run(data){
 				buttons[5 * x + y].appendChild(container);
 				buttons[5 * x + y].addEventListener("click", function(){
 					this.classList.toggle("activeSpace");
-					if(check_win(buttons, this.num)){
+					if(check_win(buttons, this.dataset.num)){
 						openOverlay();
 					}
 				});
