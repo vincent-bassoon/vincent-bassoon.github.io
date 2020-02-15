@@ -12,46 +12,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-function openOverlay() {
-	document.getElementById("overlay").style.display = "block";
-}
 
-function closeOverlay() {
-	document.getElementById("overlay").style.display = "none";
-}
-
-function check_line(buttons, start, increment){
-	for(var i = 0; i < 5; i++){
-		if(start != 12 && !buttons[start].classList.contains("activeSpace")){
-			return false;
-		}
-		start += increment;
-	}
-	return true;
-}
-
-function check_win(buttons, button_num){
-	var x_num = button_num % 5;
-	var y_num = button_num - x_num;
-	if(check_line(buttons, x_num, 5)){
-		return true;
-	}
-	if(check_line(buttons, y_num, 1)){
-		return true;
-	}
-	if(button_num % 6 == 0 && check_line(buttons, 0, 6)){
-		return true;
-	}
-	if(button_num > 0 && button_num % 4 == 0 && check_line(buttons, 4, 4)){
-		return true;
-	}
-	return false;
-}
-
-function fail(text){
-	document.getElementsByClassName("overlay-content")[0].children[0].innerText = text;
-	openOverlay();
-}
 
 function get_data(){
 	firebase.database().ref('spaces').once('value').then(function(snapshot){
