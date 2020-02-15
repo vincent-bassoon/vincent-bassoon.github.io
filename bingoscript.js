@@ -30,19 +30,19 @@ function check_line(buttons, start, increment){
 	return true;
 }
 
-function check_win(buttons){
-	for(var i = 0; i < 5; i++){
-		if(check_line(buttons, i, 5)){
-			return true;
-		}
-		if(check_line(buttons, 5 * i, 1)){
-			return true;
-		}
-	}
-	if(check_line(buttons, 0, 6)){
+function check_win(buttons, button_num){
+	var x_num = button_num % 5;
+	var y_num = button_num - x_num;
+	if(check_line(buttons, x_num, 5)){
 		return true;
 	}
-	if(check_line(buttons, 4, 4)){
+	if(check_line(buttons, y_num, 1)){
+		return true;
+	}
+	if(button_num % 6 == 0 && check_line(buttons, 0, 6)){
+		return true;
+	}
+	if(button_num > 0 && button_num % 4 == 0 && check_line(buttons, 4, 4)){
 		return true;
 	}
 	return false;
@@ -68,6 +68,12 @@ function get_data(){
 }
 
 function run(data){
+	if(data.length < 25){
+		var og_data_length = data.length;
+		for(var i = 0; i < 25 - og_data_length; i++){
+			data.push(data[Math.floor(Math.random() * og_data_length)]);
+		}
+	}
 	var buttons = [];
 	for(var x = 0; x < 5; x++){
 		for(var y = 0; y < 5; y++){
@@ -80,7 +86,7 @@ function run(data){
 				buttons[5 * x + y].innerText = data.splice(Math.floor(Math.random() * data.length), 1);
 				buttons[5 * x + y].addEventListener("click", function(){
 					this.classList.toggle("activeSpace");
-					if(check_win(buttons)){
+					if(check_win(buttons, this.num)){
 						openOverlay();
 					}
 				});
