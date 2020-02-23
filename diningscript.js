@@ -170,7 +170,7 @@ function process_text(final_menu, finished, servery, text_content, date){
 }
 
 function scrape_menu(url, final_menu, finished, servery, date){
-	document.getElementById(servery + " panel").innerText = "Retrieving menu...";
+	document.getElementById(servery + " panel").innerText = "Retrieving menu from rice dining website...";
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 	var loadingTask = pdfjsLib.getDocument(url);
@@ -182,13 +182,16 @@ function scrape_menu(url, final_menu, finished, servery, date){
 					process_text(final_menu, finished, servery, textContent.items, date);
 				}, function(reason){
 					console.error(reason);
+					document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
 				});
 			}, function(reason){
 				console.error(reason);
+				document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
 			});
 		}
 	}, function(reason){
 		console.error(reason);
+		document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
 	});
 }
 
@@ -233,6 +236,9 @@ function scrape_all_menus(){
 			}
 			if(date == null){
 				console.log("No date found in url");
+				for(var i = 0; i < serveries.length; i++){
+					document.getElementById(serveries[i] + " panel").innerText = "Error: no menus found on rice dining website";
+				}
 			}
 			else{
 				for(var i = 0; i < valid_links.length; i++){
@@ -358,7 +364,7 @@ function update_all(final_menu, current_day, current_meal, serveries, schedule, 
 		else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
 			panels[serveries[i]].innerHTML = "Closed";
 		}
-		else if(final_menu[serveries[i]][current_meal][current_day].length == 0){
+		else if(final_menu[serveries[i]][current_meal][current_day].length <= 1){
 			panels[serveries[i]].innerHTML = "Closed";
 		}
 		else{
