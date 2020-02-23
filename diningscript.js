@@ -182,16 +182,16 @@ function scrape_menu(url, final_menu, finished, servery, date){
 					process_text(final_menu, finished, servery, textContent.items, date);
 				}, function(reason){
 					console.error(reason);
-					document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
+					document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
 				});
 			}, function(reason){
 				console.error(reason);
-				document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
+				document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
 			});
 		}
 	}, function(reason){
 		console.error(reason);
-		document.getElementById(servery + " panel").innerText = "Error: failed to retrieve menu from rice dining website";
+		document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
 	});
 }
 
@@ -237,7 +237,7 @@ function scrape_all_menus(){
 			if(date == null){
 				console.log("No date found in url");
 				for(var i = 0; i < serveries.length; i++){
-					document.getElementById(serveries[i] + " panel").innerText = "Error: no menus found on rice dining website";
+					document.getElementById(serveries[i] + " panel").innerText = "Error:\nNo menus found on rice dining website";
 				}
 			}
 			else{
