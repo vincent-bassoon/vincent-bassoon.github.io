@@ -17,14 +17,15 @@ function get_validated_menu(success, fail){
 		firebase.database().ref('menu-ref').once('value').then(function(snapshot){
 			var data = snapshot.val();
 			if(data != null && data.date != undefined && (current_time - data.date) / (1000 * 60 * 60 * 24) <= 7){
+				document.getElementById("day_header").innerText = "Week of " + new Date(data.date).toLocaleDateString();
 				success(data.menu);
 			}
 			else{
-				fail();
+				fail(current_time);
 			}
 		}, function(error){
 			console.log("Could not obtain menu from server");
-			fail();
+			fail(current_time);
 		});
 	};
 	firebase.database().ref('/.info/serverTimeOffset').once('value').then(function(snapshot){
@@ -88,20 +89,18 @@ function process_text(final_menu, finished, servery, text_content, date){
 	var closed = false;
 	for(var i = 0; i < text_content.length; i++){
 		var text = text_content[i];
-		for(var j = 0; j < days.length; j++){
-			if(text.str == days[j].day){
-				x[days[j].index] = text.transform[4] + text.width / 2;
-				y[days[j].index] = text.transform[5];
-				days.splice(j, 1);
-				j = 7;
-				text_content.splice(i, 1);
-				i -= 1;
-				if(days.length == 0 && meal != null){
-					i = text_content.length;
+		if(text.str.toLowerCase().includes("day")){
+			for(var j = 0; j < days.length; j++){
+				if(text.str == days[j].day){
+					x[days[j].index] = text.transform[4] + text.width / 2;
+					y[days[j].index] = text.transform[5];
+					j = 7;
+					text_content.splice(i, 1);
+					i -= 1;
 				}
 			}
 		}
-		if(text.str.toLowerCase().includes("menu")){
+		else if(text.str.toLowerCase().includes("menu")){
 			if(text.str.toLowerCase().trim() == "lunch menu"){
 				meal = 1;
 				text_content.splice(i, 1);
@@ -195,7 +194,7 @@ function scrape_menu(url, final_menu, finished, servery, date){
 	});
 }
 
-function scrape_all_menus(){
+function scrape_all_menus(current_time){
 	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
 	var final_menu = [];
 	var finished = [];
@@ -223,7 +222,16 @@ function scrape_all_menus(){
 						var link_temp = links[i].href.substring(links[i].href.lastIndexOf("/"))
 						var date_string = /\d{1,2}\.\d{1,2}\.\d{2}/.exec(link_temp)[0];
 						var result = date_string.split(".");
-						date = new Date(2000 + parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1])).getTime();
+						var full_date = new Date(2000 + parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1]));
+						date = full_date.getTime();
+						if((current_time - date) / (1000 * 60 * 60 * 24) <= 7){
+							document.getElementById("day_header").innerText = "Week of " + full_date.toLocaleDateString();
+						}
+						else{
+							document.getElementById("day_header").innerText = "Error";
+							date = null;
+							i = links.length;
+						}
 					}
 					for(var j = 0; j < serveries.length; j++){
 						if(links[i].href.toLowerCase().includes(serveries[j])){
@@ -237,7 +245,7 @@ function scrape_all_menus(){
 			if(date == null){
 				console.log("No date found in url");
 				for(var i = 0; i < serveries.length; i++){
-					document.getElementById(serveries[i] + " panel").innerText = "Error:\nNo menus found on rice dining website";
+					document.getElementById(serveries[i] + " panel").innerText = "Error:\nNo up-to-date menus found on rice dining website";
 				}
 			}
 			else{
