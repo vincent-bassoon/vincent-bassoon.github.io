@@ -259,6 +259,8 @@ function scrape_all_menus(current_time){
 							}
 							else{
 								create_error_schedule(serveries[j], final_menu);
+								finished[serveries[j]][1] = true;
+								finished[serveries[j]][2] = true;
 							}
 							j = serveries.length;
 						}
