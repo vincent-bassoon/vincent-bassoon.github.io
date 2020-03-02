@@ -258,7 +258,7 @@ function scrape_all_menus(current_time){
 								valid_links.push({"url":url, "servery":serveries[j]});
 							}
 							else{
-								
+								create_error_schedule(serveries[j], final_menu);
 							}
 							j = serveries.length;
 						}
