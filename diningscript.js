@@ -194,6 +194,24 @@ function scrape_menu(url, final_menu, finished, servery, date){
 	});
 }
 
+function create_error_schedule(servery, final_menu){
+	for(var i = 0; i < 4; i++){
+		final_menu[servery][1][i] = [["Error"], ["Invalid link on rice dining website"]];
+		final_menu[servery][2][i] = [["Error"], ["Invalid link on rice dining website"]];
+	}
+	final_menu[servery][1][4] = [["Error"], ["Invalid link on rice dining website"]];
+	if(servery != "baker" && servery != "sid"){
+		final_menu[servery][2][4] = [["Error"], ["Invalid link on rice dining website"]];
+		final_menu[servery][1][6] = [["Error"], ["Invalid link on rice dining website"]];
+		final_menu[servery][2][6] = [["Error"], ["Invalid link on rice dining website"]];
+	}
+	if(servery == "north" || servery == "seibel"){
+		final_menu[servery][1][5] = [["Error"], ["Invalid link on rice dining website"]];
+		final_menu[servery][2][5] = [["Error"], ["Invalid link on rice dining website"]];
+	}
+	
+}
+
 function scrape_all_menus(current_time){
 	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
 	var final_menu = [];
@@ -235,8 +253,13 @@ function scrape_all_menus(current_time){
 					}
 					for(var j = 0; j < serveries.length; j++){
 						if(links[i].href.toLowerCase().includes(serveries[j])){
-							var url = "https://cors-anywhere.herokuapp.com/" + links[i].href.replace(/.+io/, "dining.rice.edu");
-							valid_links.push({"url":url, "servery":serveries[j]});
+							if(links[i].text.toLowerCase().includes(serveries[j])){
+								var url = "https://cors-anywhere.herokuapp.com/" + links[i].href.replace(/.+io/, "dining.rice.edu");
+								valid_links.push({"url":url, "servery":serveries[j]});
+							}
+							else{
+								
+							}
 							j = serveries.length;
 						}
 					}
