@@ -71,6 +71,17 @@
 				background-color: white;
 				overflow: hidden;
 			}
+			.refresh {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 100%;
+			}
 		</style>
 	</head>
 	<body>
@@ -115,6 +126,8 @@
 		<div class="panel" id="sid panel" style="display: block">
 			<p>Loading...</p>
 		</div>
+		
+		<button class="refresh" id="refresh button">Validate menus from rice dining website\n(will take a moment)</button>
 		
 		<script src = "//mozilla.github.io/pdf.js/build/pdf.js"></script>
 		<script src = "diningscript.js"></script>
