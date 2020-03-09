@@ -446,6 +446,9 @@ function update_all(final_menu, status, serveries, info){
 			if(!status.finished[serveries[i]][1] || !status.finished[serveries[i]][2]){
 				info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
 			}
+			else if(final_menu[serveries[i]] == undefined){
+				info.panels[serveries[i]].innerText = "Closed";
+			}
 			else if(final_menu[serveries[i]][status.current_meal] == undefined){
 				info.panels[serveries[i]].innerText = "Closed";
 			}
@@ -458,6 +461,9 @@ function update_all(final_menu, status, serveries, info){
 		}
 		else if(!status.finished[serveries[i]][status.current_meal]){
 			info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
+		}
+		else if(final_menu[serveries[i]] == undefined){
+			info.panels[serveries[i]].innerText = "Closed";
 		}
 		else if(final_menu[serveries[i]][status.current_meal] == undefined){
 			info.panels[serveries[i]].innerText = "Closed";
