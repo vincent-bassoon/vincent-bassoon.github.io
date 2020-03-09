@@ -389,6 +389,7 @@ function configure_ui(){
 		}
 		final_menu["seibel"][0][5] = [0];
 		final_menu["north"][0][5] = [0];
+		update_all(final_menu, status, serveries, info);
 		scrape_all_menus(final_menu, status, serveries, info);
 	});
 	
