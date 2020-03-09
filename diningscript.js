@@ -17,6 +17,7 @@ function get_validated_menu(final_menu, status, serveries, info, fail){
 		var data = snapshot.val();
 		if(data != null && data.date != undefined && data.date == info.date){
 			for(var i = 0; i < serveries.length; i++){
+				final_menu[serveries[i]] = data.menu[serveries[i]];
 				status.finished[serveries[i]][1] = true;
 				status.finished[serveries[i]][2] = true;
 			}
