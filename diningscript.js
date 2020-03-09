@@ -452,9 +452,6 @@ function update_all(final_menu, status, serveries, info){
 			else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
 				info.panels[serveries[i]].innerText = "Closed";
 			}
-			else if(!final_menu[serveries[i]][status.current_meal][status.current_day][0]){
-				info.panels[serveries[i]].innerText = "Closed";
-			}
 			else{
 				info.panels[serveries[i]].innerText = info.schedule[status.current_day][status.current_meal].str;
 			}
