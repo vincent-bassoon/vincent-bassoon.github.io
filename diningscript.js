@@ -171,7 +171,7 @@ function process_text(final_menu, status, serveries, servery, text_content, info
 }
 
 function scrape_menu(url, final_menu, status, serveries, servery, info){
-	status.message[servery] = "Retrieving menu from rice dining website...";
+	status.messages[servery] = "Retrieving menu from rice dining website...";
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 	var loadingTask = pdfjsLib.getDocument(url);
@@ -183,18 +183,18 @@ function scrape_menu(url, final_menu, status, serveries, servery, info){
 					process_text(final_menu, status, serveries, servery, textContent.items, info);
 				}, function(reason){
 					console.error(reason);
-					status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+					status.messages[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
 					status.finished[servery].error = true;
 				});
 			}, function(reason){
 				console.error(reason);
-				status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+				status.messages[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
 				status.finished[servery].error = true;
 			});
 		}
 	}, function(reason){
 		console.error(reason);
-		status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+		status.messages[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
 		status.finished[servery].error = true;
 	});
 }
@@ -259,7 +259,7 @@ function scrape_all_menus(final_menu, status, serveries, info){
 								status.finished[servery][1] = true;
 								status.finished[servery][2] = true;
 								status.finished[servery].error = true;
-								status.message[servery] = "Error:<br>No up-to-date menu found on rice dining website";
+								status.messages[servery] = "Error:<br>No up-to-date menu found on rice dining website";
 								update_all(final_menu, status, serveries, info);
 							}
 						}
