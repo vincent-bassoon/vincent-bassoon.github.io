@@ -371,6 +371,22 @@ function configure_ui(){
 	refresh.addEventListener("click", function(){
 		this.classList.toggle("activeRefresh");
 		this.innerHTML = "Loading...";
+		for(var i = 0; i < serveries.length; i++){
+			status.messages[serveries[i]] = "Loading...";
+		}
+		var final_menu = [];
+		for(var i = 0; i < serveries.length; i++){
+			status.finished[serveries[i]] = [];
+			status.finished[serveries[i]][1] = false;
+			status.finished[serveries[i]][2] = false;
+			status.finished[serveries[i]].error = false;
+			final_menu[serveries[i]] = [];
+			final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
+			final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
+			final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
+		}
+		final_menu["seibel"][0][5] = [0];
+		final_menu["north"][0][5] = [0];
 		scrape_all_menus(final_menu, status, serveries, info);
 	});
 	
@@ -379,7 +395,7 @@ function configure_ui(){
 		day_buttons[i] = document.getElementById(i + "_day_button");
 		day_buttons[i].addEventListener("click", function(){
 			day_buttons[status.current_day].classList.toggle("activeTab");
-			info.current_day = parseInt(this.id[0]);
+			status.current_day = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
 			update_all(final_menu, status, serveries, info);
 		});
