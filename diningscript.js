@@ -12,29 +12,28 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-function get_validated_menu(success, fail){
-	var post_time = function(current_time){
-		firebase.database().ref('menu-ref').once('value').then(function(snapshot){
-			var data = snapshot.val();
-			if(data != null && data.date != undefined && (current_time - data.date) / (1000 * 60 * 60 * 24) <= 7){
-				document.getElementById("day_header").innerText = "Week of " + new Date(data.date).toLocaleDateString();
-				success(data.menu);
+function get_validated_menu(final_menu, status, serveries, info, fail){
+	firebase.database().ref('menu-ref').once('value').then(function(snapshot){
+		var data = snapshot.val();
+		if(data != null && data.date != undefined && data.date == info.date){
+			for(var i = 0; i < serveries.length; i++){
+				status.finished[serveries[i]][1] = true;
+				status.finished[serveries[i]][2] = true;
 			}
-			else{
-				fail(current_time);
-			}
-		}, function(error){
-			console.log("Could not obtain menu from server");
-			fail(current_time);
-		});
-	};
-	firebase.database().ref('/.info/serverTimeOffset').once('value').then(function(snapshot){
-		post_time(snapshot.val() + Date.now());
+			update_all(final_menu, status, serveries, info);
+			var refresh = document.getElementById("refresh button");
+			refresh.classList.toggle("activeRefresh");
+			refresh.innerHTML = "Validate menus from rice dining website<br>(will take a moment)";
+		}
+		else{
+			fail(final_menu, status, serveries, info);
+		}
 	}, function(error){
-		console.log("Could not obtain time from server, using client time");
-		post_time(Date.now());
+		console.log("Could not obtain menu from server");
+		fail(final_menu, status, serveries, info);
 	});
 }
+	
 	
 function set_menu(final_menu, date){
 	var menuObject = {
@@ -76,7 +75,7 @@ function title_case(str) {
 	return splitStr.join(' '); 
 }
 
-function process_text(final_menu, finished, servery, text_content, date){
+function process_text(final_menu, status, serveries, servery, text_content, info){
 	var x = [];
 	var y = [];
 	var meal = null;
@@ -155,21 +154,24 @@ function process_text(final_menu, finished, servery, text_content, date){
 			menu[i].push(menu_temp[i][j].str);
 		}
 	}
-	finished[servery][meal] = true;
+	status.finished[servery][meal] = true;
 	var done = true;
-	for(var servery in finished){
-		if(!finished[servery][1] || !finished[servery][2]){
+	for(var i = 0; i < serveries.length; i++){
+		if(!status.finished[serveries[i]][1] || !status.finished[serveries[i]][2]){
 			done = false;
 		}
 	}
 	if(done){
-		set_menu(final_menu, date);
-		configure_ui(final_menu);
+		set_menu(final_menu, info.date);
+		update_all(final_menu, status, serveries, info);
+		var refresh = document.getElementById("refresh button");
+		refresh.classList.toggle("activeRefresh");
+		refresh.innerHTML = "Validate menus from rice dining website<br>(will take a moment)";
 	}
 }
 
-function scrape_menu(url, final_menu, finished, servery, date){
-	document.getElementById(servery + " panel").innerText = "Retrieving menu from rice dining website...";
+function scrape_menu(url, final_menu, status, serveries, servery, info){
+	status.message[servery] = "Retrieving menu from rice dining website...";
 	var pdfjsLib = window['pdfjs-dist/build/pdf'];
 	pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 	var loadingTask = pdfjsLib.getDocument(url);
@@ -178,19 +180,22 @@ function scrape_menu(url, final_menu, finished, servery, date){
 		for(var pageNumber = 2; pageNumber <= 3; pageNumber++){
 			pdf.getPage(pageNumber).then(function(page){
 				page.getTextContent().then(function(textContent){
-					process_text(final_menu, finished, servery, textContent.items, date);
+					process_text(final_menu, status, serveries, servery, textContent.items, info);
 				}, function(reason){
 					console.error(reason);
-					document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
+					status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+					status.finished[servery].error = true;
 				});
 			}, function(reason){
 				console.error(reason);
-				document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
+				status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+				status.finished[servery].error = true;
 			});
 		}
 	}, function(reason){
 		console.error(reason);
-		document.getElementById(servery + " panel").innerText = "Error:\nFailed to retrieve menu from rice dining website";
+		status.message[servery] = "Error:<br>Failed to retrieve menu from rice dining website";
+		status.finished[servery].error = true;
 	});
 }
 
@@ -212,71 +217,64 @@ function create_error_schedule(servery, final_menu){
 	
 }
 
-function scrape_all_menus(current_time){
-	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
-	var final_menu = [];
-	var finished = [];
-	for(var i = 0; i < serveries.length; i++){
-		finished[serveries[i]] = [];
-		finished[serveries[i]][1] = false;
-		finished[serveries[i]][2] = false;
-		final_menu[serveries[i]] = [];
-		final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
-		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
-		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
+function find_servery(serveries, text){
+	if(!text.includes("kitchen") && !text.includes("servery")){
+		return null;
 	}
-	final_menu["seibel"][0][5] = [0];
-	final_menu["north"][0][5] = [0];
+	for(var i = 0; i < serveries.length; i++){
+		if(text.includes(serveries[i])){
+			return serveries[i];
+		}
+	}
+	return null;
+}
+
+function scrape_all_menus(final_menu, status, serveries, info){
 	var x = new XMLHttpRequest();
 	x.open("GET", "https://cors-anywhere.herokuapp.com/https://dining.rice.edu");
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
-			var date = null;
   			var links = new DOMParser().parseFromString(x.responseText, "text/html").links;
 			var valid_links = [];
+			var servery = null;
   			for(var i = 0; i < links.length; i++){
-  				if(links[i].href.substring(links[i].href.length - 4) == ".pdf"){
-					if(date == null){
-						var link_temp = links[i].href.substring(links[i].href.lastIndexOf("/"))
-						var date_string = /\d{1,2}\.\d{1,2}\.\d{2}/.exec(link_temp)[0];
-						var result = date_string.split(".");
-						var full_date = new Date(2000 + parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1]));
-						date = full_date.getTime();
-						if((current_time - date) / (1000 * 60 * 60 * 24) <= 7){
-							document.getElementById("day_header").innerText = "Week of " + full_date.toLocaleDateString();
+				servery = find_servery(serveries, links[i].innerText.toLowerCase());
+				if(servery != null){
+					if(links[i].href.toLowerCase().includes(servery)){
+						if(links[i].href.substring(links[i].href.length - 4) != ".pdf"){
+							status.finished[servery][1] = true;
+							status.finished[servery][2] = true;
+							update_all(final_menu, status, serveries, info);
 						}
 						else{
-							document.getElementById("day_header").innerText = "Error";
-							date = null;
-							i = links.length;
-						}
-					}
-					for(var j = 0; j < serveries.length; j++){
-						if(links[i].text.toLowerCase().includes(serveries[j])){
-							if(links[i].href.toLowerCase().includes(serveries[j])){
+							var link_temp = links[i].href.substring(links[i].href.lastIndexOf("/"))
+							var date_string = /\d{1,2}\.\d{1,2}\.\d{2}/.exec(link_temp)[0];
+							var result = date_string.split(".");
+							var full_date = new Date(2000 + parseInt(result[2]), parseInt(result[0] - 1), parseInt(result[1]));
+							if(info.date == full_date.getTime()){
 								var url = "https://cors-anywhere.herokuapp.com/" + links[i].href.replace(/.+io/, "dining.rice.edu");
-								valid_links.push({"url":url, "servery":serveries[j]});
+								valid_links.push({"url":url, "servery":servery});
 							}
 							else{
-								create_error_schedule(serveries[j], final_menu);
-								finished[serveries[j]][1] = true;
-								finished[serveries[j]][2] = true;
+								status.finished[servery][1] = true;
+								status.finished[servery][2] = true;
+								status.finished[servery].error = true;
+								status.message[servery] = "Error:<br>No up-to-date menu found on rice dining website";
+								update_all(final_menu, status, serveries, info);
 							}
-							j = serveries.length;
 						}
+					}
+					else{
+						create_error_schedule(servery, final_menu);
+						status.finished[servery][1] = true;
+						status.finished[servery][2] = true;
+						status.finished[servery].error = true;
+						update_all(final_menu, status, serveries, info);
 					}
 				}
 			}
-			if(date == null){
-				console.log("No date found in url");
-				for(var i = 0; i < serveries.length; i++){
-					document.getElementById(serveries[i] + " panel").innerText = "Error:\nNo up-to-date menus found on rice dining website";
-				}
-			}
-			else{
-				for(var i = 0; i < valid_links.length; i++){
-					scrape_menu(valid_links[i].url, final_menu, finished, valid_links[i].servery, date);
-				}
+			for(var i = 0; i < valid_links.length; i++){
+				scrape_menu(valid_links[i].url, final_menu, status, serveries, valid_links[i].servery, info);
 			}
 		}
 	};
@@ -317,52 +315,91 @@ function create_schedule(){
 	return schedule;
 }
 	
-function configure_ui(final_menu){
+function configure_ui(){
 	var serveries = ["baker", "north", "west", "south", "seibel", "sid"];
-	var schedule = create_schedule();
+	var info = {};
+	info.schedule = create_schedule();
 	
 	var now = new Date();
-	var current_day = (now.getDay() + 6) % 7;
-	var current_meal = 2;
+	info.current_time = Date.now();
+	
+	var day_diff = (now.getDay() + 6) % 7;
+	var temp = new Date();
+	temp.setHours(0, 0, 0, 0);
+	temp.setDate(temp.getDate() - day_diff);
+	info.date = temp.getTime();
+	
+	document.getElementById("day_header").innerText = "Week of " + temp.toLocaleDateString();
+	
+	var status = {};
+	status.current_day = (now.getDay() + 6) % 7;
+	status.current_meal = 2;
+	
 	for(var i = 0; i < 3; i++){
-		if(schedule[current_day][i].end.is_after(now)){
-			current_meal = i;
+		if(info.schedule[status.current_day][i].end.is_after(now)){
+			status.current_meal = i;
 			i = 3;
 		}
 	}
 	
-	var panels = {};
+	info.panels = {};
 	for(var i = 0; i < serveries.length; i++){
-		panels[serveries[i]] = document.getElementById(serveries[i] + " panel");
+		info.panels[serveries[i]] = document.getElementById(serveries[i] + " panel");
 	}
+	
+	status.finished = [];
+	status.messages = {};
+	for(var i = 0; i < serveries.length; i++){
+		status.messages[serveries[i]] = "Loading...";
+	}
+	var final_menu = [];
+	for(var i = 0; i < serveries.length; i++){
+		status.finished[serveries[i]] = [];
+		status.finished[serveries[i]][1] = false;
+		status.finished[serveries[i]][2] = false;
+		status.finished[serveries[i]].error = false;
+		final_menu[serveries[i]] = [];
+		final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
+		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
+		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
+	}
+	final_menu["seibel"][0][5] = [0];
+	final_menu["north"][0][5] = [0];
+	
+	var refresh = document.getElementById("refresh button");
+	refresh.addEventListener("click", function(){
+		this.classList.toggle("activeRefresh");
+		this.innerHTML = "Loading...";
+		scrape_all_menus(final_menu, status, serveries, info);
+	});
 	
 	var day_buttons = [];
 	for(var i = 0; i < 7; i++){
 		day_buttons[i] = document.getElementById(i + "_day_button");
 		day_buttons[i].addEventListener("click", function(){
-			day_buttons[current_day].classList.toggle("activeTab");
-			current_day = parseInt(this.id[0]);
+			day_buttons[status.current_day].classList.toggle("activeTab");
+			info.current_day = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
-			update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
+			update_all(final_menu, status, serveries, info);
 		});
 	}	
-	day_buttons[current_day].classList.toggle("activeTab");
-	var temp = day_buttons[current_day].innerText;
-	day_buttons[current_day].innerHTML = "<b>" + temp + "</b>";
+	day_buttons[status.current_day].classList.toggle("activeTab");
+	var temp = day_buttons[status.current_day].innerText;
+	day_buttons[status.current_day].innerHTML = "<b>" + temp + "</b>";
 	
 	var meal_buttons = [];
 	for(var i = 0; i < 3; i++){
 		meal_buttons[i] = document.getElementById(i + "_meal_button");
 		meal_buttons[i].addEventListener("click", function(){
-			meal_buttons[current_meal].classList.toggle("activeTab");
-			current_meal = parseInt(this.id[0]);
+			meal_buttons[status.current_meal].classList.toggle("activeTab");
+			status.current_meal = parseInt(this.id[0]);
 			this.classList.toggle("activeTab");
-			update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
+			update_all(final_menu, status,  serveries, info);
 		});
 	}
-	meal_buttons[current_meal].classList.toggle("activeTab");
-	var temp = meal_buttons[current_meal].innerText;
-	meal_buttons[current_meal].innerHTML = "<b>" + temp + "</b>";
+	meal_buttons[status.current_meal].classList.toggle("activeTab");
+	var temp = meal_buttons[status.current_meal].innerText;
+	meal_buttons[status.current_meal].innerHTML = "<b>" + temp + "</b>";
 	
 	var acc = document.getElementsByClassName("accordion");
 	for(var i = 0; i < acc.length; i++) {
@@ -379,33 +416,42 @@ function configure_ui(final_menu){
 		});
 	}
 	
-	update_all(final_menu, current_day, current_meal, serveries, schedule, panels);
+	update_all(final_menu, status, serveries, info);
+	get_validated_menu(final_menu, status, serveries, info, scrape_all_menus);
 }
 
 
 
-function update_all(final_menu, current_day, current_meal, serveries, schedule, panels){
+function update_all(final_menu, status, serveries, info){
 	for(var i = 0; i < serveries.length; i++){
-		if(current_meal == 0){
-			if(final_menu[serveries[i]][current_meal][current_day] == undefined){
-				panels[serveries[i]].innerHTML = "Closed";
+		if(status.finished[serveries[i]].error){
+			info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
+		}
+		else if(status.current_meal == 0){
+			if(!status.finished[serveries[i]][1] || !status.finished[serveries[i]][2]){
+				info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
+			}
+			else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
+				info.panels[serveries[i]].innerText = "Closed";
 			}
 			else{
-				panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str;
+				info.panels[serveries[i]].innerText = info.schedule[status.current_day][status.current_meal].str;
 			}
 		}
-		else if(final_menu[serveries[i]][current_meal][current_day] == undefined){
-			panels[serveries[i]].innerHTML = "Closed";
+		else if(!status.finished[serveries[i]][status.current_meal]){
+			info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
 		}
-		else if(final_menu[serveries[i]][current_meal][current_day].length <= 1){
-			panels[serveries[i]].innerHTML = "Closed";
+		else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
+			info.panels[serveries[i]].innerText = "Closed";
+		}
+		else if(final_menu[serveries[i]][status.current_meal][status.current_day].length <= 1){
+			info.panels[serveries[i]].innerText = "Closed";
 		}
 		else{
-			panels[serveries[i]].innerHTML = schedule[current_day][current_meal].str + "<br />" +
-			    final_menu[serveries[i]][current_meal][current_day].join("<br />");
+			info.panels[serveries[i]].innerHTML = info.schedule[status.current_day][status.current_meal].str + "<br />" +
+			    final_menu[serveries[i]][status.current_meal][status.current_day].join("<br />");
 		}
 	}
 }
 
-//console.log("start");
-get_validated_menu(configure_ui, scrape_all_menus);
+configure_ui();
