@@ -200,20 +200,20 @@ function scrape_menu(url, final_menu, status, serveries, servery, info){
 	});
 }
 
-function create_error_schedule(servery, final_menu){
+function create_error_schedule(servery, final_menu, message){
 	for(var i = 0; i < 4; i++){
-		final_menu[servery][1][i] = [["Error:"], ["Invalid link on rice dining website"]];
-		final_menu[servery][2][i] = [["Error:"], ["Invalid link on rice dining website"]];
+		final_menu[servery][1][i] = [["Error:"], [message]];
+		final_menu[servery][2][i] = [["Error:"], [message]];
 	}
-	final_menu[servery][1][4] = [["Error:"], ["Invalid link on rice dining website"]];
+	final_menu[servery][1][4] = [["Error:"], [message]];
 	if(servery != "baker" && servery != "sid"){
-		final_menu[servery][2][4] = [["Error:"], ["Invalid link on rice dining website"]];
-		final_menu[servery][1][6] = [["Error:"], ["Invalid link on rice dining website"]];
-		final_menu[servery][2][6] = [["Error:"], ["Invalid link on rice dining website"]];
+		final_menu[servery][2][4] = [["Error:"], [message]];
+		final_menu[servery][1][6] = [["Error:"], [message]];
+		final_menu[servery][2][6] = [["Error:"], [message]];
 	}
 	if(servery == "north" || servery == "seibel"){
-		final_menu[servery][1][5] = [["Error:"], ["Invalid link on rice dining website"]];
-		final_menu[servery][2][5] = [["Error:"], ["Invalid link on rice dining website"]];
+		final_menu[servery][1][5] = [["Error:"], [message]];
+		final_menu[servery][2][5] = [["Error:"], [message]];
 	}
 	
 }
@@ -245,6 +245,9 @@ function scrape_all_menus(final_menu, status, serveries, info){
 						if(links[i].href.substring(links[i].href.length - 4) != ".pdf"){
 							status.finished[servery][1] = true;
 							status.finished[servery][2] = true;
+							for(var i = 0; i < 7; i++){
+								final_menu[servery][0][i][0] = false;
+							}
 							update_all(final_menu, status, serveries, info);
 						}
 						else{
@@ -257,19 +260,17 @@ function scrape_all_menus(final_menu, status, serveries, info){
 								valid_links.push({"url":url, "servery":servery});
 							}
 							else{
+								create_error_schedule(servery, final_menu, "No up-to-date menu found on rice dining website");
 								status.finished[servery][1] = true;
 								status.finished[servery][2] = true;
-								status.finished[servery].error = true;
-								status.messages[servery] = "Error:<br>No up-to-date menu found on rice dining website";
 								update_all(final_menu, status, serveries, info);
 							}
 						}
 					}
 					else{
-						create_error_schedule(servery, final_menu);
+						create_error_schedule(servery, final_menu, "Invalid link on rice dining website");
 						status.finished[servery][1] = true;
 						status.finished[servery][2] = true;
-						status.finished[servery].error = true;
 						update_all(final_menu, status, serveries, info);
 					}
 				}
@@ -360,7 +361,7 @@ function configure_ui(){
 		status.finished[serveries[i]][2] = false;
 		status.finished[serveries[i]].error = false;
 		final_menu[serveries[i]] = [];
-		final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
+		final_menu[serveries[i]][0] = [[true], [true], [true], [true], [true]];
 		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
 		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 	}
@@ -380,7 +381,7 @@ function configure_ui(){
 			status.finished[serveries[i]][2] = false;
 			status.finished[serveries[i]].error = false;
 			final_menu[serveries[i]] = [];
-			final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
+			final_menu[serveries[i]][0] = [[true], [true], [true], [true], [true]];
 			final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
 			final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 		}
@@ -448,6 +449,9 @@ function update_all(final_menu, status, serveries, info){
 				info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
 			}
 			else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
+				info.panels[serveries[i]].innerText = "Closed";
+			}
+			else if(!final_menu[serveries[i]][status.current_meal][status.current_day][0]){
 				info.panels[serveries[i]].innerText = "Closed";
 			}
 			else{
