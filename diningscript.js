@@ -457,6 +457,9 @@ function update_all(final_menu, status, serveries, info){
 		else if(!status.finished[serveries[i]][status.current_meal]){
 			info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
 		}
+		else if(final_menu[serveries[i]][status.current_meal] == undefined){
+			info.panels[serveries[i]].innerText = "Closed";
+		}
 		else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
 			info.panels[serveries[i]].innerText = "Closed";
 		}
