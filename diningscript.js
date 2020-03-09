@@ -245,9 +245,7 @@ function scrape_all_menus(final_menu, status, serveries, info){
 						if(links[i].href.substring(links[i].href.length - 4) != ".pdf"){
 							status.finished[servery][1] = true;
 							status.finished[servery][2] = true;
-							for(var i = 0; i < 7; i++){
-								final_menu[servery][0][i][0] = false;
-							}
+							final_menu[servery][0] = [];
 							update_all(final_menu, status, serveries, info);
 						}
 						else{
@@ -361,7 +359,7 @@ function configure_ui(){
 		status.finished[serveries[i]][2] = false;
 		status.finished[serveries[i]].error = false;
 		final_menu[serveries[i]] = [];
-		final_menu[serveries[i]][0] = [[true], [true], [true], [true], [true]];
+		final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
 		final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
 		final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 	}
@@ -381,7 +379,7 @@ function configure_ui(){
 			status.finished[serveries[i]][2] = false;
 			status.finished[serveries[i]].error = false;
 			final_menu[serveries[i]] = [];
-			final_menu[serveries[i]][0] = [[true], [true], [true], [true], [true]];
+			final_menu[serveries[i]][0] = [[0], [0], [0], [0], [0]];
 			final_menu[serveries[i]][1] = [[], [], [], [], [], [], []];
 			final_menu[serveries[i]][2] = [[], [], [], [], [], [], []];
 		}
@@ -447,6 +445,9 @@ function update_all(final_menu, status, serveries, info){
 		else if(status.current_meal == 0){
 			if(!status.finished[serveries[i]][1] || !status.finished[serveries[i]][2]){
 				info.panels[serveries[i]].innerHTML = status.messages[serveries[i]];
+			}
+			else if(final_menu[serveries[i]][status.current_meal] == undefined){
+				info.panels[serveries[i]].innerText = "Closed";
 			}
 			else if(final_menu[serveries[i]][status.current_meal][status.current_day] == undefined){
 				info.panels[serveries[i]].innerText = "Closed";
