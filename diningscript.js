@@ -24,6 +24,7 @@ function get_validated_menu(final_menu, status, serveries, info, fail){
 			update_all(final_menu, status, serveries, info);
 			var refresh = document.getElementById("refresh button");
 			refresh.classList.toggle("activeRefresh");
+			refresh.disabled = false;
 			refresh.innerHTML = "Validate menus from rice dining website<br>(will take a moment)";
 		}
 		else{
@@ -166,6 +167,7 @@ function process_text(final_menu, status, serveries, servery, text_content, info
 		set_menu(final_menu, info.date);
 		update_all(final_menu, status, serveries, info);
 		var refresh = document.getElementById("refresh button");
+		refresh.disabled = false;
 		refresh.classList.toggle("activeRefresh");
 		refresh.innerHTML = "Validate menus from rice dining website<br>(will take a moment)";
 	}
@@ -367,7 +369,9 @@ function configure_ui(){
 	final_menu["north"][0][5] = [0];
 	
 	var refresh = document.getElementById("refresh button");
+	refresh.disabled = true;
 	refresh.addEventListener("click", function(){
+		refresh.disabled = true;
 		this.classList.toggle("activeRefresh");
 		this.innerHTML = "Loading...";
 		for(var i = 0; i < serveries.length; i++){
