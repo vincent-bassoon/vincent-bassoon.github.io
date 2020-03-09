@@ -374,7 +374,6 @@ function configure_ui(){
 		for(var i = 0; i < serveries.length; i++){
 			status.messages[serveries[i]] = "Loading...";
 		}
-		var final_menu = [];
 		for(var i = 0; i < serveries.length; i++){
 			status.finished[serveries[i]] = [];
 			status.finished[serveries[i]][1] = false;
