@@ -275,6 +275,22 @@ function scrape_all_menus(final_menu, status, serveries, info){
 					}
 				}
 			}
+			var found;
+			for(var i = 0; i < serveries.length; i++){
+				servery = serveries[i];
+				found = false;
+				for(var j = 0; j < valid_links.length; j++){
+					if(valid_links[j].url.contains(servery)){
+						found = true;
+					}
+				}
+				if(!found){
+					create_error_schedule(servery, final_menu, "No data found on rice dining website");
+					status.finished[servery][1] = true;
+					status.finished[servery][2] = true;
+					update_all(final_menu, status, serveries, info);
+				}
+			}
 			for(var i = 0; i < valid_links.length; i++){
 				scrape_menu(valid_links[i].url, final_menu, status, serveries, valid_links[i].servery, info);
 			}
