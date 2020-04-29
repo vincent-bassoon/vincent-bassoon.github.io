@@ -280,7 +280,7 @@ function scrape_all_menus(final_menu, status, serveries, info){
 				servery = serveries[i];
 				found = false;
 				for(var j = 0; j < valid_links.length; j++){
-					if(valid_links[j].url.contains(servery)){
+					if(valid_links[j].url.includes(servery)){
 						found = true;
 					}
 				}
