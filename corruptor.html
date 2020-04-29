@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+  		<title>Dining</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
+		<style>
+			* {box-sizing: border-box}
+			body, html {
+				height: 100%;
+				margin: 0;
+				font-family: Arial;
+			}
+			.dayheader {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 100%;
+			}
+			.tabdaylink {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 14.2857142857%;
+			}
+			.tablink {
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 33.3333333333%;
+			}
+			.activeTab {
+				background-color: #777;
+			}
+			.accordion{
+				background-color: #ccc; 
+				color: #444;
+				cursor: pointer;
+				padding: 18px;
+				width: 100%;
+				border: none;
+				text-align: center;
+				outline: none;
+				font-size: 15px;
+				transition: 0.2s;
+			}
+			.activeAcc {
+				background-color: #eee;
+			}
+			.panel {
+				padding: 18px;
+				display: none;
+				text-align: center;
+				background-color: white;
+				overflow: hidden;
+			}
+			.refresh {
+				background-color: #777;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				padding: 14px 16px;
+				font-size: 17px;
+				width: 100%;
+			}
+			.activeRefresh {
+				background-color: #555;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<button class="dayheader" id="day_header">Loading...</button>
+		<button class="tabdaylink" id="0_day_button">M</button>
+		<button class="tabdaylink" id="1_day_button">T</button>
+		<button class="tabdaylink" id="2_day_button">W</button>
+		<button class="tabdaylink" id="3_day_button">T</button>
+		<button class="tabdaylink" id="4_day_button">F</button>
+		<button class="tabdaylink" id="5_day_button">S</button>
+		<button class="tabdaylink" id="6_day_button">S</button>
+		<div></div>
+		<button class="tablink" id="0_meal_button">Breakfast</button>
+		<button class="tablink" id="1_meal_button">Lunch</button>
+		<button class="tablink" id="2_meal_button">Dinner</button>
+		<button class="accordion" id="west">West</button>
+		<div class="panel" id="west panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+
+		<button class="accordion" id="south">South</button>
+		<div class="panel" id="south panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+		
+		<button class="accordion" id="seibel">Seibel</button>
+		<div class="panel" id="seibel panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+		
+		<button class="accordion" id="baker">Baker</button>
+		<div class="panel" id="baker panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+		
+		<button class="accordion" id="north">North</button>
+		<div class="panel" id="north panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+		
+		<button class="accordion" id="sid">Sid Rich</button>
+		<div class="panel" id="sid panel" style="display: block">
+			<p>Loading...</p>
+		</div>
+		
+		<button class="refresh" id="refresh button">Loading...</button>
+		
+		<script src = "//mozilla.github.io/pdf.js/build/pdf.js"></script>
+		<script src = "diningscript.js"></script>
+	</body>
+</html>
