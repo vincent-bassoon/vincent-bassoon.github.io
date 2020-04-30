@@ -1,5 +1,37 @@
-function 
+// Decide on structure
 
+// Major or minor: 50% M, 50% m
+
+// 4-5 segments: 80% 4, 20% 5
+//   If 5 segments, guaranteed 7-8 segment length.
+
+// Segment length: 90% 7-8, 10% 9-10
+//    cadence on first or third beat tied to segment length
+
+// pickup or not: 66.7% yes, 33.3% no
+//   If not pickup, then no other segment will have 1 note pickup
+//   If not pickup, then 2 note pickup after downbeat cadence
+//   If pickup, then 1 note pickup after downbeat cadence
+
+
+
+// Decide on chords for cadences: 74% PAC/IAC, 17% HC, 7% DC, 2% PC
+//   Ending: 90% PAC, 10% IAC ... 70% Piccardy third for minor, 30% not
+
+// Construct melody
+// PAC/IAC: 55% 2-1, 14% 4-3, 13% 7-1, 12% 2-3, 3% 5-3, 3% 5-5
+// HC: 40% 3-2, 20% 1-2, 15% 4-5, 15% 1-7, 4% 2-7, 4% 4-2, 2% 2-2
+// DC: 60% 2-1, 22% 4-5, 18% 7-1
+// PC: 50% 1-1, 50% 6-5
+
+
+// Decide chords
+// Harmonize
+
+
+// type = major, minor, aug, dim, 7, d7
+// key = 0, 1,..., 12
+// inversion = 0, 1, 2, 3
 class Chord {
 	constructer(type, key, inversion){
 		this.type = type;
