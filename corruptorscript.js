@@ -60,4 +60,10 @@ function create_byte_pairs(){
 	x.send(null);
 }
 
-var byte_pairs = [];
+$.getJSON("https://vincent-bassoon.github.io/corruptordata.json", function(json) {
+    initialize(JSON.parse(json));
+});
+
+function initialize(byte_pairs){
+	console.log(byte_pairs);
+}
