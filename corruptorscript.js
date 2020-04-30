@@ -36,7 +36,7 @@ function create_byte_pairs(){
 				counter++;
 				console.log("  ", counter);
 				console.log("New Pair: ", best_pair);
-				json_string += "'" + best_pair + "'";
+				json_string += '"' + best_pair + '"';
 				if(i < 10000 - 1){
 					json_string += ",";
 				}
