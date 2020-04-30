@@ -9,7 +9,9 @@ function create_byte_pairs(){
 				word_list.push({"word":("." + word + ".").split(""), freq:response[word]});
 			}
 			var byte_pairs = [];
-			for(var i = 0; i < 1000; i++){
+			var counter = 0;
+			var json_string = "[";
+			for(var i = 0; i < 10000; i++){
 				var pairs = {};
 				for(var j = 0; j < word_list.length; j++){
 					var word = word_list[j].word;
@@ -31,7 +33,13 @@ function create_byte_pairs(){
 						best_pair_freq = pairs[pair];
 					}
 				}
+				counter++;
+				console.log("  ", counter);
 				console.log("New Pair: ", best_pair);
+				json_string += "'" + best_pair + "'";
+				if(i < 10000 - 1){
+					json_string += ",";
+				}
 				byte_pairs.push(best_pair);
 				for(var j = 0; j < word_list.length; j++){
 					var word = word_list[j].word;
@@ -42,8 +50,14 @@ function create_byte_pairs(){
 					}
 				}
 			}
+			json_string += "]";
 			console.log(byte_pairs);
+			var div = document.createElement("div");
+			div.innerText = json_string;
+			document.body.appendChild(div);
 		}
 	};
 	x.send(null);
 }
+
+var byte_pairs = [];
