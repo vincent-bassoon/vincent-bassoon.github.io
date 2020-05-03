@@ -1,19 +1,3 @@
-function run(){
-	// Decide basic structure
-	var modality = choose({"Major":0.5, "Minor":0.5});
-	var cadence_num = choose({4:0.8, 5:0.2});
-	//  If 5 segments, guaranteed 7-8 segment length?
-	var pickup = choose({1:0.667, 0:0.333});
-	
-	var segments = [];
-	for(var index = 0; index < cadence_num; index++){
-		var length = pickup + choose({7:0.9, 9:0.1});
-		segments.push(generate_segment(length, index));
-	}
-	
-	
-}
-
 function choose(probs){
 	var num = Math.random();
 	var choice = null;
@@ -33,8 +17,25 @@ function choose(probs){
 	return choice;
 }
 
-//   If not pickup, then 2 note pickup after downbeat cadence
-//   If pickup, then 1 note pickup after downbeat cadence
+function run(){
+	// Decide basic structure
+	var modality = choose({"Major":0.5, "Minor":0.5});
+	var cadence_num = choose({4:0.8, 5:0.2});
+	//  If 5 segments, guaranteed 7-8 segment length?
+	var pickup = choose({1:0.667, 0:0.333});
+	
+	var segments = [];
+	for(var index = 0; index < cadence_num; index++){
+		var length = pickup + choose({7:0.9, 9:0.1});
+		segments.push(generate_segment(length, segments, index));
+	}
+	
+	
+}
+
+function generate_segment(length, previous_segments, index){
+	var current_segment = [];
+}
 
 // Key patterns
 // Major:
@@ -53,7 +54,6 @@ function choose(probs){
 // V: I, vii, VI, IV, II
 // VI: IV, II, III, V
 // vii: I, V
-// VII: III, IV, II
 
 
 // Decide chords
@@ -75,38 +75,29 @@ function choose(probs){
 // Harmonize
 
 
+//   If not pickup, then 2 note pickup after downbeat cadence
+//   If pickup, then 1 note pickup after downbeat cadence
 
-// type = major, minor, aug, dim, 7, d7
-// key = 0, 1,..., 12
-// inversion = 0, 1, 2, 3
+
 class Chord {
-	constructer(type, key, inversion){
-		this.type = type;
+	constructer(root, key){
+		this.root = root;
 		this.key = key;
-		this.inversion = inversion;
 	}
-	get_type(){return this.type;}
+	get_root(){return this.root;}
 	get_key(){return this.key;}
-	get_inversion(){return this.inversion;}
 }
 
 class Note {
-	constructer(pitch, name, octave){
+	constructer(pitch, octave){
 		this.pitch = pitch;
-		this.name = name;
 		this.octave = octave;
-		var string = pitch
 	}
 	get_pitch(){return this.pitch}
-	get_name(){return this.name}
 	get_octave(){return this.octave}
 	get_value(){
 		return this.pitch + 12 * this.octave;
 	}
-	to_string(){
-		
-	}
-	get_inversion(){return this.inversion;}
 }
 
 class Score {
