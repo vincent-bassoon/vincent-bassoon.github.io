@@ -18,23 +18,83 @@ function choose(probs){
 }
 
 function run(){
+	var chord_data = new ChordData();
 	// Decide basic structure
+	
+	// 50% major, 50% minor
 	var modality = choose({"Major":0.5, "Minor":0.5});
+	// 80% four-cadence length, 20% five-cadence
 	var cadence_num = choose({4:0.8, 5:0.2});
-	//  If 5 segments, guaranteed 7-8 segment length?
+	// 66.7% with pickup, 33.3% without
 	var pickup = choose({1:0.667, 0:0.333});
 	
+	// key
+	var num_accidentals = choose({0:0.2, 1:0.2, 2:0.2, 3:0.2, 4:0.14, 5:0.03, 6:0.02, 7:0.01});
+	var sharp_or_flat = choose({-1:0.5, 1:0.5});
+	var key = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
+	
 	var segments = [];
-	for(var index = 0; index < cadence_num; index++){
+	for(var i = 0; i < cadence_num; i++){
+		// 90% 7-8 note segment length, 10% 9-10 note length
 		var length = pickup + choose({7:0.9, 9:0.1});
-		segments.push(generate_segment(length, segments, index));
+		segments.push(generate_segment(length, segments, key, i, cadence_num, chord_data));
 	}
 	
 	
 }
 
-function generate_segment(length, previous_segments, index){
-	var current_segment = [];
+function generate_segment(length, previous_segments, key, index, cadence_num, chord_data){
+	var chords = [];
+	var voices = [];
+	for(var i = 0; i < length; i++){
+		chords.push(null);
+		voices.push(null);
+	}
+	
+
+	if(last){
+		
+	}
+	else{
+		
+	}
+}
+
+function generate_chords(chords, key, prev_chord, last, min, max, chord_data){
+	if(min == 0){
+		// assigning first chord
+		if(prev_chord == null){
+			// not-first, cadence-starting chord 85% like starting chord, 15% not
+			// Starting chord: 70% V, 30% I
+			chords[0] = chord_data.choose_start_chord(key);
+		}
+		else{
+			chords[0] = chord_data.choose_start_chord_after(prev_chord);
+		}
+	}
+	var max_temp = max;
+	if(max == chords.length){
+		var cad = chord_data.choose_cad(last);
+		var cad_length = chord_data.cad_length(cad);
+		for(var i = 0; i < cad_length; i++){
+			chords[max - 1 - i] = chord_data.choose_cad_chord(cad, i);
+			max_temp--;
+		}
+	}
+	else if(chords[max] != null && chords[max].cad != null){
+		var cad = chords[max].cad;
+		var cad_length = chord_data.cad_length(cad);
+		for(var i = 0; i < cad_length; i++){
+			if(chords.length - 1 - i < max){
+				chords[chords.length - 1 - i] = chord_data.choose_cad_chord(cad, i);
+				max_temp--;
+			}
+		}
+	}
+	var min_temp = Math.max(1, min);
+	for(var index = max - 1; index >= min_temp; index--){
+		
+	}
 }
 
 // Key patterns
@@ -59,9 +119,8 @@ function generate_segment(length, previous_segments, index){
 // Decide chords
 
 // Decide on chords for cadences: 74% PAC/IAC, 17% HC, 7% DC, 2% PC
-//   Ending: 90% PAC, 10% IAC ... 70% Piccardy third for minor, 30% not
+//   Ending: 95% PAC, 5% IAC ... 70% Piccardy third for minor, 30% not
 
-// Starting chord: 70% V, 30% I
 
 
 
@@ -80,12 +139,14 @@ function generate_segment(length, previous_segments, index){
 
 
 class Chord {
-	constructer(root, key){
-		this.root = root;
+	constructer(roman_num, key, cad){
+		this.roman_num = roman_num;
 		this.key = key;
+		this.cad = cad;
 	}
-	get_root(){return this.root;}
+	get_roman_num(){return this.roman_num;}
 	get_key(){return this.key;}
+	get_cad(){return this.cad;}
 }
 
 class Note {
