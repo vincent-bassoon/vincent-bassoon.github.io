@@ -105,6 +105,10 @@ function generate_segment(length, previous_segments, phrase_data, chord_data){
 function generate_chords(chords, max, phrase_data, chord_data){
 	/*
 	possibilities:
+		Total length: 7-10
+		min space: 1
+		max space: 7
+		
 		prev_cadence_chord: all can lead to either 5 or 1 (varying probabilities)
 		start: length of 1 or 2
 		end:
