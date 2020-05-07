@@ -133,6 +133,7 @@ function generate_chords(length, phrase_data, chord_functions){
 	}
 	var key = phrase_data.get_key();
 	
+	// first chords manual input (to avoid vii)
 	if(sub_phrase_lengths[0] == 1){
 		chords[0] = chord_functions.generate_chord(1, key, null);
 	}
@@ -146,6 +147,7 @@ function generate_chords(length, phrase_data, chord_functions){
 	
 	var cadence_chords = chord_functions.generate_cadence_chords(phrase_data.get_cadence(),
 								     phrase_data.get_cadence_length(),
+								     sub_phrase_lengths.pop(),
 								     key);
 	for(var i = 0; i < cadence_chords.length; i++){
 		chords[length - 1 - 0] = cadence_chords[i];
@@ -186,17 +188,8 @@ function generate_sub_phrases(length, phrase_data){
 	var spaces = length - cad_length - sub_phrase_lengths[0];
 	console.log("pre mod spaces: ", spaces);
 	
-	/*
-	prev_cadence_chord: all can lead to either 5 or 1 (varying probabilities)
-	start: length of 1 or 2
-	end:
-		hc: 2 or 3
-		pc: 2
-		all pacs + dc: 3 or 4
-		
-		All cadences begin with predominant, can be extended by up to 2
-	*/
-	var freqs = {0: 49, 1: 49, 2: 2};
+	// frequency of each addition to cadence sub-phrase
+	var freqs = {0: 58, 1: 40, 2: 2};
 	var choices = [0, 1, 2];
 	for(var i = choices.length - 1; i >= 0; i--){
 		if(choices[i] > spaces || choices[i] + 1 == spaces){
@@ -207,7 +200,8 @@ function generate_sub_phrases(length, phrase_data){
 	spaces = length - cad_length - sub_phrase_lengths[0];
 	console.log("post cadence mod spaces: ", spaces);
 	
-	freqs = {2: 23, 3: 40, 4: 30, 5: 6, 6: 1}
+	// frequency of each length of sub-phrase
+	freqs = {2: 17, 3: 43, 4: 33, 5: 6, 6: 1}
 	while(spaces > 4){
 		choices = [];
 		for(var i = Math.min(6, spaces); i >= 2; i--){
@@ -232,25 +226,36 @@ function generate_sub_phrases(length, phrase_data){
 class ChordFunctions {
 	constructor(){
 		// 0 is tonic, 1 is dominant, sub-dominant, tonic prolongation, tonic prolongation+
-		this.probs = {1: {5: 0.95, 7: 0.05}, 2: {2: 0.65, 4: 0.35}};
-		this.constants = {0: 1, 3: 6, 4: 3};
+		this.probs = {0: {1: 1.0}, 1: {5: 0.95, 7: 0.05}, 2: {2: 0.65, 4: 0.35}, 3: {6: 1.0}, 4: {3: 1.0}};
+		this.chord_classes = {1: 0, 5: 1, 7: 1, 2: 2, 4: 2, 6: 3, 3: 4};
 		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
 		this.modalities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
+		// 3-6-4/2-5-1
 	}
 	generate_chord(roman_num, key, inversion){
 		return new Chord(roman_num, key, this.modalities[key.get_modality()][roman_num], inversion);
 	}
-	get_chord(chord_class, key){
-		if(chord_class == 1 || chord_class == 2){
-			return this.generate_chord(choose(this.probs[chord_class]), key, null);
+	generate_remaining_chords(phrase_chords, num_chords, next_chord_roman_num, key){
+		var current_chord_class = this.chord_classes[next_chord_roman_num];
+		if(5 - current_chord_class < num_chords){
+			console.log("phrase length error: ", num_chords);
 		}
-		else{
-			return this.generate_chord(this.constants[chord_class], key, null);
+		else if(5 - current_chord_class == num_chords){
+			
+		}
+		else if(4 - current_chord_class == num_chords){
+			
 		}
 	}
-	// returns chords of the cadence, last chord is at index 0
-	generate_cadence_chords(cad, cad_length, key){
+	generate_phrase_chords(phrase_length, key){
+		var phrase_chords = [];
+		phrase_chords.push(this.generate_chord(1, key, null));
+		this.generate_remaining_chords(phrase_chords, phrase_length - 1, 1, key);
+		return phrase_chords;
+	}
+	// returns chords of the entire cadence phrase, last chord is at index 0
+	generate_cadence_chords(cad, cad_length, phrase_length, key){
 		var cadence_chords = [];
 		for(var i = 0; i < this.cadences[cad].length; i++){
 			if(cad == "pacm" && i == 0){
@@ -263,6 +268,8 @@ class ChordFunctions {
 		if(cad_length == 4){
 			cadence_chords.push(this.generate_chord(1, key, 2));
 		}
+		var roman_num = this.cadences[cad][this.cadences[cad].length - 1];
+		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
 }
