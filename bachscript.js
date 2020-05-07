@@ -18,8 +18,10 @@ function choose(probs){
 }
 
 function generate_chorale_plan(key, modality, cadence_num){
-	var lengths = {"pac": 3, "pac/iac": 3, "hc": 1, "dc": 3, "pc": 2, "pacm": 3};
+	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
+	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
 	var chorale_plan = [];
+	var previous_cadence_chord = null;
 	for(var i = 0; i < cadence_num; i++){
 		var modulation = {"key": key, "modality": modality};
 		var cadence;
@@ -35,24 +37,32 @@ function generate_chorale_plan(key, modality, cadence_num){
 		}
 		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
 		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.37, "hc": 0.17, "dc": 0.07, "pc": 0.02});
+			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
 		}
 		
 		var cadence_length = lengths[cadence];
-		chorale_plan.push(new PhraseData(modulation, cadence, cadence_length));
+		// 4 beat cadence includes a 64 tonic
+		if(cadence != "pc" && choose({false: 0.8, true: 0.2})){
+			cadence_length++;
+		}
+		chorale_plan.push(new PhraseData(modulation, cadence, cadence_length, previous_cadence_chord));
+		previous_cadence_chord = endings[cadence];
 	}
 	return chorale_plan;
 }
 
 class PhraseData {
-	constructor(modulation, cadence, cadence_length){
+	// note: previous_cadence_chord means be careful updating a single PhraseData object without updating them all
+	constructor(modulation, cadence, cadence_length, previous_cadence_chord){
 		this.modulation = modulation;
 		this.cadence = cadence;
 		this.cadence_length = cadence_length;
+		this.previous_cadence_chord = previous_cadence_chord;
 	}
 	get_modulation(){return this.modulation;}
 	get_cadence(){return this.cadence;}
 	get_cadence_length(){return this.cadence_length;}
+	get_previous_cadence_chord(){return this.previous_cadence_chord;}
 }
 
 function run(){
@@ -76,7 +86,7 @@ function run(){
 	var segments = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 90% 7-8 note segment length, 10% 9-10 note length
-		var length = pickup + choose({7: 0.9, 9: 0.1});
+		var length = pickup + choose({7: 0.8, 9: 0.2});
 		segments.push(generate_segment(length, segments, chorale_plan[i], chord_data));
 	}
 	
@@ -92,17 +102,28 @@ function generate_segment(length, previous_segments, phrase_data, chord_data){
 	}
 }
 
-function generate_chords(chords, min, max, prev_chord, phrase_data, chord_data){
-	if(min == 0){
-		if(prev_chord == null){
-			chords[0] = chord_data.choose_start_chord(phrase_data);
-		}
-		else{
-			chords[0] = chord_data.choose_start_chord_after(phrase_data, prev_chord);
-		}
-		min++;
+function generate_chords(chords, max, phrase_data, chord_data){
+	/*
+	possibilities:
+		prev_cadence_chord: all can lead to either 5 or 1 (varying probabilities)
+		start: length of 1 or 2
+		end:
+			hc: 2 or 3
+			pc: 2
+			all pacs + dc: 3 or 4
+			
+			All cadences begin with predominant, can be extended by up to 2
+		
+		note: IV-ii is also possible, V-vii is possible but improbable
+	
+	*/
+	if(phrase_data.get_previous_cadence_chord == null){
+		chords[0] = chord_data.choose_start_chord(phrase_data);
 	}
-	for(var i = max - 1; i >= min; i--){
+	else{
+		chords[0] = chord_data.choose_start_chord_after(phrase_data, prev_chord);
+	}
+	/*for(var i = max - 1; i >= min; i--){
 		var cad_index = chords.length - 1 - i;
 		if(cad_index < phrase_data.get_cadence_length()){
 			chords[i] = chord_data.choose_cad_chord(cad_index, phrase_data);
@@ -110,7 +131,8 @@ function generate_chords(chords, min, max, prev_chord, phrase_data, chord_data){
 		else{
 			chords[i] = chord_data.generate_chord_before(chords[i + 1], phrase_data);
 		}
-	}
+	}*/
+	
 }
 
 
@@ -135,27 +157,28 @@ function generate_chords(chords, min, max, prev_chord, phrase_data, chord_data){
 //   If not pickup, then 2 note pickup after downbeat cadence
 //   If pickup, then 1 note pickup after downbeat cadence
 
+class ChordFunctions {
+	constructor(){
+		// 0 is tonic, 1 is dominant, sub-dominant, tonic prolongation, tonic prolongation+
+		this.probs = {1: {5: 0.95, 7: 0.05}, 2: {2: 0.65, 4: 0.35}};
+		this.constants = {0: 1, 3: 6, 4: 3};
+	}
+	get_name(chord_class){
+		return this.names[chord_class];
+	}
+	get_chord(chord_class){
+		if(chord_class == 1 || chord_class == 2){
+			return choose(this.probs[chord_class]);
+		}
+		else{
+			return this.constants[chord_class];
+		}
+	}
+}
+
 class ChordData {
 	constructor(){
-		this.chords_before = {1: {"tonic": null,
-					  "tonicpro": {6: 0.1},
-					  "subdom": {4: 0.2},
-					  "dom": {5: 0.5, 7: 0.2}},
-				      2: {"tonic": {1: 0.1},
-					  "tonicpro": {6: 0.1},
-					  "subdom": {4: 0.2},
-					  "dom": {5: 0.5}},
-				      3: {"tonic":{1: 0.1, 6: 0.3}},
-				      4: {"tonic":{1: 0.1, 6: 0.3},
-					  "dom":{5: 0.5}},
-				      5: {"tonic":{1: 0.1, 6: 0.3},
-					  "subdom":{2: 0.4, 4: 0.2},
-					  "dom":{7: 0.05}},
-				      6: {"tonic":{1: 0.1, 3: 0.3},
-					  "dom":{5: 0.05}},
-				      7: {"tonic":{1: 0.1},
-					  "subdom":{2: 0.4, 4: 0.2},
-					  "dom":{5: 0.05}}};
+		this.chord_functions = new ChordFunctions();
 	}
 	choose_start_chord(phrase_data){
 		// Starting chord: 70% V, 30% I
@@ -176,7 +199,7 @@ class ChordData {
 		var key_data = phrase_data.get_modulation();
 		var cad = phrase_data.get_cadence();
 		if(index == 2){
-			return new Chord(choose({2: 0.7, 4: 0.3}), key_data.key, key_data.modality);
+			return new Chord(this.chord_functions.get_chord(1), key_data.key, key_data.modality);
 		}
 		else if(index == 1){
 			if(cad == "pc"){
