@@ -17,34 +17,73 @@ function choose(probs){
 	return choice;
 }
 
+function generate_chorale_plan(key, modality, cadence_num){
+	var lengths = {"pac": 3, "pac/iac": 3, "hc": 1, "dc": 3, "pc": 2, "pacm": 3};
+	var chorale_plan = [];
+	for(var i = 0; i < cadence_num; i++){
+		var modulation = {"key": key, "modality": modality};
+		var cadence;
+		
+		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
+		if(i == cadence_num - 1){
+			if(modality == "minor"){
+				cadence = choose({"pac": 0.3, "pacm": 0.7});
+			}
+			else{
+				cadence = "pac";
+			}
+		}
+		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
+		else{
+			cadence = choose({"pac": 0.37, "pac/iac": 0.37, "hc": 0.17, "dc": 0.07, "pc": 0.02});
+		}
+		
+		var cadence_length = lengths[cadence];
+		chorale_plan.push(new PhraseData(modulation, cadence, cadence_length));
+	}
+	return chorale_plan;
+}
+
+class PhraseData {
+	constructor(modulation, cadence, cadence_length){
+		this.modulation = modulation;
+		this.cadence = cadence;
+		this.cadence_length = cadence_length;
+	}
+	get_modulation(){return this.modulation;}
+	get_cadence(){return this.cadence;}
+	get_cadence_length(){return this.cadence_length;}
+}
+
 function run(){
 	var chord_data = new ChordData();
 	// Decide basic structure
 	
 	// 50% major, 50% minor
-	var modality = choose({"major":0.5, "minor":0.5});
+	var modality = choose({"major": 0.5, "minor": 0.5});
 	// 80% four-cadence length, 20% five-cadence
-	var cadence_num = choose({4:0.8, 5:0.2});
+	var cadence_num = choose({4: 0.8, 5: 0.2});
 	// 66.7% with pickup, 33.3% without
-	var pickup = choose({1:0.667, 0:0.333});
+	var pickup = choose({1: 0.667, 0: 0.333});
 	
 	// key
-	var num_accidentals = choose({0:0.2, 1:0.2, 2:0.2, 3:0.2, 4:0.14, 5:0.03, 6:0.02, 7:0.01});
-	var sharp_or_flat = choose({-1:0.5, 1:0.5});
+	var num_accidentals = choose({0: 0.2, 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.14, 5: 0.03, 6: 0.02, 7: 0.01});
+	var sharp_or_flat = choose({0: 0.5, 2: 0.5}) - 1;
 	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
-	var key_data = {"key":pitch, "modality":modality};
+	
+	var chorale_plan = generate_chorale_plan(pitch, modality, cadence_num);
 	
 	var segments = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 90% 7-8 note segment length, 10% 9-10 note length
-		var length = pickup + choose({7:0.9, 9:0.1});
-		segments.push(generate_segment(length, segments, key_data, i, cadence_num, chord_data));
+		var length = pickup + choose({7: 0.9, 9: 0.1});
+		segments.push(generate_segment(length, segments, chorale_plan[i], chord_data));
 	}
 	
 	
 }
 
-function generate_segment(length, previous_segments, key_data, index, cadence_num, chord_data){
+function generate_segment(length, previous_segments, phrase_data, chord_data){
 	var chords = [];
 	var voices = [];
 	for(var i = 0; i < length; i++){
@@ -53,49 +92,27 @@ function generate_segment(length, previous_segments, key_data, index, cadence_nu
 	}
 }
 
-function generate_chords(chords, key_data, prev_chord, last, min, max, chord_data){
+function generate_chords(chords, min, max, prev_chord, phrase_data, chord_data){
 	if(min == 0){
 		if(prev_chord == null){
-			chords[0] = chord_data.choose_start_chord(key_data);
+			chords[0] = chord_data.choose_start_chord(phrase_data);
 		}
 		else{
-			chords[0] = chord_data.choose_start_chord_after(prev_chord);
+			chords[0] = chord_data.choose_start_chord_after(phrase_data, prev_chord);
 		}
+		min++;
 	}
-	var max_temp = max;
-	if(max == chords.length){
-		var cad = chord_data.choose_cad(last, key_data);
-		var cad_length = chord_data.cad_length(cad);
-		for(var i = 0; i < cad_length; i++){
-			if(max - 1 - i >= min){
-				chords[max - 1 - i] = chord_data.choose_cad_chord(cad, i, key_data);
-				max_temp--;
-			}
+	for(var i = max - 1; i >= min; i--){
+		var cad_index = chords.length - 1 - i;
+		if(cad_index < phrase_data.get_cadence_length()){
+			chords[i] = chord_data.choose_cad_chord(cad_index, phrase_data);
 		}
-	}
-	else if(chords[max] != null && chords[max].cad != null){
-		var cad = chords[max].cad;
-		var cad_length = chord_data.cad_length(cad);
-		for(var i = 0; i < cad_length; i++){
-			if(chords.length - 1 - i < max && chords.length - 1 - i >= min){
-				chords[chords.length - 1 - i] = chord_data.choose_cad_chord(cad, i, key_data);
-				max_temp--;
-			}
+		else{
+			chords[i] = chord_data.generate_chord_before(chords[i + 1], phrase_data);
 		}
-	}
-	var min_temp = Math.max(1, min);
-	for(var index = max_temp - 1; index >= min_temp; index--){
-		
 	}
 }
 
-// I: ALL
-// II: V, vii
-// III: IV, VI
-// IV: II, V, vii, I
-// V: I, vii, VI, IV, II
-// VI: IV, II, III, V
-// vii: I, V
 
 
 // Decide chords
@@ -120,78 +137,86 @@ function generate_chords(chords, key_data, prev_chord, last, min, max, chord_dat
 
 class ChordData {
 	constructor(){
-		this.chord_functions = {"tonic":[1, 3, 6], "dominant":[5, 7], "predominant":[2, 4]};
+		this.chords_before = {1: {"tonic": null,
+					  "tonicpro": {6: 0.1},
+					  "subdom": {4: 0.2},
+					  "dom": {5: 0.5, 7: 0.2}},
+				      2: {"tonic": {1: 0.1},
+					  "tonicpro": {6: 0.1},
+					  "subdom": {4: 0.2},
+					  "dom": {5: 0.5}},
+				      3: {"tonic":{1: 0.1, 6: 0.3}},
+				      4: {"tonic":{1: 0.1, 6: 0.3},
+					  "dom":{5: 0.5}},
+				      5: {"tonic":{1: 0.1, 6: 0.3},
+					  "subdom":{2: 0.4, 4: 0.2},
+					  "dom":{7: 0.05}},
+				      6: {"tonic":{1: 0.1, 3: 0.3},
+					  "dom":{5: 0.05}},
+				      7: {"tonic":{1: 0.1},
+					  "subdom":{2: 0.4, 4: 0.2},
+					  "dom":{5: 0.05}}};
 	}
-	choose_start_chord(key_data){
+	choose_start_chord(phrase_data){
 		// Starting chord: 70% V, 30% I
-		return new Chord(choose({5:0.7, 1:0.3}), key_data.key, null);
+		return new Chord(choose({5: 0.7, 1: 0.3}), phrase_data.get_modulation().key);
 	}
-	choose_start_chord_after(prev_chord){
+	choose_start_chord_after(phrase_data, prev_chord){
 		// not-first, cadence-starting chord 85% like starting chord, 15% not
-		if(choose({true:0.85, false:0.15})){
-			return this.choose_start_chord(prev_chord.get_key());
+		if(choose({true: 0.85, false: 0.15})){
+			// Starting chord: 70% V, 30% I
+			return new Chord(choose({5: 0.7, 1: 0.3}), phrase_data.get_modulation().key);
 		}
 		else{
 			return this.choose_chord_after(prev_chord);
 		}
 	}
-	choose_cad(last, key_data){
-		var cad;
-		
-		// Ending: 95% PAC, 5% IAC ... 70% Piccardy third for minor, 30% not
-		if(last){
-			cad = choose({"pac":0.95, "pac/iac":0.05});
-			if(key_data.modality == "minor" && cad == "pac"){
-				cad = choose({"pac":0.3, "pacm":0.7});
-			}
-		}
-		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
-		else{
-			cad = choose({"pac":0.37, "pac/iac":0.37, "hc":0.17, "dc":0.07, "pc":0.02});
-		}
-		return cad;
-	}
-	cad_length(cad){
-		if(cad == "hc"){
-			return 1;
-		}
-		else if(cad == "pc"){
-			return 2;
-		}
-		else{
-			return 3;
-		}
-	}
 	// note: index is from the end (0 is the last chord)
-	choose_cad_chord(cad, index, key_data){
-		if(index == 0){
-			if(cad == "pacm"){
-				return new Chord(1, key_data.key, "major", "pacm");
-			else if(cad.contains("pac")){
-				return new Chord(1, key_data.key, key_data.modality, "pac");
+	choose_cad_chord(index, phrase_data){
+		var key_data = phrase_data.get_modulation();
+		var cad = phrase_data.get_cadence();
+		if(index == 2){
+			return new Chord(choose({2: 0.7, 4: 0.3}), key_data.key, key_data.modality);
+		}
+		else if(index == 1){
+			if(cad == "pc"){
+				return new Chord(4, key_data.key, key_data.modality);
+			}
+			else{
+				return new Chord(choose({5: 0.97, 7: 0.03}), key_data.key, key_data.modality);
 			}
 		}
-			else{
-				
+		else if(index == 0){
+			if(cad == "pacm"){
+				return new Chord(1, key_data.key, "major");
 			}
+			else if(cad.includes("pac") || cad == "pc"){
+				return new Chord(1, key_data.key, key_data.modality);
+			}
+			else if(cad == "hc"){
+				return new Chord(5, key_data.key, key_data.modality);
+			}
+		}
+		else{
+			console.log("Cadence index error: ", index);
+			return null;
 		}
 	}
-	choose_chord_after(prev_chord){
-		
+	choose_chord_before(next_chord, phrase_data){
+		var key_data = phrase_data.get_modulation();
+		return new Chord(choose(this.chords_before[next_chord.get_roman_num()]), key_data.key, key_data.modality);
 	}
 }
 
 class Chord {
-	constructer(roman_num, key, modality, cad){
+	constructer(roman_num, key, modality){
 		this.roman_num = roman_num;
 		this.key = key;
 		this.modality = modality;
-		this.cad = cad;
 	}
 	get_roman_num(){return this.roman_num;}
 	get_key(){return this.key;}
 	get_modality(){return this.modality;}
-	get_cad(){return this.cad;}
 }
 
 class Note {
