@@ -53,39 +53,6 @@ function choose_int_from_freqs(freqs, choices){
 	return null;
 }
 
-function generate_chorale_plan(key, cadence_num){
-	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
-	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
-	var chorale_plan = [];
-	var previous_cadence_chord = null;
-	for(var i = 0; i < cadence_num; i++){
-		var cadence;
-		
-		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
-		if(i == cadence_num - 1){
-			if(key.get_modality() == "minor"){
-				cadence = choose({"pac": 0.3, "pacm": 0.7});
-			}
-			else{
-				cadence = "pac";
-			}
-		}
-		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
-		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
-		}
-		
-		var cadence_length = lengths[cadence];
-		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && choose_int({0: 0.8, 1: 0.2}) == 0){
-			cadence_length++;
-		}
-		chorale_plan.push(new PhraseData(key, cadence, cadence_length, previous_cadence_chord));
-		previous_cadence_chord = endings[cadence];
-	}
-	return chorale_plan;
-}
-
 class Key {
 	constructor(pitch, modality){
 		this.pitch = pitch;
@@ -212,6 +179,39 @@ class ChordFunctions {
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
+}
+
+function generate_chorale_plan(key, cadence_num){
+	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
+	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
+	var chorale_plan = [];
+	var previous_cadence_chord = null;
+	for(var i = 0; i < cadence_num; i++){
+		var cadence;
+		
+		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
+		if(i == cadence_num - 1){
+			if(key.get_modality() == "minor"){
+				cadence = choose({"pac": 0.3, "pacm": 0.7});
+			}
+			else{
+				cadence = "pac";
+			}
+		}
+		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
+		else{
+			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+		}
+		
+		var cadence_length = lengths[cadence];
+		// 4 beat cadence includes a 64 tonic
+		if(cadence != "pac/iac" && cadence_length == 3 && choose_int({0: 0.8, 1: 0.2}) == 0){
+			cadence_length++;
+		}
+		chorale_plan.push(new PhraseData(key, cadence, cadence_length, previous_cadence_chord));
+		previous_cadence_chord = endings[cadence];
+	}
+	return chorale_plan;
 }
 
 function run(){
