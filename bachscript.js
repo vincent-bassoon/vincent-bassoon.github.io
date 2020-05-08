@@ -285,17 +285,17 @@ function generate_sub_phrases(length, phrase_data){
 	var probs;
 	switch(phrase_data.get_previous_cadence_chord()){
 		case 1:
-			probs = {1: 0.4, 2: 0.6};
+			probs = {1: 0.6, 2: 0.4};
 			break;
 		case 5:
-			probs = {1: 0.7, 2: 0.3};
+			probs = {1: 0.85, 2: 0.15};
 			break;
 		case 6:
 			probs = {1: 0.9, 2: 0.1};
 			break;
 		default:
 			// Starting chord: 70% V, 30% I
-			probs = {1: 0.3, 2: 0.7};
+			probs = {1: 0.4, 2: 0.6};
 	}
 	sub_phrase_lengths.push(choose_int(probs));
 	
