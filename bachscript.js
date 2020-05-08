@@ -49,7 +49,7 @@ function choose_int_from_freqs(freqs, choices){
 			return parseInt(choices[i]);
 		}
 	}
-	console.log("Probability null choice error: ", freqs);
+	console.log("Probability null choice error: ", choices, freqs);
 	return null;
 }
 
@@ -109,139 +109,17 @@ class PhraseData {
 	get_previous_cadence_chord(){return this.previous_cadence_chord;}
 }
 
-function run(){
-	var chord_functions = new ChordFunctions();
-	// Decide basic structure
-	
-	// 50% major, 50% minor
-	var modality = choose({"major": 0.5, "minor": 0.5});
-	// 80% four-cadence length, 20% five-cadence
-	var cadence_num = choose_int({4: 0.8, 5: 0.2});
-	// 66.7% with pickup, 33.3% without
-	var pickup = choose_int({1: 0.667, 0: 0.333});
-	
-	// key
-	var num_accidentals = choose_int({0: 0.2, 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.14, 5: 0.03, 6: 0.02, 7: 0.01});
-	var sharp_or_flat = choose_int({0: 0.5, 2: 0.5}) - 1;
-	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
-	
-	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
-	
-	var segments = [];
-	for(var i = 0; i < cadence_num; i++){
-		// 90% 7-8 note segment length, 10% 9-10 note length
-		var length = pickup + choose_int({7: 0.8, 9: 0.2});
-		segments.push(generate_segment(length, segments, chorale_plan[i], chord_functions));
+class Chord {
+	constructor(roman_num, key, chord_modality, inversion){
+		this.roman_num = roman_num;
+		this.key = key;
+		this.chord_modality = chord_modality;
+		this.inversion = inversion;
 	}
-	
-	
-}
-
-function generate_segment(length, previous_segments, phrase_data, chord_functions){
-	var voices = [];
-	for(var i = 0; i < length; i++){
-		voices.push(null);
-	}
-}
-
-function generate_chords(length, phrase_data, chord_functions){
-	var sub_phrase_lengths = generate_sub_phrases(length, phrase_data);
-	var chords = [];
-	for(var i = 0; i < length; i++){
-		chords.push(null);
-	}
-	var key = phrase_data.get_key();
-	
-	// first chords manual input (to avoid vii)
-	if(sub_phrase_lengths[0] == 1){
-		chords[0] = chord_functions.generate_chord(1, key, null);
-	}
-	else if(sub_phrase_lengths[0] == 2){
-		chords[0] = chord_functions.generate_chord(5, key, null);
-		chords[1] = chord_functions.generate_chord(1, key, null);
-	}
-	else{
-		console.log("first sub phrase length error: ", sub_phrase_lengths[0]);
-	}
-	
-	var cadence_chords = chord_functions.generate_cadence_chords(phrase_data.get_cadence(),
-								     phrase_data.get_cadence_length(),
-								     sub_phrase_lengths.pop(),
-								     key);
-	for(var i = 0; i < cadence_chords.length; i++){
-		chords[length - 1 - 0] = cadence_chords[i];
-	}
-	
-	var chord_class = -1;
-	for(var i = 0; i < length; i++){
-		if(chord_class == -1){
-			chord_class = sub_phrase_lengths.shift() - 1;
-		}
-		if(chords[i] == null){
-			chords[i] = chord_functions.get_chord(chord_class, key);
-		}
-		chord_class--;
-	}
-}
-
-function generate_sub_phrases(length, phrase_data){
-	var sub_phrase_lengths = [];
-	
-	// sub_phrase_length of 2 means V-I, 1 means I
-	var probs;
-	switch(phrase_data.get_previous_cadence_chord()){
-		case 1:
-			probs = {1: 0.4, 2: 0.6};
-			break;
-		case 5:
-			probs = {1: 0.7, 2: 0.3};
-			break;
-		case 6:
-			probs = {1: 0.9, 2: 0.1};
-			break;
-		default:
-			// Starting chord: 70% V, 30% I
-			probs = {1: 0.3, 2: 0.7};
-	}
-	sub_phrase_lengths.push(choose_int(probs));
-	
-	var cad_length = phrase_data.get_cadence_length()
-	var spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("pre mod spaces: ", spaces);
-	
-	// frequency of each addition to cadence sub-phrase
-	var freqs = {0: 58, 1: 40, 2: 2};
-	var choices = [0, 1, 2];
-	for(var i = choices.length - 1; i >= 0; i--){
-		if(choices[i] > spaces || choices[i] + 1 == spaces){
-			choices.splice(i, 1);
-		}
-	}
-	cad_length += choose_int_from_freqs(freqs, choices);
-	spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("post cadence mod spaces: ", spaces);
-	
-	// frequency of each length of sub-phrase
-	freqs = {2: 17, 3: 43, 4: 33, 5: 6, 6: 1}
-	while(spaces > 4){
-		choices = [];
-		for(var i = Math.min(6, spaces); i >= 2; i--){
-			if(i + 1 != spaces){
-				choices.push(i);
-			}
-		}
-		var length_temp = choose_int_from_freqs(freqs, choices);
-		sub_phrase_lengths.push(length_temp);
-		spaces -= length_temp;
-	}
-	if(spaces != 0){
-		sub_phrase_lengths.push(spaces);
-		if(spaces == 1){
-			console.log("sub phrase length 1 error");
-		}
-	}
-	sub_phrase_lengths.push(cad_length);
-	return sub_phrase_lengths;
+	get_roman_num(){return this.roman_num;}
+	get_key(){return this.key;}
+	get_modality(){return this.chord_modality;}
+	get_inversion(){return this.inversion;}
 }
 
 class ChordFunctions {
@@ -335,19 +213,134 @@ class ChordFunctions {
 		return cadence_chords;
 	}
 }
-					
-class Chord {
-	constructer(roman_num, key, chord_modality, inversion){
-		this.roman_num = roman_num;
-		this.key = key;
-		this.chord_modality = chord_modality;
-		this.inversion
+
+function run(){
+	var chord_functions = new ChordFunctions();
+	// Decide basic structure
+	
+	// 50% major, 50% minor
+	var modality = choose({"major": 0.5, "minor": 0.5});
+	// 80% four-cadence length, 20% five-cadence
+	var cadence_num = choose_int({4: 0.8, 5: 0.2});
+	// 66.7% with pickup, 33.3% without
+	var pickup = choose_int({1: 0.667, 0: 0.333});
+	
+	// key
+	var num_accidentals = choose_int({0: 0.2, 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.14, 5: 0.03, 6: 0.02, 7: 0.01});
+	var sharp_or_flat = choose_int({0: 0.5, 2: 0.5}) - 1;
+	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
+	
+	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
+	
+	var segments = [];
+	for(var i = 0; i < cadence_num; i++){
+		// 90% 7-8 note segment length, 10% 9-10 note length
+		var length = pickup + choose_int({7: 0.8, 9: 0.2});
+		segments.push(generate_segment(length, segments, chorale_plan[i], chord_functions));
 	}
-	get_roman_num(){return this.roman_num;}
-	get_key(){return this.key;}
-	get_modality(){return this.chord_modality;}
-	get_inversion(){return this.inversion;}
+	
+	
 }
+
+function generate_segment(length, previous_segments, phrase_data, chord_functions){
+	var voices = [];
+	for(var i = 0; i < length; i++){
+		voices.push(null);
+	}
+}
+
+function generate_chords(length, phrase_data, chord_functions){
+	var sub_phrase_lengths = generate_sub_phrases(length, phrase_data);
+	var chords = [];
+	var key = phrase_data.get_key();
+	
+	// first chords manual input (to avoid vii)
+	var first_phrase_length = sub_phrase_lengths.shift();
+	if(first_phrase_length == 1){
+		chords.push(chord_functions.generate_chord(1, key, null));
+	}
+	else if(first_phrase_length == 2){
+		chords.push(chord_functions.generate_chord(5, key, null));
+		chords.push(chord_functions.generate_chord(1, key, null));
+	}
+	else{
+		console.log("first sub phrase length error: ", first_phrase_length);
+	}
+	
+	var cadence_chords = chord_functions.generate_cadence_chords(phrase_data.get_cadence(),
+								     phrase_data.get_cadence_length(),
+								     sub_phrase_lengths.pop(),
+								     key);
+	for(var i = 0; i < sub_phrase_lengths.length; i++){
+		chords.push(...chord_functions.generate_phrase_chords(sub_phrase_lengths[i], key));
+	}
+	chords.push(...cadence_chords);
+	console.log("chords: ", chords);
+}
+
+function generate_sub_phrases(length, phrase_data){
+	var sub_phrase_lengths = [];
+	
+	// sub_phrase_length of 2 means V-I, 1 means I
+	var probs;
+	switch(phrase_data.get_previous_cadence_chord()){
+		case 1:
+			probs = {1: 0.4, 2: 0.6};
+			break;
+		case 5:
+			probs = {1: 0.7, 2: 0.3};
+			break;
+		case 6:
+			probs = {1: 0.9, 2: 0.1};
+			break;
+		default:
+			// Starting chord: 70% V, 30% I
+			probs = {1: 0.3, 2: 0.7};
+	}
+	sub_phrase_lengths.push(choose_int(probs));
+	
+	var cad_length = phrase_data.get_cadence_length()
+	var spaces = length - cad_length - sub_phrase_lengths[0];
+	console.log("pre mod spaces: ", spaces);
+	
+	// frequency of each addition to cadence sub-phrase
+	var freqs = {0: 58, 1: 40, 2: 2};
+	var choices = [0, 1, 2];
+	for(var i = choices.length - 1; i >= 0; i--){
+		if(choices[i] > spaces || choices[i] + 1 == spaces){
+			choices.splice(i, 1);
+		}
+	}
+	cad_length += choose_int_from_freqs(freqs, choices);
+	spaces = length - cad_length - sub_phrase_lengths[0];
+	console.log("post cadence mod spaces: ", spaces);
+	
+	// frequency of each length of sub-phrase
+	freqs = {2: 17, 3: 43, 4: 33, 5: 6, 6: 1}
+	while(spaces > 4){
+		choices = [];
+		for(var i = Math.min(6, spaces); i >= 2; i--){
+			if(i + 1 != spaces){
+				choices.push(i);
+			}
+		}
+		var length_temp = choose_int_from_freqs(freqs, choices);
+		sub_phrase_lengths.push(length_temp);
+		spaces -= length_temp;
+	}
+	if(spaces != 0){
+		sub_phrase_lengths.push(spaces);
+		if(spaces == 1){
+			console.log("sub phrase length 1 error");
+		}
+	}
+	sub_phrase_lengths.push(cad_length);
+	return sub_phrase_lengths;
+}
+
+
+					
+
 
 // Construct melody
 // PAC/IAC: 55% 2-1, 14% 4-3, 13% 7-1, 12% 2-3, 3% 5-3, 3% 5-5
