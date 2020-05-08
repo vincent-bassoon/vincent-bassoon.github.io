@@ -303,7 +303,6 @@ function generate_sub_phrases(length, phrase_data){
 	
 	var cad_length = phrase_data.get_cadence_length()
 	var spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("initial cad length: ", cad_length);
 	
 	// frequency of each addition to cadence sub-phrase
 	var freqs = {0: 58, 1: 40, 2: 2};
@@ -315,12 +314,12 @@ function generate_sub_phrases(length, phrase_data){
 	}
 	cad_length += choose_int_from_freqs(freqs, choices);
 	spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("final cad length: ", cad_length);
-	console.log("phrase length: ", length);
-	console.log("first phrase length: ", sub_phrase_lengths[0]);
 	
 	// frequency of each length of sub-phrase
-	freqs = {2: 10, 3: 46, 4: 37, 5: 6, 6: 1}
+	freqs = {2: 10, 3: 46, 4: 37, 5: 6, 6: 1};
+	if(sub_phrase_lengths[0] == 2){
+		freqs[2] = 5;
+	}
 	while(spaces > 4){
 		choices = [];
 		for(var i = Math.min(6, spaces); i >= 2; i--){
@@ -339,6 +338,7 @@ function generate_sub_phrases(length, phrase_data){
 		}
 	}
 	sub_phrase_lengths.push(cad_length);
+	console.log("phrase lengths: ", sub_phrase_lengths);
 	return sub_phrase_lengths;
 }
 
