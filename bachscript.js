@@ -130,7 +130,7 @@ class ChordFunctions {
 		else{
 			var choices = [];
 			for(var i = 2; i <= 3; i++){
-				if(i > chord_class && i < chord_class + num_chords + 1){
+				if(i >= chord_class + 1 && i < chord_class + 1 + num_chords + 1){
 					choices.push(i);
 				}
 			}
@@ -142,9 +142,9 @@ class ChordFunctions {
 			}
 			// choices should be a subset of [2, 3, 4 or 5]
 			
-			var freqs = {2: 20, 3: 30, 4: 50, 5: 200};
+			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
 			var removed = choose_int_from_freqs(freqs, choices);
-			for(var i = 0; i < num_chords; i++){
+			for(var i = 0; i < num_chords + 1; i++){
 				chord_class++
 				if(chord_class != removed){
 					var num = this.get_chord_roman_num(chord_class);
@@ -158,7 +158,8 @@ class ChordFunctions {
 	generate_phrase_chords(phrase_length, key){
 		var phrase_chords = [];
 		phrase_chords.unshift(this.generate_chord(1, key, null));
-		this.generate_remaining_chords(phrase_chords, phrase_length - 1, 0, key);
+		this.generate_remaining_chords(phrase_chords, phrase_length - 1, 1, key);
+		console.log("phrase chords: ", phrase_chords);
 		return phrase_chords;
 	}
 	// returns chords of the entire cadence phrase, first chord of phrase is at index 0
@@ -177,6 +178,7 @@ class ChordFunctions {
 		}
 		var roman_num = this.cadences[cad][this.cadences[cad].length - 1];
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
+		console.log("cadence chords: ", cadence_chords);
 		return cadence_chords;
 	}
 }
@@ -301,7 +303,7 @@ function generate_sub_phrases(length, phrase_data){
 	
 	var cad_length = phrase_data.get_cadence_length()
 	var spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("pre mod spaces: ", spaces);
+	console.log("initial cad length: ", cad_length);
 	
 	// frequency of each addition to cadence sub-phrase
 	var freqs = {0: 58, 1: 40, 2: 2};
@@ -313,10 +315,12 @@ function generate_sub_phrases(length, phrase_data){
 	}
 	cad_length += choose_int_from_freqs(freqs, choices);
 	spaces = length - cad_length - sub_phrase_lengths[0];
-	console.log("post cadence mod spaces: ", spaces);
+	console.log("final cad length: ", cad_length);
+	console.log("phrase length: ", length);
+	console.log("first phrase length: ", sub_phrase_lengths[0]);
 	
 	// frequency of each length of sub-phrase
-	freqs = {2: 17, 3: 43, 4: 33, 5: 6, 6: 1}
+	freqs = {2: 10, 3: 46, 4: 37, 5: 6, 6: 1}
 	while(spaces > 4){
 		choices = [];
 		for(var i = Math.min(6, spaces); i >= 2; i--){
