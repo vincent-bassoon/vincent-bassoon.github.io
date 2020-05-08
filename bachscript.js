@@ -159,7 +159,6 @@ class ChordFunctions {
 		var phrase_chords = [];
 		phrase_chords.unshift(this.generate_chord(1, key, null));
 		this.generate_remaining_chords(phrase_chords, phrase_length - 1, 1, key);
-		console.log("phrase chords: ", phrase_chords);
 		return phrase_chords;
 	}
 	// returns chords of the entire cadence phrase, first chord of phrase is at index 0
@@ -178,7 +177,6 @@ class ChordFunctions {
 		}
 		var roman_num = this.cadences[cad][this.cadences[cad].length - 1];
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
-		console.log("cadence chords: ", cadence_chords);
 		return cadence_chords;
 	}
 }
