@@ -88,7 +88,7 @@ class ChordFunctions {
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generate_segment_chords(length, phrase_data, chord_functions){
+	generate_segment_chords(length, phrase_data){
 		var sub_phrase_lengths = this.generate_sub_phrases(length, phrase_data);
 		var chords = [];
 		var key = phrase_data.get_key();
@@ -96,22 +96,22 @@ class ChordFunctions {
 		// first chords manual input (to avoid vii)
 		var first_phrase_length = sub_phrase_lengths.shift();
 		if(first_phrase_length == 1){
-			chords.push(chord_functions.generate_chord(1, key, null));
+			chords.push(this.generate_chord(1, key, null));
 		}
 		else if(first_phrase_length == 2){
-			chords.push(chord_functions.generate_chord(5, key, null));
-			chords.push(chord_functions.generate_chord(1, key, null));
+			chords.push(this.generate_chord(5, key, null));
+			chords.push(this.generate_chord(1, key, null));
 		}
 		else{
 			console.log("first sub phrase length error: ", first_phrase_length);
 		}
 		
-		var cadence_chords = chord_functions.generate_cadence_chords(phrase_data.get_cadence(),
-									     phrase_data.get_cadence_length(),
-									     sub_phrase_lengths.pop(),
-									     key);
+		var cadence_chords = this.generate_cadence_chords(phrase_data.get_cadence(),
+								  phrase_data.get_cadence_length(),
+								  sub_phrase_lengths.pop(),
+								  key);
 		for(var i = 0; i < sub_phrase_lengths.length; i++){
-			chords.push(...chord_functions.generate_phrase_chords(sub_phrase_lengths[i], key));
+			chords.push(...this.generate_phrase_chords(sub_phrase_lengths[i], key));
 		}
 		chords.push(...cadence_chords);
 		console.log("chords: ", chords);
