@@ -114,7 +114,11 @@ class ChordFunctions {
 			chords.push(...this.generate_phrase_chords(sub_phrase_lengths[i], key));
 		}
 		chords.push(...cadence_chords);
-		console.log("chords: ", chords);
+		var string = "" + chords[0].get_roman_num();
+		for(var i = 1; i < chords.length; i++){
+			string += ", " + chords[i].get_roman_num();
+		}
+		console.log("chords: ", string);
 		return chords;
 	}
 	generate_sub_phrases(length, phrase_data){
