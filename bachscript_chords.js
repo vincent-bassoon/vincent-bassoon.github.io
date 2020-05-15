@@ -49,7 +49,7 @@ class ChordFunctions {
 			else if(chord_class + num_chords + 1 == 4){
 				choices.push(4);
 			}
-			// choices should be a subset of [2, 3, 4 or 5]
+			// choices should be a subset of [2, 3, (4 or 5)]
 			
 			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
 			var removed = choose_int_from_freqs(freqs, choices);
@@ -161,6 +161,7 @@ class ChordFunctions {
 		if(sub_phrase_lengths[0] == 2){
 			freqs[2] = 5;
 		}
+		
 		while(spaces > 4){
 			choices = [];
 			for(var i = Math.min(6, spaces); i >= 2; i--){
