@@ -32,7 +32,6 @@ function generate_chorale_plan(key, cadence_num){
 }
 
 function run(){
-	var chord_functions = new ChordFunctions();
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -49,65 +48,28 @@ function run(){
 	
 	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
 	
+	var chord_functions = new ChordFunctions();
+	var harmony_functions = new HarmonyFunctions();
 	var segments = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 90% 7-8 note segment length, 10% 9-10 note length
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
-		segments.push(generate_segment(length, segments, chorale_plan[i], chord_functions));
+		var chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
+		segments.push({"chords":chords, "harmony":null});
 	}
-	
-	
-}
-
-function generate_segment(length, previous_segments, phrase_data, chord_functions){
-	var chords = chord_functions.generate_segment_chords(length, phrase_data);
+	for(var i = cadence_num - 1; i >= 0; i--){
+		segments[i].harmony = harmony_functions.generate_harmony(segments[i].chords, chorale_plan[i]);
+	}
 }
 
 
-					
-
-
-// Construct melody
-// PAC/IAC: 55% 2-1, 14% 4-3, 13% 7-1, 12% 2-3, 3% 5-3, 3% 5-5
-// HC: 40% 3-2, 20% 1-2, 15% 4-5, 15% 1-7, 4% 2-7, 4% 4-2, 2% 2-2
-// DC: 60% 2-1, 22% 4-5, 18% 7-1
-// PC: 50% 1-1, 50% 6-5
-
-
-// Harmonize
 
 
 //   If not pickup, then 2 note pickup after downbeat cadence
 //   If pickup, then 1 note pickup after downbeat cadence
 
 
-class Note {
-	constructer(pitch, octave){
-		this.pitch = pitch;
-		this.octave = octave;
-	}
-	get_pitch(){return this.pitch}
-	get_octave(){return this.octave}
-	get_value(){
-		return this.pitch + 12 * this.octave;
-	}
-}
 
-class Score {
-	constructor(length){
-		this.harmony = [];
-		for(var i = 0; i < length; i++){
-			this.harmony[i] = {};
-			this.harmony[i].voice = [[], [], [], []];
-			this.harmony[i].chord = null;
-		}
-	}
-	get_chord(chord_index){
-		return this.harmony[chord_index].chord;
-	}
-	get_note(chord_index){
-	}
-}
 
 function configure_ui(){
 	//create_score(beat_num);
