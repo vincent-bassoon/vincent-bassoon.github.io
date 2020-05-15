@@ -88,3 +88,15 @@ class Chord {
 	get_modality(){return this.chord_modality;}
 	get_inversion(){return this.inversion;}
 }
+
+class Note {
+	constructer(pitch, octave){
+		this.pitch = pitch;
+		this.octave = octave;
+	}
+	get_pitch(){return this.pitch}
+	get_octave(){return this.octave}
+	get_value(){
+		return this.pitch + 12 * this.octave;
+	}
+}
