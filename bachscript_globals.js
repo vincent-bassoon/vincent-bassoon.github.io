@@ -94,15 +94,16 @@ class Note {
 		this.pitch = pitch;
 		this.octave = octave;
 	}
-	get_pitch(){return this.pitch}
-	get_octave(){return this.octave}
+	get_pitch(){return this.pitch;}
+	get_octave(){return this.octave;}
 	get_value(){
 		return this.pitch + 12 * this.octave;
 	}
 }
 
-class HarmonyUnit {
-	constructor(notes){
-		this.notes = notes;
+class Voice {
+	constructor(note){
+		this.note = note;
 	}
+	get_note(){return this.note;}
 }
