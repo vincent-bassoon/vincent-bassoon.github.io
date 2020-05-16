@@ -55,10 +55,8 @@ function run(){
 		// 90% 7-8 note segment length, 10% 9-10 note length
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
 		var chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
-		segments.push({"chords":chords, "harmony":null});
-	}
-	for(var i = cadence_num - 1; i >= 0; i--){
-		segments[i].harmony = harmony_functions.generate_harmony(segments[i].chords, chorale_plan[i]);
+		var harmony = null;//harmony_functions.generate_harmony(segments[i].chords, chorale_plan[i]);
+		segments.push({"chords":chords, "harmony":harmony});
 	}
 }
 
