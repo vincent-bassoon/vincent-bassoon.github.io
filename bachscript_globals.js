@@ -100,3 +100,9 @@ class Note {
 		return this.pitch + 12 * this.octave;
 	}
 }
+
+class HarmonyUnit {
+	constructor(notes){
+		this.notes = notes;
+	}
+}
