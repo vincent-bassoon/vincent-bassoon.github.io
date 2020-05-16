@@ -14,6 +14,17 @@ class HarmonyFunctions {
 					1: {"min": note("C", 3), "max": note("G", 4)},
 					2: {"min": note("G", 3), "max": note("D", 5)},
 					3: {"min": note("C", 4), "max": note("G", 5)}};
+		
+		var ac_probs = {"2-1": 0.55, "4-3": 0.14, "7-1": 0.13, "2-3": 0.12, "5-3": 0.03, "5-5": 0.03};
+		var hc_probs = {"3-2": 0.4, "1-2": 0.2, "4-5": 0.15, "1-7": 0.15, "2-7": 0.04, "4-2": 0.04, "2-2": 0.02};
+		
+		this.cadence_probabilities = {"pac": ac_probs,
+					      "pac/iac": ac_probs,
+					      "hc": hc_probs,
+					      "dc": {"2-1": 0.6, "4-5": 0.22, "7-1": 0.18},
+					      "pc": {"1-1": 0.5, "6-5": 0.5},
+					      "pacm": ac_probs};
+		
 	}
 	generate_adjacent(chords, harmony, adjacent_index, target_index){
 		if(Math.abs(adjacent_index - target_index) != 1){
@@ -22,7 +33,7 @@ class HarmonyFunctions {
 		}
 		
 	}
-	complete_single_harmony(chords, harmony, start_index, end_index){
+	complete_harmony(chords, harmony, start_index, end_index){
 		var change;
 		if(start_index > end_index){
 			change = -1;
@@ -32,8 +43,20 @@ class HarmonyFunctions {
 		}
 		
 	}
-	complete_double_harmony(chords, harmonies, index1, index2){
+	complete_matching_harmony(chords, harmony, existing_harmony, start_index, end_index){
 		
+	}
+	is_in_chord(roman_num, chord_root){
+		if(roman_num == chord_root){
+			return true;
+		}
+		for(var i = 0; i < 2; i++){
+			chord_root = ((chord_root + 2 - 1) % 7) + 1;
+			if(roman_num == chord_root){
+				return true;
+			}
+		}
+		return false;
 	}
 	generate_cadence_harmony(chords, harmony, cadence){
 		
@@ -49,25 +72,30 @@ class HarmonyFunctions {
 		if(prev_harmony_unit == null){
 			var harmony = this.create_empty_harmony(chords.length);
 			this.generate_cadence_harmony(chords, harmony, phrase_plan.get_cadence());
-			this.complete_single_harmony(chords, harmony, chords.length - 3, 0);
+			this.complete_harmony(chords, harmony, chords.length - 3, 0);
 			return harmony;
 		}
 		else{
 			var length = chords.length + 1;
-			var harmonies = [this.create_empty_harmony(length - 2),
-				       this.create_empty_harmony(length)];
-			this.generate_cadence_harmony(chords, harmonies[1], phrase_plan.get_cadence());
-			this.complete_harmony(chords, harmonies, 1, length - 3);
+			var harmonies = [this.create_empty_harmony(length),
+				       this.create_empty_harmony(length - 2)];
+			harmonies[0][0] = prev_harmony_unit;
+			harmonies[1][0] = prev_harmony_unit;
+			this.generate_cadence_harmony(chords, harmonies[0], phrase_plan.get_cadence());
+			
+			this.complete_harmony(chords, harmonies[0], length - 3, 1);
+			var stitch_index = this.complete_matching_harmony(chords, harmonies[1], harmonies[0], 1, length - 3);
+			if(stitch_index != null){
+				return this.stitch_and_trim(harmonies[0], harmonies[1], stitch_index);
+			}
+			
+			this.complete_harmony(chords, harmonies[1], 1, length - 3);
+			var stitch_index = this.complete_matching_harmony(chords, harmonies[0], harmonies[1], length - 3, 1);
+			if(stitch_index != null){
+				return this.stitch_and_trim(harmonies[0], harmonies[1], stitch_index);
+			}
+			return null;
 		}
 		
 	}
 }
-
-					
-
-
-// Construct melody
-// PAC/IAC: 55% 2-1, 14% 4-3, 13% 7-1, 12% 2-3, 3% 5-3, 3% 5-5
-// HC: 40% 3-2, 20% 1-2, 15% 4-5, 15% 1-7, 4% 2-7, 4% 4-2, 2% 2-2
-// DC: 60% 2-1, 22% 4-5, 18% 7-1
-// PC: 50% 1-1, 50% 6-5
