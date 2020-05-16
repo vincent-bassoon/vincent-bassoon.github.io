@@ -22,7 +22,7 @@ class HarmonyFunctions {
 		}
 		
 	}
-	complete_harmony(chords, harmony, start_index, end_index, prev_harmony_unit){
+	complete_single_harmony(chords, harmony, start_index, end_index){
 		var change;
 		if(start_index > end_index){
 			change = -1;
@@ -30,6 +30,9 @@ class HarmonyFunctions {
 		else{
 			change = 1;
 		}
+		
+	}
+	complete_double_harmony(chords, harmonies, index1, index2){
 		
 	}
 	generate_cadence_harmony(chords, harmony, cadence){
@@ -43,25 +46,19 @@ class HarmonyFunctions {
 		return harmony;
 	}
 	generate_harmony(chords, prev_harmony_unit, phrase_plan){
-		if(phrase_plan.get_previous_cadence_chord() == null){
-			
+		if(prev_harmony_unit == null){
+			var harmony = this.create_empty_harmony(chords.length);
+			this.generate_cadence_harmony(chords, harmony, phrase_plan.get_cadence());
+			this.complete_single_harmony(chords, harmony, chords.length - 3, 0);
+			return harmony;
 		}
 		else{
-			
+			var length = chords.length + 1;
+			var harmonies = [this.create_empty_harmony(length - 2),
+				       this.create_empty_harmony(length)];
+			this.generate_cadence_harmony(chords, harmonies[1], phrase_plan.get_cadence());
+			this.complete_harmony(chords, harmonies, 1, length - 3);
 		}
-		
-		var harmony = [this.create_empty_harmony(chords.length), this.create_empty_harmony(chords.length - 2)];
-		var start_index = [chords.length - 3, 0];
-		var end_index = [0, chords.length - 3];
-		this.generate_cadence_harmony(chords, harmony[0], phrase_plan.get_cadence());
-		
-		this.complete_harmony(chords, harmony[0], start_index[0], end_index[0], harmony[0][chords.length - 2]);
-		// if harmony[0] can be stitched to prev_harmony_unit
-		if(false){
-			return harmony[0];
-		}
-		
-		this.complete_harmony(chords, harmony[1], start_index[1], end_index[1], prev_harmony_unit);
 		
 	}
 }
