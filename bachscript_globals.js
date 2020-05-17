@@ -53,6 +53,23 @@ function choose_int_from_freqs(freqs, choices){
 	return null;
 }
 
+function choose_from_freqs_remove(freqs, choices){
+	var sum = 0;
+	for(var i = 0; i < choices.length; i++){
+		sum += freqs[choices[i]];
+	}
+	var num = Math.random() * sum;
+	sum = 0;
+	for(var i = 0; i < choices.length; i++){
+		sum += freqs[choices[i]];
+		if(sum > num){
+			return choices.splice(i, 1)[0];
+		}
+	}
+	console.log("Probability null choice error: ", choices, freqs);
+	return null;
+}
+
 class Key {
 	constructor(pitch, modality){
 		this.pitch = pitch;
@@ -89,6 +106,21 @@ class Chord {
 	get_key(){return this.key;}
 	get_modality(){return this.chord_modality;}
 	get_inversion(){return this.inversion;}
+	get_degree(degree){
+		if(degree == 0){
+			return this.root;
+		}
+		else if(degree == 1){
+			return this.third;
+		}
+		else if(degree == 2){
+			return this.fifth;
+		}
+		else{
+			console.log("degree error: ", degree);
+			return null;
+		}
+	}
 	is_in_chord(roman_num){
 		return roman_num == this.root || roman_num == this.third || roman_num == this.fifth;
 	}
@@ -111,12 +143,16 @@ class Voice {
 	set_start_note(value){
 		this.start_note_value = value;
 	}
+	set_note(value){
+		this.start_note_value = value;
+		this.end_note_value = value;
+	}
 	
 }
 
 
 
-class NoteFunctions = {
+class NoteFunctions {
 	constructor(){
 		this.name_to_num = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
@@ -133,5 +169,14 @@ class NoteFunctions = {
 	}
 	num_to_pitch(roman_num, key){
 		return (key.get_pitch() + this.roman_num_mapping[key.get_modality()][roman_num]) % 12;
+	}
+	get_bass(chord){
+		var inversion = chord.get_inversion();
+		if(inversion == null){
+			return null;
+		}
+		else{
+			return this.num_to_pitch(chord.get_degree(inversion), chord.get_key());
+		}
 	}
 }
