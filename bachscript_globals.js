@@ -78,15 +78,20 @@ class PhraseData {
 
 class Chord {
 	constructor(roman_num, key, chord_modality, inversion){
-		this.roman_num = roman_num;
+		this.root = roman_num;
+		this.third = ((roman_num + 2 - 1) % 7) + 1;
+		this.fifth = ((roman_num + 4 - 1) % 7) + 1;
 		this.key = key;
 		this.chord_modality = chord_modality;
 		this.inversion = inversion;
 	}
-	get_roman_num(){return this.roman_num;}
+	get_roman_num(){return this.root;}
 	get_key(){return this.key;}
 	get_modality(){return this.chord_modality;}
 	get_inversion(){return this.inversion;}
+	is_in_chord(roman_num){
+		return roman_num == this.root || roman_num == this.third || roman_num == this.fifth;
+	}
 }
 
 class Note {
