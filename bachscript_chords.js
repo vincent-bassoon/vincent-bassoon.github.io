@@ -1,16 +1,17 @@
-var cf = {
-	// 0 is I, 1 is V or vii, 2 ii, 3 IV, 4 vi, 5 iii
-	//{2: 0.65, 4: 0.35}
-	chord_to_class: {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5},
-	class_to_chord: {0: 1, 2: 2, 3: 4, 4: 6, 5: 3},
-	cadences: {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]},
-	modalities: {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
-		     "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}},
-	// 3-6-4/2-5-1
-
+class ChordFunctions {
+	constructor(){
+		// 0 is I, 1 is V or vii, 2 ii, 3 IV, 4 vi, 5 iii
+		//{2: 0.65, 4: 0.35}
+		this.chord_to_class = {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5};
+		this.class_to_chord = {0: 1, 2: 2, 3: 4, 4: 6, 5: 3};
+		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
+		this.modalities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
+				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
+		// 3-6-4/2-5-1
+	}
 	generate_chord(roman_num, key, inversion){
 		return new Chord(roman_num, key, this.modalities[key.get_modality()][roman_num], inversion);
-	},
+	}
 	get_chord_roman_num(chord_class){
 		if(chord_class == 1){
 			return choose_int({5: 0.95, 7: 0.05})
@@ -18,7 +19,7 @@ var cf = {
 		else{
 			return this.class_to_chord[chord_class];
 		}
-	},
+	}
 	generate_remaining_chords(phrase_chords, num_chords, next_chord_roman_num, key){
 		var chord_class = this.chord_to_class[next_chord_roman_num];
 		if(5 - chord_class < num_chords){
@@ -61,14 +62,14 @@ var cf = {
 			}
 			return;
 		}
-	},
+	}
 	// returns chords of a phrase of specified length, first chord of phrase is at index 0
 	generate_phrase_chords(phrase_length, key){
 		var phrase_chords = [];
 		phrase_chords.unshift(this.generate_chord(1, key, null));
 		this.generate_remaining_chords(phrase_chords, phrase_length - 1, 1, key);
 		return phrase_chords;
-	},
+	}
 	// returns chords of the entire cadence phrase, first chord of phrase is at index 0
 	generate_cadence_chords(cad, cad_length, phrase_length, key){
 		var cadence_chords = [];
@@ -86,7 +87,7 @@ var cf = {
 		var roman_num = this.cadences[cad][this.cadences[cad].length - 1];
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
-	},
+	}
 	generate_segment_chords(length, phrase_data){
 		var sub_phrase_lengths = this.generate_sub_phrases(length, phrase_data);
 		var chords = [];
@@ -119,7 +120,7 @@ var cf = {
 		}
 		console.log("chords: ", string);
 		return chords;
-	},
+	}
 	generate_sub_phrases(length, phrase_data){
 		var sub_phrase_lengths = [];
 		
