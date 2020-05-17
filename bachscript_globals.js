@@ -94,22 +94,44 @@ class Chord {
 	}
 }
 
-class Note {
-	constructer(pitch, octave){
-		this.pitch = pitch;
-		this.octave = octave;
+class Voice {
+	constructor(){
+		this.end_note_value = null;
+		this.start_note_value = null;
 	}
-	get_pitch(){return this.pitch;}
-	get_octave(){return this.octave;}
-	get_value(){
-		return this.pitch + 12 * this.octave;
+	get_end_value(){
+		return this.end_note_value;
 	}
+	get_start_value(){
+		return this.start_note_value;
+	}
+	set_end_note(value){
+		this.end_note_value = value;
+	}
+	set_start_note(value){
+		this.start_note_value = value;
+	}
+	
 }
 
-class Voice {
-	constructor(note){
-		this.note = note;
+
+
+class NoteFunctions = {
+	constructor(){
+		this.name_to_num = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
+		var letters = ["C", "D", "E", "F", "G", "A", "B"];
+		for(var i = 0; i < letters.length; i++){
+			this.name_to_num[letters[i] + "b"] = (this.name_to_num[letters[i]] + 11) % 12;
+			this.name_to_num[letters[i] + "#"] = (this.name_to_num[letters[i]] + 1) % 12;
+		}
+		
+		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
+					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 10}};
 	}
-	get_note(){return this.note;}
-	set_note(note){this.note = note;}
+	name_to_value(name, octave){
+		return this.name_to_num[name] + 12 * octave;
+	}
+	num_to_pitch(roman_num, key){
+		return (key.get_pitch() + this.roman_num_mapping[key.get_modality()][roman_num]) % 12;
+	}
 }
