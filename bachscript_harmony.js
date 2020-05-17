@@ -1,24 +1,20 @@
 class HarmonyFunctions {
 	constructor(){
-		var name_to_num = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
-		function note(name, octave){
-			return new Note(name_to_num[name], octave);
-		}
+		this.note_functions = new NoteFunctions();
+		var nf = this.note_functions;
+		this.preferred_ranges = {0: {"min": nf.name_to_value("F", 2), "max": nf.name_to_value("E", 3)},
+					 1: {"min": nf.name_to_value("F", 3), "max": nf.name_to_value("E", 4)},
+					 2: {"min": nf.name_to_value("A", 3), "max": nf.name_to_value("Ab", 4)},
+					 3: {"min": nf.name_to_value("E", 4), "max": nf.name_to_value("Eb", 5)}},
+	
+		this.absolute_ranges = {0: {"min": nf.name_to_value("C", 2), "max": nf.name_to_value("C", 4)},
+					1: {"min": nf.name_to_value("C", 3), "max": nf.name_to_value("G", 4)},
+					2: {"min": nf.name_to_value("G", 3), "max": nf.name_to_value("D", 5)},
+					3: {"min": nf.name_to_value("C", 4), "max": nf.name_to_value("G", 5)}};
 		
-		this.preferred_ranges = {0: {"min": note("F", 2), "max": note("F", 3)},
-					 1: {"min": note("F", 3), "max": note("F", 4)},
-					 2: {"min": note("A", 3), "max": note("A", 4)},
-					 3: {"min": note("E", 4), "max": note("E", 5)}};
-		
-		this.absolute_ranges = {0: {"min": note("C", 2), "max": note("C", 4)},
-					1: {"min": note("C", 3), "max": note("G", 4)},
-					2: {"min": note("G", 3), "max": note("D", 5)},
-					3: {"min": note("C", 4), "max": note("G", 5)}};
-		
+		// all cadential soprano voicings must leap less than a tritone.
 		var ac_probs = {"2-1": 0.55, "4-3": 0.14, "7-1": 0.13, "2-3": 0.12, "5-3": 0.03, "5-5": 0.03};
 		var hc_probs = {"3-2": 0.4, "1-2": 0.2, "4-5": 0.15, "1-7": 0.15, "2-7": 0.04, "4-2": 0.04, "2-2": 0.02};
-		
-		this.rn = new RomanNumeral();
 		
 		this.cadence_probabilities = {"pac": ac_probs,
 					      "pac/iac": ac_probs,
@@ -28,19 +24,12 @@ class HarmonyFunctions {
 					      "pacm": ac_probs};
 		
 	}
-	create_note(pitch, octave){
-		return new Note(pitch, octave);
-	}
-	create_note_from_value(value){
-		return new Note(Math.floor(value / 12), value % 12);
-	}
-	lowest_octave_in_preferred_range(pitch, voice_index){
-		var min = this.preferred_ranges[voice_index].min.get_value();
-		var octave = 0;
-		while(pitch + 12 * octave < min){
-			octave++;
+	value_in_pref_range(pitch, voice_index){
+		var min = this.preferred_ranges[voice_index].min;
+		while(pitch < min){
+			pitch += 12;
 		}
-		return octave;
+		return pitch;
 	}
 	generate_adjacent(chords, harmony, existing_harmony, target_index, adjacent_index){
 		if(Math.abs(adjacent_index - target_index) != 1){
@@ -74,22 +63,44 @@ class HarmonyFunctions {
 		}
 	}
 	generate_cadence_harmony(chords, harmony, cadence, key){
-		var soprano_notes = [];
-		do{
-			var temp = choose(this.cadence_probabilities[cadence]).split("-");
-			soprano_notes[0] = parseInt(temp[0]);
-			soprano_notes[1] = parseInt(temp[1]);
-			console.log("cadence iteration");
-		} while(!chords[chords.length - 2].is_in_chord(soprano_notes[0]));
-		var min_index = 0;
-		var max_index = 1;
-		if(this.rn.min(soprano_notes[0], soprano_notes[1]) == soprano_notes[1]){
-			min_index = 1;
-			max_index = 0;
+		// set soprano notes
+		
+		var sop_pitches = [];
+		var sop_values = [];
+		var done = false;
+		
+		var options = [];
+		for(var option in this.cadence_probabilities[cadence]){
+			options.push(option);
 		}
-		var pitch = this.rn.get_pitch(soprano_notes[min_index], key);
-		var absolute = this.move_to_preferred_range(pitch, 3);
-		harmony[harmony.length - 2 + min_index][3].set_note(this.create_note());
+		
+		do{
+			var temp = choose_from_freqs_remove(this.cadence_probabilities[cadence], options).split("-");
+			for(var i = 0; i < 2; i++){
+				sop_pitches[i] = parseInt(temp[i]);
+				sop_values[i] = this.value_in_pref_range(sop_pitches[i], 3);
+			}
+			
+			console.log("cadence iteration");
+			
+			done = chords[chords.length - 2].is_in_chord(sop_pitches[0]) &&
+				Math.abs(sop_values[1] - sop_values[0]) < 6;
+			// 6 is the value of a tritone
+		} while(!done);
+		
+		for(var i = 0; i < 2; i++){
+			harmony[harmony.length - 2 + i][3].set_note(sop_values[i]);
+		}
+		
+		// set base notes
+		for(var i = 0; i < 2; i++){
+			var bass = this.note_functions.get_bass(chords[chords.length - 1 - i]);
+			if(bass != null){
+				harmony[harmony.length - 1 - i][0].set_note(this.value_in_pref_range(bass, 0));
+			}
+		}
+		// note: all cadences end with a root position chord
+		
 	}
 	create_empty_harmony(length){
 		var harmony = [];
