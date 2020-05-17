@@ -48,17 +48,20 @@ function run(){
 	
 	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
 	
+	//var harmony_functions = new HarmonyFunctions();
+	var chord_functions = new ChordFunctions();
+	
 	var segments = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 90% 7-8 note segment length, 10% 9-10 note length
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
 		//remove the next line after implementing harmony
-		var chords = cf.generate_segment_chords(length, chorale_plan[i]);
+		var chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
 		var harmony = null;
 		/*
 		while(harmony == null){
-			chords = cf.generate_segment_chords(length, chorale_plan[i]);
-			harmony = hf.generate_harmony(segments[i].chords, chorale_plan[i]);
+			chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
+			harmony = harmony_functions.generate_harmony(segments[i].chords, chorale_plan[i]);
 		}
 		
 		*/
