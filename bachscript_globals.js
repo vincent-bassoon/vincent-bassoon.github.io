@@ -111,4 +111,5 @@ class Voice {
 		this.note = note;
 	}
 	get_note(){return this.note;}
+	set_note(note){this.note = note;}
 }
