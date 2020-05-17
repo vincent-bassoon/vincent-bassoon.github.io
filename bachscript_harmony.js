@@ -1,35 +1,3 @@
-class RomanNumeral {
-	constructor(){
-		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
-					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 10}};
-	}
-	get_pitch(roman_num, key){
-		return (key.get_pitch() + this.roman_num_mapping[key.get_modality()][roman_num]) % 12;
-	}
-	dist(num1, num2){
-		return Math.min((num1 - num2 + 7) % 7, (num2 - num1 + 7) % 7);
-	}
-	min(num1, num2){
-		if(this.add(num1, this.dist(num1, num2)) == num2){
-			return num1;
-		}
-		else{
-			return num2;
-		}
-	}
-	max(num1, num2){
-		if(this.min(num1, num2) == num1){
-			return num2;
-		}
-		else{
-			return num1;
-		}
-	}
-	add(num1, change){
-		return ((num1 - 1 + change) % 7) + 1;
-	}
-}
-
 class HarmonyFunctions {
 	constructor(){
 		var name_to_num = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
