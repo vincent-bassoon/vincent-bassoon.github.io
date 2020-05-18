@@ -63,9 +63,10 @@ class HarmonyFunctions {
 		}
 	}
 	generate_cadence_harmony(chords, harmony, cadence, key){
+		var nf = this.note_functions;
 		// set soprano notes
 		
-		var sop_pitches = [];
+		var nums = [[], []];
 		var sop_values = [];
 		var done = false;
 		
@@ -77,13 +78,14 @@ class HarmonyFunctions {
 		do{
 			var temp = choose_from_freqs_remove(this.cadence_probabilities[cadence], options).split("-");
 			for(var i = 0; i < 2; i++){
-				sop_pitches[i] = parseInt(temp[i]);
-				sop_values[i] = this.value_in_pref_range(sop_pitches[i], 3);
+				sop_nums[i] = parseInt(temp[i]);
+				var temp = nf.num_to_pitch(sop_nums[i], chords[chords.length - 1 - i].get_key());
+				sop_values[i] = this.value_in_pref_range(temp, 3);
 			}
 			
 			console.log("cadence iteration");
 			
-			done = chords[chords.length - 2].is_in_chord(sop_pitches[0]) &&
+			done = chords[chords.length - 2].is_in_chord(sop_nums[0]) &&
 				Math.abs(sop_values[1] - sop_values[0]) < 6;
 			// 6 is the value of a tritone
 		} while(!done);
@@ -93,13 +95,18 @@ class HarmonyFunctions {
 		}
 		
 		// set base notes
-		for(var i = 0; i < 2; i++){
-			var bass = this.note_functions.get_bass(chords[chords.length - 1 - i]);
-			if(bass != null){
-				harmony[harmony.length - 1 - i][0].set_note(this.value_in_pref_range(bass, 0));
-			}
+		
+		// note: all cadences end with a specified inversion chord
+		var bass = this.note_functions.get_bass(chords[chords.length - 1]);
+		harmony[harmony.length - 1][0].set_note(this.value_in_pref_range(bass, 0));
+		
+		var bass2 = this.note_functions.get_bass(chords[chords.length - 2]);
+		if(bass2 == null){
+			
 		}
-		// note: all cadences end with a root position chord
+		else{
+			harmony[harmony.length - 2][0].set_note(this.value_in_pref_range(bass2, 0));
+		}
 		
 	}
 	create_empty_harmony(length){
