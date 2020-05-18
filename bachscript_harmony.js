@@ -93,7 +93,9 @@ class HarmonyFunctions {
 		}
 		return harmony;
 	}
-	generate_harmony(chords, prev_harmony_unit, phrase_plan){
+	generate_harmony(chords, chorale_plan){
+		// HERE
+		
 		if(prev_harmony_unit == null){
 			var harmony = this.create_empty_harmony(chords.length);
 			this.generate_cadence_harmony(chords, harmony, phrase_plan.get_cadence());
