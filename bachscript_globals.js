@@ -53,7 +53,7 @@ function choose_int_from_freqs(freqs, choices){
 	return null;
 }
 
-function choose_from_freqs_remove(freqs, choices){
+function choose_int_from_freqs_remove(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
@@ -63,7 +63,7 @@ function choose_from_freqs_remove(freqs, choices){
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
 		if(sum > num){
-			return choices.splice(i, 1)[0];
+			return parseInt(choices.splice(i, 1)[0]);
 		}
 	}
 	console.log("Probability null choice error: ", choices, freqs);
@@ -95,35 +95,15 @@ class PhraseData {
 
 class Chord {
 	constructor(roman_num, key, chord_modality, inversion){
-		this.root = roman_num;
-		this.third = ((roman_num + 2 - 1) % 7) + 1;
-		this.fifth = ((roman_num + 4 - 1) % 7) + 1;
+		this.root_roman_num = roman_num;
 		this.key = key;
 		this.chord_modality = chord_modality;
 		this.inversion = inversion;
 	}
-	get_roman_num(){return this.root;}
+	get_roman_num(){return this.root_roman_num;}
 	get_key(){return this.key;}
 	get_modality(){return this.chord_modality;}
 	get_inversion(){return this.inversion;}
-	get_degree(degree){
-		if(degree == 0){
-			return this.root;
-		}
-		else if(degree == 1){
-			return this.third;
-		}
-		else if(degree == 2){
-			return this.fifth;
-		}
-		else{
-			console.log("degree error: ", degree);
-			return null;
-		}
-	}
-	is_in_chord(roman_num){
-		return roman_num == this.root || roman_num == this.third || roman_num == this.fifth;
-	}
 }
 
 class Voice {
@@ -167,7 +147,7 @@ class NoteFunctions {
 	name_to_value(name, octave){
 		return this.name_to_num[name] + 12 * octave;
 	}
-	num_to_pitch(roman_num, key){
+	num_to_pitch(roman_num, chord){
 		return (key.get_pitch() + this.roman_num_mapping[key.get_modality()][roman_num]) % 12;
 	}
 	get_bass(chord){
