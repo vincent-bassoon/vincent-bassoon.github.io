@@ -51,22 +51,13 @@ function run(){
 	//var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
 	
-	var segments = [];
+	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 90% 7-8 note segment length, 10% 9-10 note length
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
-		//remove the next line after implementing harmony
-		var chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
-		var harmony = null;
-		/*
-		while(harmony == null){
-			chords = chord_functions.generate_segment_chords(length, chorale_plan[i]);
-			harmony = harmony_functions.generate_harmony(segments[i].chords, chorale_plan[i]);
-		}
-		
-		*/
-		segments.push({"chords":chords, "harmony":harmony});
+		chords.push(chord_functions.generate_segment_chords(length, chorale_plan[i]));
 	}
+	//var harmony = harmony_functions.generate_harmony(chords, chorale_plan);
 }
 
 
