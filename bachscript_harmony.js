@@ -12,16 +12,17 @@ class HarmonyFunctions {
 					2: {"min": nf.name_to_value("G", 3), "max": nf.name_to_value("D", 5)},
 					3: {"min": nf.name_to_value("C", 4), "max": nf.name_to_value("G", 5)}};
 		
-		// all cadential soprano voicings must leap less than a tritone.
-		var ac_probs = {"2-1": 0.55, "4-3": 0.14, "7-1": 0.13, "2-3": 0.12, "5-3": 0.03, "5-5": 0.03};
-		var hc_probs = {"3-2": 0.4, "1-2": 0.2, "4-5": 0.15, "1-7": 0.15, "2-7": 0.04, "4-2": 0.04, "2-2": 0.02};
+		var ac_probs = {1: 0.68, 3: 0.29, 5: 0.03};
+		var hc_probs = {2: 0.66, 5: 0.15, 7: 0.19};
 		
 		this.cadence_probabilities = {"pac": ac_probs,
 					      "pac/iac": ac_probs,
 					      "hc": hc_probs,
-					      "dc": {"2-1": 0.6, "4-5": 0.22, "7-1": 0.18},
-					      "pc": {"1-1": 0.5, "6-5": 0.5},
+					      "dc": {1: 0.78, 3: 0.22},
+					      "pc": {1: 0.5, 5: 0.5},
 					      "pacm": ac_probs};
+		
+		this.voice_order = [3, 0, 2, 1];
 		
 	}
 	value_in_pref_range(pitch, voice_index){
@@ -62,51 +63,27 @@ class HarmonyFunctions {
 			this.generate_adjacent(chords, harmony, existing_harmony, i, i - change);
 		}
 	}
+	fill_harmony(harmony, pitches, index, order_index){
+		if(order_index == 4){
+			return true;
+		}
+		var voice = this.voice_order[order_index];
+	}
 	generate_cadence_harmony(chords, harmony, cadence, key){
 		var nf = this.note_functions;
+		
 		// set soprano notes
-		
-		var nums = [[], []];
-		var sop_values = [];
-		var done = false;
-		
 		var options = [];
 		for(var option in this.cadence_probabilities[cadence]){
 			options.push(option);
 		}
-		
-		do{
-			var temp = choose_from_freqs_remove(this.cadence_probabilities[cadence], options).split("-");
-			for(var i = 0; i < 2; i++){
-				sop_nums[i] = parseInt(temp[i]);
-				var temp = nf.num_to_pitch(sop_nums[i], chords[chords.length - 1 - i].get_key());
-				sop_values[i] = this.value_in_pref_range(temp, 3);
-			}
-			
-			console.log("cadence iteration");
-			
-			done = chords[chords.length - 2].is_in_chord(sop_nums[0]) &&
-				Math.abs(sop_values[1] - sop_values[0]) < 6;
-			// 6 is the value of a tritone
-		} while(!done);
-		
-		for(var i = 0; i < 2; i++){
-			harmony[harmony.length - 2 + i][3].set_note(sop_values[i]);
-		}
+		var num = choose_int_from_freqs_remove(this.cadence_probabilities[cadence], options);
+		var pitch = nf.num_to_pitch(num, chords[chords.length - 1]);
+			sop_values[i] = this.value_in_pref_range(temp, 3);
+		harmony[harmony.length - 2 + i][3].set_note(sop_values[i]);
 		
 		// set base notes
 		
-		// note: all cadences end with a specified inversion chord
-		var bass = this.note_functions.get_bass(chords[chords.length - 1]);
-		harmony[harmony.length - 1][0].set_note(this.value_in_pref_range(bass, 0));
-		
-		var bass2 = this.note_functions.get_bass(chords[chords.length - 2]);
-		if(bass2 == null){
-			
-		}
-		else{
-			harmony[harmony.length - 2][0].set_note(this.value_in_pref_range(bass2, 0));
-		}
 		
 	}
 	create_empty_harmony(length){
@@ -120,25 +97,26 @@ class HarmonyFunctions {
 		if(prev_harmony_unit == null){
 			var harmony = this.create_empty_harmony(chords.length);
 			this.generate_cadence_harmony(chords, harmony, phrase_plan.get_cadence());
-			this.complete_harmony(chords, harmony, chords.length - 3, 0);
+			this.complete_harmony(chords, harmony, chords.length - 2, 0);
 			return harmony;
 		}
 		else{
-			var length = chords.length + 1;
+			chords.unshift(null);
+			var length = chords.length;
 			var harmonies = [this.create_empty_harmony(length),
-				       this.create_empty_harmony(length - 2)];
+				       this.create_empty_harmony(length - 1)];
 			harmonies[0][0] = prev_harmony_unit;
 			harmonies[1][0] = prev_harmony_unit;
 			this.generate_cadence_harmony(chords, harmonies[0], phrase_plan.get_cadence(), phrase_plan.get_key());
 			
-			this.complete_harmony(chords, harmonies[0], length - 3, 1);
-			var stitch_index = this.complete_matching_harmony(chords, harmonies[1], harmonies[0], 1, length - 3);
+			this.complete_harmony(chords, harmonies[0], length - 2, 1);
+			var stitch_index = this.complete_matching_harmony(chords, harmonies[1], harmonies[0], 1, length - 2);
 			if(stitch_index != null){
 				return this.stitch_and_trim(harmonies[0], harmonies[1], stitch_index);
 			}
 			
-			this.complete_harmony(chords, harmonies[1], 1, length - 3);
-			var stitch_index = this.complete_matching_harmony(chords, harmonies[0], harmonies[1], length - 3, 1);
+			this.complete_harmony(chords, harmonies[1], 1, length - 2);
+			var stitch_index = this.complete_matching_harmony(chords, harmonies[0], harmonies[1], length - 2, 1);
 			if(stitch_index != null){
 				return this.stitch_and_trim(harmonies[0], harmonies[1], stitch_index);
 			}
