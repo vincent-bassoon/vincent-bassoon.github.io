@@ -114,7 +114,7 @@ class Chord {
 				return 1;
 			case this.fifth:
 				return 2;
-			case default:
+			default:
 				return null;
 		}
 	}
