@@ -43,28 +43,11 @@ class HarmonyFunctions {
 		}
 		
 	}
-	fill_harmony(harmony, pitches, index, order_index){
+	fill_harmony(harmony, voicing, options, index, order_index){
 		if(order_index == 4){
 			return true;
 		}
 		var voice = this.voice_order[order_index];
-	}
-	generate_cadence_harmony(chords, harmony, cadence, key){
-		var nf = this.note_functions;
-		
-		// set soprano notes
-		var options = [];
-		for(var option in this.cadence_probabilities[cadence]){
-			options.push(option);
-		}
-		var num = choose_int_from_freqs_remove(this.cadence_probabilities[cadence], options);
-		var pitch = nf.num_to_pitch(num, chords[chords.length - 1]);
-			sop_values[i] = this.value_in_pref_range(temp, 3);
-		harmony[harmony.length - 2 + i][3].set_note(sop_values[i]);
-		
-		// set base notes
-		
-		
 	}
 	create_empty_harmony(length){
 		var harmony = [];
@@ -98,10 +81,6 @@ class HarmonyFunctions {
 			}
 		}
 		
-		
-		
-		
-		this.generate_cadence_harmony(chords, harmony, phrase_plan.get_cadence());
 		
 	}
 }
