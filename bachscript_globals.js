@@ -95,15 +95,29 @@ class PhraseData {
 
 class Chord {
 	constructor(roman_num, key, chord_modality, inversion){
-		this.root_roman_num = roman_num;
+		this.root = roman_num;
+		this.third = ((roman_num + 2 - 1) % 7) + 1;
+		this.fifth = ((roman_num + 4 - 1) % 7) + 1;
 		this.key = key;
 		this.chord_modality = chord_modality;
 		this.inversion = inversion;
 	}
-	get_roman_num(){return this.root_roman_num;}
+	get_roman_num(){return this.root;}
 	get_key(){return this.key;}
 	get_modality(){return this.chord_modality;}
 	get_inversion(){return this.inversion;}
+	get_degree(roman_num){
+		switch(roman_num){
+			case this.root:
+				return 0;
+			case this.third:
+				return 1;
+			case this.fifth:
+				return 2;
+			case default:
+				return null;
+		}
+	}
 }
 
 class Voice {
@@ -142,13 +156,20 @@ class NoteFunctions {
 		}
 		
 		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
-					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 10}};
+					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
+		
+		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
+				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
 	}
 	name_to_value(name, octave){
 		return this.name_to_num[name] + 12 * octave;
 	}
-	num_to_pitch(roman_num, chord){
-		return (key.get_pitch() + this.roman_num_mapping[key.get_modality()][roman_num]) % 12;
+	num_to_pitch_for_cad(roman_num, chord){
+		var key = chord.get_key();
+		var key_pitch = key.get_pitch();
+		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
+		var degree_pitch = this.chord_mapping[chord.get_modality][chord.get_degree(roman_num)];
+		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 	get_bass(chord){
 		var inversion = chord.get_inversion();
@@ -160,3 +181,4 @@ class NoteFunctions {
 		}
 	}
 }
+
