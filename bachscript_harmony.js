@@ -43,11 +43,22 @@ class HarmonyFunctions {
 		}
 		
 	}
-	fill_harmony(harmony, voicing, options, index, order_index){
+	fill_harmony(harmony, voicing, pitch_options, index, order_index){
 		if(order_index == 4){
 			return true;
 		}
 		var voice = this.voice_order[order_index];
+		for(var i = 0; i < voicing.length; i++){
+			for(var j = 0; j < pitch_options[voice][i].length; j++){
+				harmony[index][voice].set_note(pitch_options[voice][i][j]);
+				var num = voicing.shift();
+				if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
+					return true;
+				}
+				harmony[index][voice].set_note(null);
+				voicing.push(num);
+			}
+		}
 	}
 	create_empty_harmony(length){
 		var harmony = [];
