@@ -48,7 +48,7 @@ function run(){
 	
 	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
 	
-	//var harmony_functions = new HarmonyFunctions();
+	var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
 	
 	var chords = [];
@@ -57,7 +57,7 @@ function run(){
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
 		chords.push(chord_functions.generate_segment_chords(length, chorale_plan[i]));
 	}
-	//var harmony = harmony_functions.generate_harmony(chords, chorale_plan);
+	var harmony = harmony_functions.generate_harmony(chords.splice(0, 1), chorale_plan.splice(0, 1));
 }
 
 
