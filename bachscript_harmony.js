@@ -100,13 +100,15 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		console.log("starting at index ", index);
+		console.log("root doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 0, 1, 2], options, index, 0)){
 			return;
 		}
+		console.log("third doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 1, 1, 2], options, index, 0)){
 			return;
 		}
+		console.log("fifth doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 1, 2, 2], options, index, 0)){
 			return;
 		}
@@ -119,6 +121,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	fill_harmony(harmony, voicing, pitch_options, index, order_index){
+		console.log("filling at index ", "" + index + " with order_index " + order_index);
 		if(order_index == 4){
 			return true;
 		}
