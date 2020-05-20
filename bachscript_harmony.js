@@ -76,7 +76,7 @@ class HarmonyFunctions {
 				var prev_note;
 				if(index == chords.length - 1){
 					prev_note = null;
-				
+				}
 				else{
 					prev_note = harmony[index + 1][voice].get_start_value();
 				}
