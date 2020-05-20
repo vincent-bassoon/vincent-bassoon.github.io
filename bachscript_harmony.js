@@ -12,6 +12,11 @@ class HarmonyFunctions {
 					2: {"min": nf.name_to_value("G", 3), "max": nf.name_to_value("D", 5)},
 					3: {"min": nf.name_to_value("C", 4), "max": nf.name_to_value("G", 5)}};
 		
+		for(var i = 0; i < 4; i++){
+			this.preferred_ranges[i].min += 120;
+			this.preferred_ranges[i].max += 120;
+		}
+		
 		var ac_probs = {1: 0.68, 3: 0.29, 5: 0.03};
 		var hc_probs = {2: 0.66, 5: 0.15, 7: 0.19};
 		
@@ -95,6 +100,7 @@ class HarmonyFunctions {
 				}
 			}
 		}
+		console.log("starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 0, 1, 2], options, index, 0)){
 			return;
 		}
@@ -181,7 +187,7 @@ class HarmonyFunctions {
 					name += " ";
 				}
 				name_string += name;
-				name_octave_string += name + (harmony[i][voice].get_end_value() % 12) + " ";
+				name_octave_string += name + ((harmony[i][voice].get_end_value() % 12) - 10) + " ";
 			}
 			name_string += "\n";
 			name_octave_string += "\n";
