@@ -174,7 +174,9 @@ class HarmonyFunctions {
 		for(var i = 0; i < chords.length; i++){
 			var inversion = chords[i].get_inversion();
 			if(inversion != null){
-				fixed_pitches[0].unshift({"pitch": nf.get_bass_pitch(chords[i]), "degree": inversion, "index": i});
+				var pitch = nf.get_bass_pitch(chords[i]);
+				pitch = this.get_pitch_in_pref_range(pitch, 0);
+				fixed_pitches[0].unshift({"pitch": pitch, "degree": inversion, "index": i});
 			}
 		}
 		
@@ -190,7 +192,7 @@ class HarmonyFunctions {
 					name += " ";
 				}
 				name_string += name;
-				name_octave_string += name + ((harmony[i][voice].get_end_value() % 12) - 10) + " ";
+				name_octave_string += name + (Math.floor(harmony[i][voice].get_end_value() / 12) - 10) + " ";
 			}
 			name_string += "\n";
 			name_octave_string += "\n";
