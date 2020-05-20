@@ -38,7 +38,7 @@ class HarmonyFunctions {
 		this.voice_order = [3, 0, 2, 1];
 		this.check_adjacent = [[false, false], [false, false], [true, false], [true, true]];
 		this.adjacent_direction = [-1, 1];
-		this.parallels = [0, 7];
+		this.parallel_pitches = [0, 7];
 	}
 	
 	
@@ -63,7 +63,7 @@ class HarmonyFunctions {
 			var voice2 = this.voice_order[i];
 			var interval = Math.abs(harmony[index][voice].get_start_value() - harmony[index][voice2].get_start_value()) % 12;
 			for(var j = 0; j < 2; j++){
-				if(interval == this.parallels[j]){
+				if(interval == this.parallel_pitches[j]){
 					var interval2 = Math.abs(harmony[index + 1][voice].get_start_value() - harmony[index + 1][voice2].get_start_value()) % 12;
 					if(interval2 == interval){
 						console.log("parallels");
