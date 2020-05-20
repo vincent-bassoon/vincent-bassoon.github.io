@@ -157,6 +157,7 @@ class HarmonyFunctions {
 			var num = choose_int(this.cadence_probabilities[chorale_plan[i].get_cadence()]);
 			var degree = chord_array[i][chord_array[i].length - 1].get_degree(num);
 			var pitch = nf.num_to_pitch_for_cad(num, chord_array[i][chord_array[i].length - 1]);
+			pitch = this.get_pitch_in_pref_range(pitch, 3);
 			fixed_pitches[3].unshift({"pitch": pitch, "degree": degree, "index": sum});
 		}
 		
