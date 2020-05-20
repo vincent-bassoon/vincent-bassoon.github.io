@@ -42,7 +42,7 @@ function run(){
 	var pickup = choose_int({1: 0.667, 0: 0.333});
 	
 	// key
-	var num_accidentals = choose_int({0: 0.2, 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.14, 5: 0.03, 6: 0.02, 7: 0.01});
+	var num_accidentals = choose_int({0: 0.2, 1: 0.2, 2: 0.2, 3: 0.2, 4: 0.15, 5: 0.03, 6: 0.02});
 	var sharp_or_flat = choose_int({0: 0.5, 2: 0.5}) - 1;
 	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
 	
