@@ -177,12 +177,15 @@ class NoteFunctions {
 			return null;
 		}
 		else{
-			var key = chord.get_key();
-			var key_pitch = key.get_pitch();
-			var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
-			var degree_pitch = this.chord_mapping[chord.get_modality][chord.get_inversion()];
-			return (key_pitch + root_pitch + degree_pitch) % 12;
+			return this.get_pitch(chord, inversion);
 		}
+	}
+	get_pitch(chord, degree){
+		var key = chord.get_key();
+		var key_pitch = key.get_pitch();
+		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
+		var degree_pitch = this.chord_mapping[chord.get_modality][degree];
+		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 }
 
