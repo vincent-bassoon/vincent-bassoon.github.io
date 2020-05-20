@@ -75,7 +75,7 @@ class HarmonyFunctions {
 			else{
 				var prev_note = harmony[index + 1][voice].get_start_value();
 				for(var degree = 0; degree < 3; degree++){
-					if(index == 0){
+					if(index == chords.length - 1){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
 						options[voice][degree].push(value);
 					}
@@ -162,7 +162,7 @@ class HarmonyFunctions {
 			}
 		}
 		
-		for(var i = 0; i < chords.length; i++){
+		for(var i = chords.length - 1; i >= 0; i--){
 			this.generate_single_harmony(chords, harmony, i, fixed_pitches);
 		}
 		return harmony;
