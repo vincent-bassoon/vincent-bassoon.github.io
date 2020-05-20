@@ -150,12 +150,10 @@ class NoteFunctions {
 	constructor(){
 		this.name_to_val = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
-		this.val_to_simple_name = {};
+		var val_to_simple_name = {};
 		for(var i = 0; i < letters.length; i++){
-			this.val_to_simple_name[this.name_to_val[letters[i]]] = letters[i];
-			var flat = letters[i] + "b";
-			var flat_value = (this.name_to_val[letters[i]] + 11) % 12;
-			this.name_to_val[flat] = flat_value;
+			val_to_simple_name[this.name_to_val[letters[i]]] = letters[i];
+			this.name_to_val[letters[i] + "b"] = (this.name_to_val[letters[i]] + 11) % 12;
 			this.name_to_val[letters[i] + "#"] = (this.name_to_val[letters[i]] + 1) % 12;
 		}
 		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
@@ -164,14 +162,16 @@ class NoteFunctions {
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
 		
-		this.key_has_flats = {};
+		var key_has_flats = {};
 		var pitch = 0;
 		var counter = 0;
 		do{
-			this.key_has_flats[pitch] = (counter >= 6);
+			key_has_flats[pitch] = (counter >= 6);
 			counter++;
 			pitch = (pitch + 7) % 12;
 		} while(pitch != 0);
+		
+		this.key_pitch_to_name = {};
 	}
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
