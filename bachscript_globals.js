@@ -172,12 +172,51 @@ class NoteFunctions {
 		} while(pitch != 0);
 		
 		this.key_pitch_to_name = {};
+		for(var pitch = 0; pitch < 12; pitch++){
+			this.key_pitch_to_name[pitch] = {};
+			var steps = this.roman_num_mapping["major"];
+			for(var i = 0; i < steps.length; i++){
+				var pitch2 = (pitch + steps[i]) % 12;
+				var name;
+				if(pitch2 in val_to_simple_name){
+					name = val_to_simple_name[pitch2];
+				}
+				else if(key_has_flats[pitch2]){
+					name = val_to_simple_name[(pitch2 + 1) % 12] + "b";
+				}
+				else{
+					name = val_to_simple_name[(pitch2 + 11) % 12] + "#";
+				}
+				this.key_pitch_to_name[pitch][pitch2] = name;
+			}
+		}
 	}
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
 	}
 	value_to_name(value, chord){
-		//return this.val_to_name[value % 12];
+		value = value % 12;
+		var key = chord.get_key();
+		var key_pitch = key.get_pitch();
+		if(key.get_modality() == "minor"){
+			key_pitch = (key_pitch + 12 - 3) % 12;
+		}
+		if(value in this.key_pitch_to_name[key_pitch]){
+			return this.key_pitch_to_name[key_pitch][value];
+		}
+		else{
+			value = (value + 12 - 1) % 12;
+			var name = this.key_pitch_to_name[key_pitch][value];
+			if(name.length == 1){
+				return name + "#";
+			}
+			else if(name[1] == "#"){
+				return name[0] + "x";
+			}
+			else if(name[1] == "b"){
+				return name + "b";
+			}
+		}
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
