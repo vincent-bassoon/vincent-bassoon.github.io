@@ -44,7 +44,7 @@ class HarmonyFunctions {
 	
 	crossed_voices(harmony, index, order_index){
 		var voice = this.voice_order[order_index];
-		for(var i = 0; i < 2, i++){
+		for(var i = 0; i < 2; i++){
 			if(this.check_adjacent[order_index][i]){
 				var parity = this.adjacent_direction[i];
 				if(parity * harmony[index][voice] > parity * harmony[index][voice + parity]){
@@ -60,12 +60,13 @@ class HarmonyFunctions {
 		}
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < order_index; i++){
-			var voice2 = this.voice_order[i]
-			var interval = Math.abs(harmony[index][voice] - harmony[index][voice2]) % 12;
+			var voice2 = this.voice_order[i];
+			var interval = Math.abs(harmony[index][voice].get_start_value() - harmony[index][voice2].get_start_value()) % 12;
 			for(var j = 0; j < 2; j++){
 				if(interval == this.parallels[j]){
-					var interval2 = Math.abs(harmony[index + 1][voice] - harmony[index + 1][voice2]) % 12;
+					var interval2 = Math.abs(harmony[index + 1][voice].get_start_value() - harmony[index + 1][voice2].get_start_value()) % 12;
 					if(interval2 == interval){
+						console.log("parallels");
 						return true;
 					}
 				}
