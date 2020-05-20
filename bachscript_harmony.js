@@ -118,21 +118,20 @@ class HarmonyFunctions {
 		}
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < voicing.length; i++){
-			for(var j = 0; j < pitch_options[voice][i].length; j++){
-				harmony[index][voice].set_note(pitch_options[voice][i][j]);
-				var num = voicing.shift();
+			var degree = voicing.shift();
+			for(var j = 0; j < pitch_options[voice][degree].length; j++){
+				harmony[index][voice].set_note(pitch_options[voice][degree][j]);
 				if(this.has_errors(harmony, index, order_index)){
 					harmony[index][voice].set_note(null);
-					voicing.push(num);
 				}
 				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
 					return true;
 				}
 				else{
 					harmony[index][voice].set_note(null);
-					voicing.push(num);
 				}
 			}
+			voicing.push(degree);
 		}
 		return false;
 	}
