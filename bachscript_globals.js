@@ -168,7 +168,7 @@ class NoteFunctions {
 		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
 		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
-		var degree_pitch = this.chord_mapping[chord.get_modality][chord.get_degree(roman_num)];
+		var degree_pitch = this.chord_mapping[chord.get_modality()][chord.get_degree(roman_num)];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 	get_bass_pitch(chord){
