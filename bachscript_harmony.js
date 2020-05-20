@@ -30,6 +30,7 @@ class HarmonyFunctions {
 				this.pitch_options[voice][degree] = [];
 			}
 		}
+		this.voice_order = [3, 0, 2, 1];
 	}
 	reset_pitch_options(){
 		for(var voice = 0; voice < 4; voice++){
@@ -75,7 +76,7 @@ class HarmonyFunctions {
 				var prev_note = harmony[index + 1][voice].get_start_value();
 				for(var degree = 0; degree < 3; degree++){
 					if(index == 0){
-						var value = this.get_pitch_in_pref_range(pitches[degree], prev_note);
+						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
 						options[voice][degree].push(value);
 					}
 					else{
