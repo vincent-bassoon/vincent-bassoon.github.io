@@ -69,8 +69,9 @@ class HarmonyFunctions {
 		}
 		
 		for(var voice = 0; voice < 4; voice++){
-			if(fixed_pitches[voice].index == index){
-				options[voice][fixed_pitches[voice].degree].push(fixed_pitches[voice].pitch);
+			if(fixed_pitches[voice].length != 0 && fixed_pitches[voice][0].index == index){
+				var fixed_pitch = fixed_pitches[voice].shift();
+				options[voice][fixed_pitch.degree].push(fixed_pitch.pitch);
 			}
 			else{
 				var prev_note;
