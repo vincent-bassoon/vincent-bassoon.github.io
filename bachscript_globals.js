@@ -148,13 +148,19 @@ class Voice {
 
 class NoteFunctions {
 	constructor(){
-		this.name_to_num = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
+		this.name_to_val = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
+		this.val_to_name = {};
 		for(var i = 0; i < letters.length; i++){
-			this.name_to_num[letters[i] + "b"] = (this.name_to_num[letters[i]] + 11) % 12;
-			this.name_to_num[letters[i] + "#"] = (this.name_to_num[letters[i]] + 1) % 12;
+			this.val_to_name[this.name_to_val[letters[i]]] = letters[i];
+			var flat = letters[i] + "b";
+			var flat_value = (this.name_to_val[letters[i]] + 11) % 12;
+			this.name_to_val[flat] = flat_value;
+			if(!(flat_value in this.val_to_name)){
+				this.val_to_name[flat_value] = flat;
+			}
+			this.name_to_val[letters[i] + "#"] = (this.name_to_val[letters[i]] + 1) % 12;
 		}
-		
 		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
 					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
 		
@@ -162,7 +168,10 @@ class NoteFunctions {
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
 	}
 	name_to_value(name, octave){
-		return this.name_to_num[name] + 12 * octave;
+		return this.name_to_val[name] + 12 * octave;
+	}
+	value_to_name(value){
+		return this.val_to_name[value % 12];
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
