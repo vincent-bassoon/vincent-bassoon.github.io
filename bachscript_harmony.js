@@ -36,7 +36,57 @@ class HarmonyFunctions {
 			}
 		}
 		this.voice_order = [3, 0, 2, 1];
+		this.check_adjacent = [[false, false], [false, false], [true, false], [true, true]];
+		this.adjacent_direction = [-1, 1];
+		this.parallels = [0, 7];
 	}
+	
+	
+	crossed_voices(harmony, index, order_index){
+		var voice = this.voice_order[order_index];
+		for(var i = 0; i < 2, i++){
+			if(this.check_adjacent[order_index][i]){
+				var parity = this.adjacent_direction[i];
+				if(parity * harmony[index][voice] > parity * harmony[index][voice + parity]){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	parallels(harmony, index, order_index){
+		if(index == harmony.length - 1 || order_index == 0){
+			return false;
+		}
+		var voice = this.voice_order[order_index];
+		for(var i = 0; i < order_index; i++){
+			var voice2 = this.voice_order[i]
+			var interval = Math.abs(harmony[index][voice] - harmony[index][voice2]) % 12;
+			for(var j = 0; j < 2; j++){
+				if(interval == this.parallels[j]){
+					var interval2 = Math.abs(harmony[index + 1][voice] - harmony[index + 1][voice2]) % 12;
+					if(interval2 == interval){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	has_errors(harmony, index, order_index){
+		if(order_index == 0){
+			return false;
+		}
+		if(this.crossed_voices(harmony, index, order_index)){
+			return true;
+		}
+		if(this.parallels(harmony, index, order_index)){
+			return true;
+		}
+		return false;
+	}
+	
+	
 	reset_pitch_options(){
 		for(var voice = 0; voice < 4; voice++){
 			for(var degree = 0; degree < 4; degree++){
@@ -63,6 +113,30 @@ class HarmonyFunctions {
 			pitch += 12;
 		}
 		return pitch;
+	}
+	fill_harmony(harmony, voicing, pitch_options, index, order_index){
+		console.log("filling at index ", "" + index + " with order_index " + order_index);
+		if(order_index == 4){
+			return true;
+		}
+		var voice = this.voice_order[order_index];
+		for(var i = 0; i < voicing.length; i++){
+			var degree = voicing.shift();
+			for(var j = 0; j < pitch_options[voice][degree].length; j++){
+				harmony[index][voice].set_note(pitch_options[voice][degree][j]);
+				if(this.has_errors(harmony, index, order_index)){
+					harmony[index][voice].set_note(null);
+				}
+				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
+					return true;
+				}
+				else{
+					harmony[index][voice].set_note(null);
+				}
+			}
+			voicing.push(degree);
+		}
+		return false;
 	}
 	generate_single_harmony(chords, harmony, index, fixed_pitches){
 		this.reset_pitch_options();
@@ -113,36 +187,6 @@ class HarmonyFunctions {
 			return;
 		}
 		console.log("failure at index ", index);
-	}
-	has_errors(harmony, index, order_index){
-		if(order_index == 0){
-			return false;
-		}
-		return false;
-	}
-	fill_harmony(harmony, voicing, pitch_options, index, order_index){
-		console.log("filling at index ", "" + index + " with order_index " + order_index);
-		if(order_index == 4){
-			return true;
-		}
-		var voice = this.voice_order[order_index];
-		for(var i = 0; i < voicing.length; i++){
-			var degree = voicing.shift();
-			for(var j = 0; j < pitch_options[voice][degree].length; j++){
-				harmony[index][voice].set_note(pitch_options[voice][degree][j]);
-				if(this.has_errors(harmony, index, order_index)){
-					harmony[index][voice].set_note(null);
-				}
-				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
-					return true;
-				}
-				else{
-					harmony[index][voice].set_note(null);
-				}
-			}
-			voicing.push(degree);
-		}
-		return false;
 	}
 	create_empty_harmony(length){
 		var harmony = [];
