@@ -232,8 +232,8 @@ class HarmonyFunctions {
 		var name_octave_string = "";
 		for(var voice = 3; voice >= 0; voice--){
 			for(var i = 0; i < chords.length; i++){
-				var name = nf.value_to_name(harmony[i][voice].get_end_value());
-				if(name.length == 1){
+				var name = nf.value_to_name(harmony[i][voice].get_end_value()) + " ";
+				if(name.length == 2){
 					name += " ";
 				}
 				name_string += name;
