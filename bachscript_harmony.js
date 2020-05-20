@@ -36,18 +36,49 @@ class HarmonyFunctions {
 			}
 		}
 		this.voice_order = [3, 0, 2, 1];
-		this.check_adjacent = [[false, false], [false, false], [true, false], [true, true]];
+		this.check_adjacent = [];
+		for(var i = 0; i < 4; i++){
+			this.check_adjacent[i] = [false, false];
+			for(var j = 0; j < i; j++){
+				if(this.voice_order[j] == this.voice_order[i] - 1){
+					this.check_adjacent[i][0] = true;
+				}
+				else if(this.voice_order[j] == this.voice_order[i] + 1){
+					this.check_adjacent[i][1] = true;
+				}
+			}
+		}
+		
+		this.adjacent_max_dist = [];
+		var max_dist_above_voice = {0: 12 + 7, 1: 10, 2: 12};
+		for(var i = 0; i < 4; i++){
+			this.adjacent_max_dist[i] = [null, null];
+			if(this.check_adjacent[i][0]){
+				this.adjacent_max_dist[i][0] = max_dist_above_voice[this.voice_order[i] - 1];
+			}
+			if(this.check_adjacent[i][1]){
+				this.adjacent_max_dist[i][1] = max_dist_above_voice[this.voice_order[i]];
+			}
+		}
+		
 		this.adjacent_direction = [-1, 1];
 		this.parallel_pitches = [0, 7];
 	}
 	
 	
-	crossed_voices(harmony, index, order_index){
+	dist_between_voices(harmony, index, order_index){
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < 2; i++){
 			if(this.check_adjacent[order_index][i]){
 				var parity = this.adjacent_direction[i];
-				if(parity * harmony[index][voice] > parity * harmony[index][voice + parity]){
+				var voice1 = parity * harmony[index][voice].get_start_value();
+				var voice2 = parity * harmony[index][voice + parity].get_start_value();
+				if(voice1 > voice2){
+					console.log("crossed");
+					return true;
+				}
+				if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
+					console.log("voices too far apart");
 					return true;
 				}
 			}
@@ -78,7 +109,7 @@ class HarmonyFunctions {
 		if(order_index == 0){
 			return false;
 		}
-		if(this.crossed_voices(harmony, index, order_index)){
+		if(this.dist_between_voices(harmony, index, order_index)){
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
@@ -116,7 +147,6 @@ class HarmonyFunctions {
 		return pitch;
 	}
 	fill_harmony(harmony, voicing, pitch_options, index, order_index){
-		console.log("filling at index ", "" + index + " with order_index " + order_index);
 		if(order_index == 4){
 			return true;
 		}
@@ -237,7 +267,7 @@ class HarmonyFunctions {
 					name += " ";
 				}
 				name_string += name;
-				name_octave_string += name + (Math.floor(harmony[i][voice].get_end_value() / 12) - 10) + " ";
+				name_octave_string += name + (Math.floor(harmony[i][voice].get_end_value() / 12) - 10) + "  ";
 			}
 			name_string += "\n";
 			name_octave_string += "\n";
