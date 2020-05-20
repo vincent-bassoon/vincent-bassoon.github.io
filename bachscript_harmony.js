@@ -73,9 +73,15 @@ class HarmonyFunctions {
 				options[voice][fixed_pitches[voice].degree].push(fixed_pitches[voice].pitch);
 			}
 			else{
-				var prev_note = harmony[index + 1][voice].get_start_value();
+				var prev_note;
+				if(index == chords.length - 1){
+					prev_note = null;
+				
+				else{
+					prev_note = harmony[index + 1][voice].get_start_value();
+				}
 				for(var degree = 0; degree < 3; degree++){
-					if(index == chords.length - 1){
+					if(prev_note == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
 						options[voice][degree].push(value);
 					}
