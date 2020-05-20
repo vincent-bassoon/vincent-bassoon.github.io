@@ -131,10 +131,10 @@ class Voice {
 	get_start_value(){
 		return this.start_note_value;
 	}
-	set_end_note(value){
+	set_end_value(value){
 		this.end_note_value = value;
 	}
-	set_start_note(value){
+	set_start_value(value){
 		this.start_note_value = value;
 	}
 	set_note(value){
