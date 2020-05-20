@@ -184,7 +184,7 @@ class NoteFunctions {
 		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
 		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
-		var degree_pitch = this.chord_mapping[chord.get_modality][degree];
+		var degree_pitch = this.chord_mapping[chord.get_modality()][degree];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 }
