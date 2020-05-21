@@ -172,16 +172,16 @@ class NoteFunctions {
 		} while(pitch != 0);
 		
 		this.key_pitch_to_name = {};
+		var steps = this.roman_num_mapping["major"];
 		for(var pitch = 0; pitch < 12; pitch++){
 			this.key_pitch_to_name[pitch] = {};
-			var steps = this.roman_num_mapping["major"];
-			for(var i = 0; i < steps.length; i++){
+			for(var i = 1; i < 8; i++){
 				var pitch2 = (pitch + steps[i]) % 12;
 				var name;
 				if(pitch2 in val_to_simple_name){
 					name = val_to_simple_name[pitch2];
 				}
-				else if(key_has_flats[pitch2]){
+				else if(key_has_flats[pitch]){
 					name = val_to_simple_name[(pitch2 + 1) % 12] + "b";
 				}
 				else{
@@ -199,7 +199,7 @@ class NoteFunctions {
 		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
 		if(key.get_modality() == "minor"){
-			key_pitch = (key_pitch + 12 - 3) % 12;
+			key_pitch = (key_pitch + 3) % 12;
 		}
 		if(value in this.key_pitch_to_name[key_pitch]){
 			return this.key_pitch_to_name[key_pitch][value];
@@ -214,7 +214,7 @@ class NoteFunctions {
 				return name[0] + "x";
 			}
 			else if(name[1] == "b"){
-				return name + "b";
+				return name[0];
 			}
 		}
 	}
