@@ -195,9 +195,9 @@ class HarmonyFunctions {
 				var max_degree = 2;
 				if(voice == 0){
 					max_degree = 1;
-				}
-				if(chords[index].get_roman_num()){
-					min_degree = 1;
+					if(chords[index].get_modality() == "dim"){
+						min_degree = 1;
+					}
 				}
 				for(var degree = min_degree; degree <= max_degree; degree++){
 					if(prev_note == null){
