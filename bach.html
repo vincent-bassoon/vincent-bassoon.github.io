@@ -5,25 +5,34 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://unpkg.com/vexflow/releases/vexflow-min.js"></script>
 		<style>
-			div.scrollBox {
-				width: 500px;
-				height: 300px;
-		  		overflow: auto;
-  				border: 1px solid black;
- 				padding: 1%;
+			* {box-sizing: border-box}
+			body, html {
+				height: 100%;
+				margin: 0;
+				font-family: Arial;
 			}
-			.match {
-  				color: red;
+			button {
+				width: 96vw;
+				padding: 10px 10px;
+				margin-left: 2vw;
+				margin-right: 2vw;
+				display: inline-block;
+				border: none;
+				border-radius: 4px;
+				background-color: #000;
+				color: white;
+				text-align: center;
+				text-decoration: none;
+				font-size: 16px;
+				cursor: pointer;
+			}
+			div {
+				width: 100%;
 			}
 		</style>
 	</head>
 	<body>
-		<button id="startButton" onclick="run()">Generate Bach Chorale</button>
-		
-		<p>
-		</p>
-		
-		<div class = "scrollBox" id="display"></div>
+		<button id="start_button" onclick="run()">Generate Chorale</button>
 		
 		<p></p>
 		
