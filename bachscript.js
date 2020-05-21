@@ -57,26 +57,5 @@ function run(){
 		var length = pickup + choose_int({7: 0.8, 9: 0.2});
 		chords.push(chord_functions.generate_segment_chords(length, chorale_plan[i]));
 	}
-	var harmony = harmony_functions.generate_harmony(chords.splice(0, 1), chorale_plan.splice(0, 1));
-}
-
-
-
-
-//   If not pickup, then 2 note pickup after downbeat cadence
-//   If pickup, then 1 note pickup after downbeat cadence
-
-
-
-
-function configure_ui(){
-	//create_score(beat_num);
-	VF = Vex.Flow;
-	var div = document.getElementById("staff")
-	var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-	renderer.resize(500, 500);
-	var context = renderer.getContext();
-	var stave = new VF.Stave(10, 40, 400);
-	stave.addClef("treble").addTimeSignature("4/4");
-	stave.setContext(context).draw();
+	harmony_functions.generate_harmony(chords.splice(0, 1), chorale_plan.splice(0, 1));
 }
