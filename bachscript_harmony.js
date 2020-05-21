@@ -191,7 +191,15 @@ class HarmonyFunctions {
 				else{
 					prev_note = harmony[index + 1][voice].get_start_value();
 				}
-				for(var degree = 0; degree < 3; degree++){
+				var min_degree = 0;
+				var max_degree = 2;
+				if(voice == 0){
+					max_degree = 1;
+				}
+				if(chords[index].get_roman_num()){
+					min_degree = 1;
+				}
+				for(var degree = min_degree; degree <= max_degree; degree++){
 					if(prev_note == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
 						options[voice][degree].push(value);
