@@ -211,7 +211,7 @@ class NoteFunctions {
 				return name + "#";
 			}
 			else if(name[1] == "#"){
-				return name[0] + "x";
+				return name + "#";
 			}
 			else if(name[1] == "b"){
 				return name[0];
