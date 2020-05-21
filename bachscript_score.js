@@ -1,7 +1,7 @@
 class Score {
-	constructor(harmony, chords){
-		this.harmony = harmony;
+	constructor(harmony, chords, note_functions){
 		this.chords = chords;
+		this.note_functions = note_functions;
 		this.vf = Vex.Flow;
 		this.formatter = new this.vf.Formatter();
 		
@@ -18,10 +18,14 @@ class Score {
 		this.context = renderer.getContext();
 		
 		this.clefs = ["treble", "bass"];
+		
+		function harmony_to_notes(harmony){
+			
+		}
 	}
 	
-	harmony_to_vex(begin_index, end_index, measure_length){
-		var measure = [[], []];
+	generate_vex(begin_index, end_index, measure_length){
+		var measure = [[], [], [], []];
 		for(var i = begin_index; i < end_index; i++){
 			for(var j = 0; j < 2; j++){
 				
@@ -71,6 +75,7 @@ class Score {
 			
 			index_start += phrase_length;
 		}
+		retuurn measures;
 	}
 	
 	generate_lines(vf, context, formatter, dim, harmony, chords){
@@ -125,7 +130,7 @@ class Score {
 			
 			formatter.joinVoices([voices[0]]);
 			formatter.joinVoices([voices[1]]);
-			formatter.format([voices[0], voices[1]], stave_length - (startX - 20));			
+			formatter.format([voices[0], voices[1]], stave_length - (startX - staveX));			
 
 			voices[0].setContext(context).draw();
 			voices[1].setContext(context).draw();
