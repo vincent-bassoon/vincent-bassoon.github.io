@@ -150,7 +150,9 @@ class NoteFunctions {
 	constructor(){
 		this.name_to_val = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
-		for(var i = 0; i < 7; i++){
+		this.letter_index = {};
+		for(var i = 0; i < letters.length; i++){
+			this.letter_index[letters[i]] = i;
 			this.name_to_val[letters[i] + "b"] = (this.name_to_val[letters[i]] + 11) % 12;
 			this.name_to_val[letters[i] + "#"] = (this.name_to_val[letters[i]] + 1) % 12;
 		}
@@ -184,6 +186,7 @@ class NoteFunctions {
 				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
 		
 		this.pitch_to_num = {0: 1, 2: 2, 3: 3, 4: 3, 5: 4, 7: 5, 8: 6, 9: 6, 10: 7, 11: 7};
+		console.log(this.pitch_to_num);
 		
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
@@ -215,7 +218,8 @@ class NoteFunctions {
 	value_to_name(value, key){
 		value = value % 12;
 		var adjusted_value = (value - key.get_pitch() + 12) % 12
-		var key_letter_index = this.val_to_key_name[key.get_modality()][key.get_pitch()];
+		var key_letter = this.val_to_key_name[key.get_modality()][key.get_pitch()];
+		var key_letter_index = this.letter_index[key_letter];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
 		var diff = this.name_to_val[name] - value;
@@ -226,6 +230,10 @@ class NoteFunctions {
 		}
 		else{
 			accidental = "b";
+		}
+		if(!Number.isInteger(diff)){
+			console.log("error");
+			return "*";
 		}
 		while(diff != 0){
 			name += accidental;
