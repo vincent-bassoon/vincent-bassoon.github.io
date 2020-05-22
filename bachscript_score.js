@@ -159,7 +159,7 @@ class Score {
 		var measures = [];
 		var pickup = (this.chords[0].length % 2 == 0);
 		var index_start = 0;
-		for(var i = 0; i < this.chords.length i++){
+		for(var i = 0; i < this.chords.length; i++){
 			var chords_length = this.chords[i].length;
 			var index = 0;
 			if(pickup){
