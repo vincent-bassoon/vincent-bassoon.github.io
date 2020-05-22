@@ -213,7 +213,7 @@ class Score {
 				if(name.length != 1){
 					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
 				}
-				if(duration == 3){
+				if(note_duration == 3){
 					note = note.addDotToAll();
 				}
 				measure.notes[3 - voice].push(note);
