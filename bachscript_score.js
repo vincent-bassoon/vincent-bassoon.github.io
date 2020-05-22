@@ -201,7 +201,7 @@ class Score {
 				var note_data = {clef: this.voice_clefs[voice], keys: [name + "/" + octave], "duration": duration };
 				var note = new this.vf.StaveNote(note_data);
 				if(name.length != 1){
-					note = note.addAccidental(0, new this.vf.Accidental(note.substring(1)));
+					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
 				}
 				if(duration == 3){
 					note = note.addDotToAll();
