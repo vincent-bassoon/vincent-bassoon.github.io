@@ -163,7 +163,7 @@ class Score {
 			var chords_length = this.chords[i].length;
 			var index = 0;
 			if(pickup){
-				measures.push(this.generate_single_measure(index + index_start 1, 1, line_data));
+				measures.push(this.generate_single_measure(index + index_start, 1, 1, line_data));
 				index++;
 				line_data.check_new_line(measures);
 			}
