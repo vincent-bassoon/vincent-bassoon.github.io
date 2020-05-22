@@ -194,9 +194,8 @@ class NoteFunctions {
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
 	}
-	value_to_name(value, chord){
+	value_to_name(value, key){
 		value = value % 12;
-		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
 		if(key.get_modality() == "minor"){
 			key_pitch = (key_pitch + 3) % 12;
