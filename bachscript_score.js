@@ -23,7 +23,7 @@ class LineData {
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
-		this.measure_length = 180;
+		this.measure_length = 150;
 		
 		this.clefs = ["treble", "bass"];
 		
@@ -227,6 +227,10 @@ class Score {
 				measure.notes[3 - voice].push(note);
 			}
 		}
+		console.log(measure);
+		console.log("index: ", index);
+		console.log("duration: ", duration);
+		console.log("index_length: ", index_length);
 		return measure;
 	}
 }
