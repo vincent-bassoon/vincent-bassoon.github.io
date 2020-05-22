@@ -215,6 +215,25 @@ class NoteFunctions {
 		}
 		return names;
 	}
+	get_accidentals(base_pitch, target_pitch){
+		var accidentals = "";
+		if(base_pitch == target_pitch){
+			return accidentals;
+		}
+		var dist1 = (base_pitch - target_pitch + 12) % 12;
+		var dist2 = (target_pitch - base_pitch + 12) % 12;
+		if(dist1 < dist2){
+			for(var i = 0; i < dist1; i++){
+				accidentals += "b";
+			}
+		}
+		else{
+			for(var i = 0; i < dist2; i++){
+				accidentals += "#";
+			}
+		}
+		return accidentals;
+	}
 	value_to_name(value, key){
 		value = value % 12;
 		var adjusted_value = (value - key.get_pitch() + 12) % 12
@@ -222,24 +241,7 @@ class NoteFunctions {
 		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
-		var diff = this.name_to_val[name] - value;
-		var accidental;
-		if(diff < 0){
-			accidental = "#";
-			diff = Math.abs(diff);
-		}
-		else{
-			accidental = "b";
-		}
-		if(!Number.isInteger(diff)){
-			console.log("error");
-			return "*";
-		}
-		while(diff != 0){
-			name += accidental;
-			diff--;
-		}
-		return name;
+		return name + this.get_accidentals(this.name_to_val[name], value);
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
