@@ -20,10 +20,10 @@ class LineData {
 		
 		this.stave_x_end = dim - 20;
 		this.line_height = 250;
-		this.stave_y_indents = [0, 110];
+		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
-		this.measure_length = 100;
+		this.measure_length = 150;
 		
 		this.clefs = ["treble", "bass"];
 		
