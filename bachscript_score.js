@@ -149,10 +149,10 @@ class Score {
 		console.log("rendering new line with " + measures.length + " measures");
 		this.render_measure(measures[0], staves);
 		for(var i = 1; i < measures.length; i++){
-			for(var i = 0; i < 2; i++){
-				var x = staves[i].width + staves[i].x;
-				var y = staves[i].y;
-				staves[i] = new this.vf.Stave(x, y, measures[i].width);
+			for(var j = 0; j < 2; j++){
+				var x = staves[j].width + staves[j].x;
+				var y = staves[j].y;
+				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
 			this.render_measure(measures[i], staves);
 		}
@@ -187,6 +187,7 @@ class Score {
 			}
 			index_start += chords_length;
 		}
+		console.log(measures);
 		if(measures.length != 0){
 			line_data.generate_final_line(measures);
 		}
@@ -197,8 +198,11 @@ class Score {
 		for(var i = index; i < index + index_length; i++){
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][voice].get_end_value();
-				var octave = Math.floor(value / 12);
 				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
+				var octave = Math.floor(value / 12);
+				if(name.substring(0, 2) == "cb"){
+					octave += 1;
+				}
 				var note_duration;
 				if(i == index + index_length - 1){
 					note_duration = this.durations[duration - index_length + 1];
@@ -227,10 +231,6 @@ class Score {
 				measure.notes[3 - voice].push(note);
 			}
 		}
-		console.log(measure);
-		console.log("index: ", index);
-		console.log("duration: ", duration);
-		console.log("index_length: ", index_length);
 		return measure;
 	}
 }
