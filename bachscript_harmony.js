@@ -201,9 +201,9 @@ class HarmonyFunctions {
 					}
 					else{
 						var value = this.get_pitch_closest_to(pitches[degree], prev_note);
-						//if(this.is_in_absolute_range(value, voice)){
+						if(this.is_in_absolute_range(value, voice)){
 							options[voice][degree].push(value);
-						//}
+						}
 					}
 				}
 			}
