@@ -1,5 +1,6 @@
 class Score {
 	constructor(harmony, chords, note_functions){
+		this.harmony = harmony;
 		this.chords = chords;
 		this.note_functions = note_functions;
 		this.vf = Vex.Flow;
@@ -9,84 +10,35 @@ class Score {
 		document.body.clientWidth;
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
 		document.body.clientHeight;
-		this.dim = Math.max(width, height);
+		var dim = Math.max(width, height);
+		this.stave_length = dim - 50;
 		
 		var div = document.getElementById("staff")
-		var renderer = new vf.Renderer(div, this.vf.Renderer.Backends.SVG);
-		renderer.resize(this.dim, this.dim);
+		var renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
+		renderer.resize(dim, dim);
 		
 		this.context = renderer.getContext();
 		
 		this.clefs = ["treble", "bass"];
-		
-		function harmony_to_notes(harmony){
-			
-		}
+		this.voice_clefs = ["bass", "bass", "treble", "treble"];
+		this.durations = {1: "q", 2: "h", 3: "hd", 4: "w"};
 	}
 	
-	generate_vex(begin_index, end_index, measure_length){
-		var measure = [[], [], [], []];
-		for(var i = begin_index; i < end_index; i++){
-			for(var j = 0; j < 2; j++){
-				
-			}
-		}
-		/*
 	
-    new VF.StaveNote({clef: "treble", keys: ["e##/5"], duration: "8d" }).
-      addAccidental(0, new VF.Accidental("##")).addDotToAll(),
-
-    new VF.StaveNote({clef: "treble", keys: ["eb/5"], duration: "16" }).
-      addAccidental(0, new VF.Accidental("b")),
-
-    new VF.StaveNote({clef: "treble", keys: ["d/5", "eb/4"], duration: "h" }).
-    	addDot(0),
-
-    new VF.StaveNote({clef: "treble", keys: ["c/5", "eb/5", "g#/5"], duration: "q" }).
-      addAccidental(1, new VF.Accidental("b")).
-      addAccidental(2, new VF.Accidental("#")).addDotToAll()
-  ];
-  */
-	}
 	
-	generate_measures(){
-		var measures = [];
-		var index_start = 0;
-		var pickup = this.chords[0].length % 2 == 0
-		for(var i = 0; i < this.chords.length i++){
-			var phrase_length = this.chords[i].length;
-			if(pickup){
-				measures.push(this.harmony_to_vex(index_start, index_start + 1, 1));
-			}
-			var begin_index = 0;
-			var end_index = begin_index + 4;
-			while(end_index <= phrase_length){
-				measures.push(this.harmony_to_vex(begin_index + index_start, end_index + index_start, 4));
-				begin_index += 4;
-				end_index += 4;
-			}
-			if(begin_index < phrase_length){
-				var length = 4;
-				if(pickup){
-					length = 3;
-				}
-				measures.push(this.harmony_to_vex(begin_index + index_start, phrase_length + index_start, length));
-			}
-			
-			index_start += phrase_length;
-		}
-		retuurn measures;
-	}
-	
-	generate_lines(vf, context, formatter, dim, harmony, chords){
+	render_harmony(){
 		var y_start = 40;
-		var stave_length = dim - 50;
+		var x_start = 20;
+		
+		var measures = this.generate_measures();
+		var measure_length = 100;
+		
 		while(harmony.length != 0){
 			var staves = [new vf.Stave(20, y_start, stave_length), new vf.Stave(20, y_start + 110, stave_length)];
-			staves[0].addClef('treble').addTimeSignature("4/4");
+			staves[0].addClef('treble').addTimeSignature("4/4").getNoteStartX();
 			staves[1].addClef('bass').addTimeSignature("4/4");
 			
-			var measures = generate_line_measures(vf, stave_length, harmony, chords);
+			var measures = generate_measures(vf, stave_length, harmony, chords);
 			
 			var brace = new vf.StaveConnector(staves[0], staves[1]).setType(vf.StaveConnector.type.BRACE);
 			var line_left = new vf.StaveConnector(staves[0], staves[1]).setType(vf.StaveConnector.type.SINGLE_LEFT);
@@ -136,5 +88,61 @@ class Score {
 			voices[1].setContext(context).draw();
 		
 			y_start += 240;
+		}
+	}
+	
+	generate_measures(){
+		var measures = [];
+		var pickup = (this.chords[0].length % 2 == 0);
+		var start = 0;
+		for(var i = 0; i < this.chords.length i++){
+			var length = this.chords[i].length;
+			var index = 0;
+			if(pickup){
+				measures.push(this.generate_single_measure(index + start 1, 1));
+				index++;
+			}
+			while(index + 4 <= length){
+				measures.push(this.generate_single_measure(index + start, 4, 4));
+				index += 4;
+			}
+			if(index < length){
+				var duration = 4;
+				if(pickup){
+					duration = 3;
+				}
+				measures.push(this.generate_single_measure(index + start, length - index, duration));
+			}
+			start += length
+		}
+		return measures;
+	}
+		
+	generate_single_measure(index, index_length, duration){
+		var measure = {notes: [[], [], [], []], "duration": duration};		
+		for(var i = index; i < index + index_length; i++){
+			for(var voice = 0; voice < 4; voice++){
+				var value = this.harmony[i][voice].get_end_value();
+				var octave = Math.floor(value / 12);
+				var name = this.note_functions.value_to_name(value, this.chords[i]);
+				var duration;
+				if(i == index + index_length - 1){
+					duration = this.durations[duration - index_length + 1];
+				}
+				else{
+					duration = "q";
+				}
+				var note_data = {clef: this.voice_clefs[voice], keys: [name + "/" + octave], "duration": duration };
+				var note = new this.vf.StaveNote(note_data);
+				if(name.length != 1){
+					note = note.addAccidental(0, new this.vf.Accidental(note.substring(1)));
+				}
+				if(duration == 3){
+					note = note.addDotToAll();
+				}
+				measure.notes[voice].push(note);
+			}
+		}
+		return measure;
 	}
 }
