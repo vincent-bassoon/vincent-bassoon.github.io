@@ -97,7 +97,7 @@ class Score {
 		
 		this.names_in_key = note_functions.get_names_in_key(key_temp);
 		
-		if(key_temp.get_modality() == "minor"){
+		if(key_temp.modality == "minor"){
 			this.key_name = note_functions.value_to_name(3, key_temp);
 		}
 		else{
