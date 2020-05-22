@@ -1,125 +1,192 @@
-class Score {
-	constructor(harmony, chords, note_functions){
-		this.harmony = harmony;
-		this.chords = chords;
-		this.note_functions = note_functions;
-		this.vf = Vex.Flow;
-		this.formatter = new this.vf.Formatter();
+class LineData {
+	constructor(score){
+		this.score = score;
+		
+		var treble_temp = new score.vf.Stave(20, 40, 100).addClef('treble').addKeySignature(score.key_name);
+		var bass_temp = new score.vf.Stave(20, 40, 100).addClef('bass').addKeySignature(score.key_name);
+		
+		this.note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
+		
+		treble_temp = treble_temp.addTimeSignature("4/4");
+		bass_temp = bass_temp.addTimeSignature("4/4");
+		
+		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
 		
 		var width  = window.innerWidth || document.documentElement.clientWidth || 
 		document.body.clientWidth;
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
 		document.body.clientHeight;
 		var dim = Math.max(width, height);
-		this.stave_length = dim - 50;
 		
-		var div = document.getElementById("staff")
-		var renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
-		renderer.resize(dim, dim);
-		
-		this.context = renderer.getContext();
+		this.stave_x_end = dim - 20;
+		this.line_height = 250;
+		this.stave_y_indents = [0, 110];
+		this.x_margin = 20;
+		this.y_margin = 40;
+		this.measure_length = 100;
 		
 		this.clefs = ["treble", "bass"];
+		
+		this.duration_to_length = {};
+		for(var i = 1; i < 5; i++){
+			this.duration_to_length[i] = this.measure_length * ((i + 1) / 5);
+		}
+		
+		this.line_num = 0;
+	}
+	get_note_indent(){
+		if(this.line_num == 0){
+			return this.initial_note_indent;
+		}
+		else{
+			return this.note_indent;
+		}
+	}
+	check_new_line(measures){
+		var x = this.x_margin + this.get_note_indent();
+		var beats = 0;
+		for(var i = 0; i < measures.length - 1; i++){
+			var next = x + this.duration_to_length[measures[i + 1].duration]
+			if(next > this.stave_x_end){
+				this.generate_line(measures.splice(0, i + 1), x, beats);
+				return;
+			}
+			else if(i + 2 < measures.length && measures[i + 1].duration == 1){
+				next += this.duration_to_length[measures[i + 2].duration]
+				if(next > this.stave_x_end){
+					this.generate_line(measures.splice(0, i + 1), x, beats);
+					return;
+				}
+			}
+			beats += measures[i].duration;
+			x += this.duration_to_length[measures[i].duration];
+		}
+	}
+	generate_line(measures, x, beats){
+		var add_per_beat = (this.stave_x_end - x) / beats;
+		for(var i = 0; i < measures.length; i++){
+			var duration = measures[i].duration
+			measures[i].width = this.duration_to_length[duration] + add_per_beat * duration;
+		}
+		var staves = {};
+		for(var i = 0; i < 2; i++){
+			var x = this.x_margin;
+			var y = this.y_margin + this.stave_y_indents[i] + this.line_height * this.line_num;
+			var length = measures[0].width + this.get_note_indent(this.line_num);
+			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
+			if(this.line_num == 0){
+				staves[i] = staves[i].addTimeSignature("4/4");
+			}
+			staves[i].setNoteStartX(this.get_note_indent());
+		}
+		this.score.render_line(measures, staves);
+		this.line_num++;
+	}
+	generate_final_line(measures){
+		this.generate_line(measures, this.stave_x_end, 1);
+		this.line_num++;
+	}
+}
+
+class Score {
+	constructor(harmony, chords, note_functions){
+		function last(array){
+			return array[array.length - 1];
+		}		
+		var key_temp = last(last(chords)).get_key();
+		
+		this.names_in_key = note_functions.get_names_in_key(key_temp);
+		
+		if(key_temp.get_modality() == "minor"){
+			this.key_name = note_functions.value_to_name(3, key_temp);
+		}
+		else{
+			this.key_name = note_functions.value_to_name(0, key_temp);
+		}
+		
+		this.harmony = harmony;
+		this.chords = chords;
+		this.note_functions = note_functions;
+		this.vf = Vex.Flow;
+		this.formatter = new this.vf.Formatter();
+		
+		var div = document.getElementById("staff")
+		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
+		
+		//***********************************renderer.resize(dim, dim);
+		
+		this.context = this.renderer.getContext();
 		this.voice_clefs = ["bass", "bass", "treble", "treble"];
 		this.durations = {1: "q", 2: "h", 3: "hd", 4: "w"};
 	}
 	
 	
-	
-	render_harmony(){
-		var y_start = 40;
-		var x_start = 20;
-		
-		var measures = this.generate_measures();
-		var measure_length = 100;
-		
-		while(harmony.length != 0){
-			var staves = [new vf.Stave(20, y_start, stave_length), new vf.Stave(20, y_start + 110, stave_length)];
-			staves[0].addClef('treble').addTimeSignature("4/4").getNoteStartX();
-			staves[1].addClef('bass').addTimeSignature("4/4");
-			
-			var measures = generate_measures(vf, stave_length, harmony, chords);
-			
-			var brace = new vf.StaveConnector(staves[0], staves[1]).setType(vf.StaveConnector.type.BRACE);
-			var line_left = new vf.StaveConnector(staves[0], staves[1]).setType(vf.StaveConnector.type.SINGLE_LEFT);
-			/*
-			var staveBar1 = new VF.Stave(10, 50, 200);
-			staveBar1.setBegBarType(VF.Barline.type.REPEAT_BEGIN);
-      staveBar1.setEndBarType(VF.Barline.type.DOUBLE);
-      staveBar1.setSection("A", 0);
-      staveBar1.addClef("treble").setContext(ctx).draw();
-      var notesBar1 = [
-        new VF.StaveNote({ keys: ["c/4"], duration: "q" }),
-        new VF.StaveNote({ keys: ["d/4"], duration: "q" }),
-        new VF.StaveNote({ keys: ["b/4"], duration: "qr" }),
-        new VF.StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "q" })
-      ];
-
-      // Helper function to justify and draw a 4/4 voice
-      VF.Formatter.FormatAndDraw(ctx, staveBar1, notesBar1);
-
-      // bar 2 - juxtaposing second bar next to first bar
-      var staveBar2 = new VF.Stave(staveBar1.width + staveBar1.x, staveBar1.y, 300);
-      staveBar2.setSection("B", 0);
-      staveBar2.setEndBarType(VF.Barline.type.END);
-      staveBar2.setContext(ctx).draw();
-		*/
-			staves[0].setContext(context).draw();
-			staves[1].setContext(context).draw();
-			brace.setContext(context).draw();
-			line_right.setContext(context).draw();
-			line_left.setContext(context).draw();
-			
-			var voices = [];
-			for(var i = 0; i < 2; i++){
-				voices[i] = new vf.Voice({num_beats: 4, beat_value: 4});
-				voices[i].addTickables(notes[i]).setStave(staves[i]);
+	render_measure(measure, staves){
+		for(var i = 0; i < 2; i++){
+			if(measure.duration == 4 || measure.duration == 1){
+				staves[i].setEndBarType(this.vf.Barline.type.REPEAT_BEGIN);
 			}
-			
-			var startX = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
-			staves[0].setNoteStartX(startX);
-			staves[1].setNoteStartX(startX);
-			
-			formatter.joinVoices([voices[0]]);
-			formatter.joinVoices([voices[1]]);
-			formatter.format([voices[0], voices[1]], stave_length - (startX - staveX));			
-
-			voices[0].setContext(context).draw();
-			voices[1].setContext(context).draw();
-		
-			y_start += 240;
+			staves[i].setContext(this.context).draw();
+		}
+		var voices = {};
+		for(var i = 0; i < 4; i++){
+			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+			voices[i].addTickables(measure[3 - i]);
+		}
+		this.formatter.joinVoices([voices[0], voices[1]]);
+		this.formatter.joinVoices([voices[2], voices[3]]);
+		var indent = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
+		this.formatter.format([voices[0], voices[1], voices[2], voices[3]], staves[0].width - (indent - staves[0].x));
+		for(var i = 0; i < 4; i++){
+			voices[i].setContext(this.context).draw();
+		}
+	}
+	render_line(measures, staves){
+		this.render_measure(measures[0], staves);
+		for(var i = 1; i < measures.length; i++){
+			for(var i = 0; i < 2; i++){
+				var x = staves[i].width + staves[i].x;
+				var y = staves[i].y;
+				staves[i] = new this.vf.Stave(x, y, measures[i].width);
+			}
+			this.render_measure(measures[i], staves);
 		}
 	}
 	
-	generate_measures(){
+	render_harmony(){
+		var line_data = new LineData(this);
+		
 		var measures = [];
 		var pickup = (this.chords[0].length % 2 == 0);
-		var start = 0;
+		var index_start = 0;
 		for(var i = 0; i < this.chords.length i++){
-			var length = this.chords[i].length;
+			var chords_length = this.chords[i].length;
 			var index = 0;
 			if(pickup){
-				measures.push(this.generate_single_measure(index + start 1, 1));
+				measures.push(this.generate_single_measure(index + index_start 1, 1, line_data));
 				index++;
+				line_data.check_new_line(measures);
 			}
-			while(index + 4 <= length){
-				measures.push(this.generate_single_measure(index + start, 4, 4));
+			while(index + 4 <= chords_length){
+				measures.push(this.generate_single_measure(index + index_start, 4, 4, line_data));
 				index += 4;
+				line_data.check_new_line(measures);
 			}
-			if(index < length){
+			if(index < chords_length){
 				var duration = 4;
 				if(pickup){
 					duration = 3;
 				}
-				measures.push(this.generate_single_measure(index + start, length - index, duration));
+				measures.push(this.generate_single_measure(index + index_start, chords_length - index, duration, line_data));
+				line_data.check_new_line(measures);
 			}
-			start += length
+			index_start += chords_length;
 		}
-		return measures;
+		line_data.generate_final_line(measures);
 	}
 		
 	generate_single_measure(index, index_length, duration){
-		var measure = {notes: [[], [], [], []], "duration": duration};		
+		var measure = {notes: [[], [], [], []], "duration": duration, "width": null};		
 		for(var i = index; i < index + index_length; i++){
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][voice].get_end_value();
