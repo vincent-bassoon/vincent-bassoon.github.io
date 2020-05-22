@@ -194,10 +194,17 @@ class Score {
 	}
 		
 	generate_single_measure(index, index_length, duration){
-		var measure = {notes: [[], [], [], []], "duration": duration, "width": null};		
+		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": null};
+		var ghost_voice;
 		for(var i = index; i < index + index_length; i++){
+			
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][voice].get_end_value();
+			}
+		}
+		for(var i = index; i < index + index_length; i++){
+			for(var voice = 0; voice < 4; voice++){
+				var value = this.harmony[i][3 - voice].get_end_value();
 				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
 				var octave = Math.floor(value / 12);
 				if(name.substring(0, 2) == "cb"){
@@ -228,7 +235,7 @@ class Score {
 				if(note_duration == 3){
 					note = note.addDotToAll();
 				}
-				measure.notes[3 - voice].push(note);
+				measure.notes[voice].push(note);
 			}
 		}
 		return measure;
