@@ -130,7 +130,7 @@ class Score {
 		var voices = {};
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-			voices[i].addTickables(measure.notes[3 - i]).setStave(staves[Math.floor(i / 2)]);
+			voices[i].addTickables(measure.notes[i]).setStave(staves[Math.floor(i / 2)]);
 		}
 		this.formatter.joinVoices([voices[0], voices[1]]);
 		this.formatter.joinVoices([voices[2], voices[3]]);
@@ -198,7 +198,17 @@ class Score {
 				else{
 					note_duration = "q";
 				}
-				var note_data = {"clef": this.voice_clefs[voice], "keys": [name + "/" + octave], "duration": note_duration};
+				var stem_dir;
+				if(voice % 2 == 0){
+					stem_dir = -1;
+				}
+				else{
+					stem_dir = 1;
+				}
+				var note_data = {"clef": this.voice_clefs[voice],
+						 "keys": [name + "/" + octave],
+						 "duration": note_duration,
+						 "stem_direction": stem_dir};
 				var note = new this.vf.StaveNote(note_data);
 				if(name.length != 1){
 					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
@@ -206,7 +216,7 @@ class Score {
 				if(duration == 3){
 					note = note.addDotToAll();
 				}
-				measure.notes[voice].push(note);
+				measure.notes[3 - voice].push(note);
 			}
 		}
 		return measure;
