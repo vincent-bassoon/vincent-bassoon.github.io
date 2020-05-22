@@ -194,6 +194,26 @@ class NoteFunctions {
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
 	}
+	get_names_in_key(key){
+		var start_value = key.get_pitch();
+		var names = {};
+		for(var letter in this.name_to_val){
+			names[letter] = false;
+		}
+		var pitches;
+		if(key.get_modality() == "major"){
+			pitches = [0, 2, 4, 5, 7, 9, 11];
+		}
+		else{
+			pitches = [0, 2, 3, 5, 7, 8, 10];
+		}
+		for(var i = 0; i < pitches.length; i++){
+			var value = (start_value + pitches[i]) % 12;
+			var temp = this.value_to_name(value, key);
+			names[temp] = true;
+		}
+		return names;
+	}
 	value_to_name(value, key){
 		value = value % 12;
 		var key_pitch = key.get_pitch();
