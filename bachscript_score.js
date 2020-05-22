@@ -190,7 +190,7 @@ class Score {
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][voice].get_end_value();
 				var octave = Math.floor(value / 12);
-				var name = this.note_functions.value_to_name(value, this.chords[i].get_key());
+				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
 				var duration;
 				if(i == index + index_length - 1){
 					duration = this.durations[duration - index_length + 1];
