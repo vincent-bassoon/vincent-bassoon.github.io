@@ -195,7 +195,7 @@ class HarmonyFunctions {
 					}
 				}
 				for(var degree = min_degree; degree <= max_degree; degree++){
-					if(prev_note == null){
+					if(true){//prev_note == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
 						options[voice][degree].push(value);
 					}
