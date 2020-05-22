@@ -130,7 +130,7 @@ class Score {
 		var voices = {};
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-			voices[i].addTickables(measure.notes[3 - i]);
+			voices[i].addTickables(measure.notes[3 - i]).setStave(staves[Math.floor(i / 2)]);
 		}
 		this.formatter.joinVoices([voices[0], voices[1]]);
 		this.formatter.joinVoices([voices[2], voices[3]]);
