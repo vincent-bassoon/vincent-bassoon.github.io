@@ -191,14 +191,14 @@ class Score {
 				var value = this.harmony[i][voice].get_end_value();
 				var octave = Math.floor(value / 12);
 				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
-				var duration;
+				var note_duration;
 				if(i == index + index_length - 1){
-					duration = this.durations[duration - index_length + 1];
+					note_duration = this.durations[duration - index_length + 1];
 				}
 				else{
-					duration = "q";
+					note_duration = "q";
 				}
-				var note_data = {"clef": this.voice_clefs[voice], "keys": [name + "/" + octave], "duration": duration};
+				var note_data = {"clef": this.voice_clefs[voice], "keys": [name + "/" + octave], "duration": note_duration};
 				var note = new this.vf.StaveNote(note_data);
 				if(name.length != 1){
 					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
