@@ -156,16 +156,16 @@ class NoteFunctions {
 		}
 		this.letters = letters;
 		this.val_to_key_name = {"major": {}, "minor": {}};
-		var notes = {"major": {letter_index: 0, value: 0}, "minor": {letter_index: "5", value: 9}};
+		var notes = {"major": {letter_index: 0, value: 0}, "minor": {letter_index: 5, value: 9}};
 		for(var i = 0; i < 12; i++){
 			for(var modality in notes){
 				var name = letters[notes[modality].letter_index];
 				var value = notes[modality].value;
-				if(!this.name_to_val[name] == value){
-					if(this.name_to_val[name] == value + 1){
+				if(this.name_to_val[name] != value){
+					if(this.name_to_val[name] + 1 == value){
 						name += "#";
 					}
-					else if(this.name_to_val[name] == value - 1){
+					else if(this.name_to_val[name] - 1 == value){
 						name += "b";
 					}
 				}
@@ -174,13 +174,11 @@ class NoteFunctions {
 					notes[modality].letter_index = (notes[modality].letter_index + 5) % 7;
 				}
 				else{
-					
 					notes[modality].letter_index = (notes[modality].letter_index + 4) % 7;
 				}
 				notes[modality].value = (value + 7) % 12;
 			}
 		}
-		console.log(this.val_to_key_name);
 		
 		this.num_to_pitch = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
 				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
