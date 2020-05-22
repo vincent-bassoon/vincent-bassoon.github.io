@@ -150,46 +150,46 @@ class NoteFunctions {
 	constructor(){
 		this.name_to_val = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
-		var val_to_simple_name = {};
-		for(var i = 0; i < letters.length; i++){
-			val_to_simple_name[this.name_to_val[letters[i]]] = letters[i];
+		for(var i = 0; i < 7; i++){
 			this.name_to_val[letters[i] + "b"] = (this.name_to_val[letters[i]] + 11) % 12;
 			this.name_to_val[letters[i] + "#"] = (this.name_to_val[letters[i]] + 1) % 12;
 		}
-		this.roman_num_mapping = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
-					  "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
+		this.letters = letters;
+		this.val_to_key_name = {"major": {}, "minor": {}};
+		var notes = {"major": {letter_index: 0, value: 0}, "minor": {letter_index: "5", value: 9}};
+		for(var i = 0; i < 12; i++){
+			for(var modality in notes){
+				var name = letters[notes[modality].letter_index];
+				var value = notes[modality].value;
+				if(!this.name_to_val[name] == value){
+					if(this.name_to_val[name] == value + 1){
+						name += "#";
+					}
+					else if(this.name_to_val[name] == value - 1){
+						name += "b";
+					}
+				}
+				this.val_to_key_name[modality][value] = name;
+				if(i == 5){
+					notes[modality].letter_index = (notes[modality].letter_index + 5) % 7;
+				}
+				else{
+					
+					notes[modality].letter_index = (notes[modality].letter_index + 4) % 7;
+				}
+				notes[modality].value = (value + 7) % 12;
+			}
+		}
+		console.log(this.val_to_key_name);
+		
+		this.num_to_pitch = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
+				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
+		
+		this.pitch_to_num = {0: 1, 2: 2, 3: 3, 4: 3, 5: 4, 7: 5, 8: 6, 9: 6, 10: 7, 11: 7};
 		
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
 		
-		var key_has_flats = {};
-		var pitch = 0;
-		var counter = 0;
-		do{
-			key_has_flats[pitch] = (counter >= 6);
-			counter++;
-			pitch = (pitch + 7) % 12;
-		} while(pitch != 0);
-		
-		this.key_pitch_to_name = {};
-		var steps = this.roman_num_mapping["major"];
-		for(var pitch = 0; pitch < 12; pitch++){
-			this.key_pitch_to_name[pitch] = {};
-			for(var i = 1; i < 8; i++){
-				var pitch2 = (pitch + steps[i]) % 12;
-				var name;
-				if(pitch2 in val_to_simple_name){
-					name = val_to_simple_name[pitch2];
-				}
-				else if(key_has_flats[pitch]){
-					name = val_to_simple_name[(pitch2 + 1) % 12] + "b";
-				}
-				else{
-					name = val_to_simple_name[(pitch2 + 11) % 12] + "#";
-				}
-				this.key_pitch_to_name[pitch][pitch2] = name;
-			}
-		}
 	}
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
@@ -216,31 +216,29 @@ class NoteFunctions {
 	}
 	value_to_name(value, key){
 		value = value % 12;
-		var key_pitch = key.get_pitch();
-		if(key.get_modality() == "minor"){
-			key_pitch = (key_pitch + 3) % 12;
-		}
-		if(value in this.key_pitch_to_name[key_pitch]){
-			return this.key_pitch_to_name[key_pitch][value];
+		var adjusted_value = (value - key.get_pitch() + 12) % 12
+		var key_letter_index = this.val_to_key_name[key.get_modality()][key.get_pitch()];
+		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
+		var name = this.letters[val_letter_index];
+		var diff = this.name_to_val[name] - value;
+		var accidental;
+		if(diff < 0){
+			accidental = "#";
+			diff = Math.abs(diff);
 		}
 		else{
-			value = (value + 12 - 1) % 12;
-			var name = this.key_pitch_to_name[key_pitch][value];
-			if(name.length == 1){
-				return name + "#";
-			}
-			else if(name[1] == "#"){
-				return name + "#";
-			}
-			else if(name[1] == "b"){
-				return name[0];
-			}
+			accidental = "b";
 		}
+		while(diff != 0){
+			name += accidental;
+			diff--;
+		}
+		return name;
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
-		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
+		var root_pitch = this.num_to_pitch[key.get_modality()][chord.get_roman_num()];
 		var degree_pitch = this.chord_mapping[chord.get_modality()][chord.get_degree(roman_num)];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
@@ -256,7 +254,7 @@ class NoteFunctions {
 	get_pitch(chord, degree){
 		var key = chord.get_key();
 		var key_pitch = key.get_pitch();
-		var root_pitch = this.roman_num_mapping[key.get_modality()][chord.get_roman_num()];
+		var root_pitch = this.num_to_pitch[key.get_modality()][chord.get_roman_num()];
 		var degree_pitch = this.chord_mapping[chord.get_modality()][degree];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
