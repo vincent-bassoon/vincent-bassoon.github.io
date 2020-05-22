@@ -69,11 +69,11 @@ class HarmonyFunctions {
 				var voice1 = parity * harmony[index][voice].get_start_value();
 				var voice2 = parity * harmony[index][voice + parity].get_start_value();
 				if(voice1 > voice2){
-					console.log("crossed");
+					console.log("  crossed");
 					return true;
 				}
 				if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
-					console.log("voices too far apart");
+					console.log("  voices too far apart");
 					return true;
 				}
 			}
@@ -92,7 +92,7 @@ class HarmonyFunctions {
 				if(interval == this.parallel_pitches[j]){
 					var interval2 = Math.abs(harmony[index + 1][voice].get_start_value() - harmony[index + 1][voice2].get_start_value()) % 12;
 					if(interval2 == interval){
-						console.log("parallels");
+						console.log("  parallels");
 						return true;
 					}
 				}
@@ -210,14 +210,17 @@ class HarmonyFunctions {
 		}
 		console.log("root doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 0, 1, 2], options, index, 0)){
+			console.log("finished at index ", index);
 			return;
 		}
 		console.log("third doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 1, 1, 2], options, index, 0)){
+			console.log("finished at index ", index);
 			return;
 		}
 		console.log("fifth doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 1, 2, 2], options, index, 0)){
+			console.log("finished at index ", index);
 			return;
 		}
 		console.log("failure at index ", index);
@@ -270,7 +273,7 @@ class HarmonyFunctions {
 					name += " ";
 				}
 				name_string += name;
-				name_octave_string += name + (Math.floor(harmony[i][voice].get_end_value() / 12) - 10) + "  ";
+				name_octave_string += name + Math.floor(harmony[i][voice].get_end_value() / 12) + "  ";
 			}
 			name_string += "\n";
 			name_octave_string += "\n";
