@@ -219,7 +219,7 @@ class NoteFunctions {
 		value = value % 12;
 		var adjusted_value = (value - key.get_pitch() + 12) % 12
 		var key_letter = this.val_to_key_name[key.get_modality()][key.get_pitch()];
-		var key_letter_index = this.letter_index[key_letter];
+		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
 		var diff = this.name_to_val[name] - value;
