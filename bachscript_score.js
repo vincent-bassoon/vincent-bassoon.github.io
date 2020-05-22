@@ -83,6 +83,10 @@ class LineData {
 		this.line_num++;
 	}
 	generate_final_line(measures){
+		for(var i = 0; i < measures.length; i++){
+			var duration = measures[i].duration
+			measures[i].width = this.duration_to_length[duration];
+		}
 		this.generate_line(measures, this.stave_x_end, 1);
 		this.line_num++;
 	}
