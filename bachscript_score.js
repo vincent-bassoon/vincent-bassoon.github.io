@@ -123,7 +123,7 @@ class Score {
 	render_measure(measure, staves){
 		for(var i = 0; i < 2; i++){
 			if(measure.duration == 4 || measure.duration == 1){
-				staves[i].setEndBarType(this.vf.Barline.type.REPEAT_BEGIN);
+				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
 			}
 			staves[i].setContext(this.context).draw();
 		}
@@ -181,7 +181,9 @@ class Score {
 			}
 			index_start += chords_length;
 		}
-		line_data.generate_final_line(measures);
+		if(measures.length != 0){
+			line_data.generate_final_line(measures);
+		}
 	}
 		
 	generate_single_measure(index, index_length, duration){
