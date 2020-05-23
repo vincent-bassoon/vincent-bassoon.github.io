@@ -1,6 +1,25 @@
-function generate_chorale_plan(key, cadence_num){
+function generate_chorale_plan(key, cadence_num, pickup){
 	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
+	var phrase_lengths = {};
+	
+	var retry = true;
+	var num_beats = {7: 8, 8: 8, 9: 10, 10: 12};
+	var fermata_index = {7: 6, 8: 6, 9: 8, 10: 8};
+	while(retry){
+		retry = false;
+		var sum = 0;
+		for(var i = 0; i < cadence_num; i++){
+			// 75% 7-8 note segment length, 25% 9-10 note length
+			phrase_lengths[i] = pickup + choose_int({7: 0.75, 9: 0.25});
+			if((sum + fermata_index[phrase_lengths[i]]) % 16 == 0){
+				i = cadence_num;
+				retry = true;
+			}
+			sum += num_beats[phrase_lengths[i]];
+		}
+	}
+	
 	var chorale_plan = [];
 	var previous_cadence_chord = null;
 	for(var i = 0; i < cadence_num; i++){
@@ -25,7 +44,8 @@ function generate_chorale_plan(key, cadence_num){
 		if(cadence != "pac/iac" && cadence_length == 3 && choose_int({0: 0.8, 1: 0.2}) == 0){
 			cadence_length++;
 		}
-		chorale_plan.push(new PhraseData(key, cadence, cadence_length, previous_cadence_chord));
+		chorale_plan.push(new PhraseData(key, phrase_lengths[i], i == cadence_num - 1,
+						 cadence, cadence_length, previous_cadence_chord));
 		previous_cadence_chord = endings[cadence];
 	}
 	return chorale_plan;
@@ -46,16 +66,14 @@ function run(){
 	var sharp_or_flat = choose_int({0: 0.5, 2: 0.5}) - 1;
 	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
 	
-	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num);
+	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num, pickup);
 	
 	var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		// 90% 7-8 note segment length, 10% 9-10 note length
-		var length = pickup + choose_int({7: 0.8, 9: 0.2});
-		chords.push(chord_functions.generate_segment_chords(length, chorale_plan[i]));
+		chords.push(chord_functions.generate_segment_chords(chorale_plan[i]));
 	}
 	harmony_functions.generate_harmony(chords.splice(0, 1), chorale_plan.splice(0, 1));
 }
