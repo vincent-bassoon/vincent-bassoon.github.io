@@ -34,6 +34,14 @@ class LineData {
 		
 		this.line_num = 0;
 	}
+	get_note_indent(){
+		if(this.line_num == 0){
+			return this.initial_note_indent;
+		}
+		else{
+			return this.note_indent;
+		}
+	}
 	check_new_line(measures){
 		var x = this.x_margin + this.get_note_indent();
 		var beats = 0;
@@ -68,10 +76,10 @@ class LineData {
 			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
 			if(this.line_num == 0){
 				staves[i] = staves[i].addTimeSignature("4/4");
-				staves[i].setNoteStartX(this.initial_note_indent);
+				staves[i].setNoteStartX(this.initial_note_indent + 100);
 			}
 			else{
-				staves[i].setNoteStartX(this.note_indent);
+				staves[i].setNoteStartX(this.note_indent + 1000);
 			}
 		}
 		this.score.render_line(measures, staves);
@@ -110,7 +118,7 @@ class Score {
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
 		
-		this.renderer.resize(1000, 1000);
+		this.renderer.resize(1000, 100);
 		//*********************************************************************************************
 		
 		this.context = this.renderer.getContext();
