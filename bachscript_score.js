@@ -139,6 +139,9 @@ console.log("render size");
 			if(measure.duration == 4 || measure.duration == 1){
 				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
 			}
+			else{
+				staves[i].setEndBarType(this.vf.Barline.type.NONE);
+			}
 			staves[i].setContext(this.context).draw();
 		}
 		var voices = {};
@@ -185,12 +188,12 @@ console.log("render size");
 			var chords_length = this.chord_array[i].length;
 			var index = 0;
 			if(pickup){
-				measures.push(this.generate_single_measure(index + index_start, 1, 1, line_data));
+				measures.push(this.generate_single_measure(index + index_start, 1, 1, line_data, false));
 				index++;
 				line_data.check_new_line(measures);
 			}
 			while(index + 4 <= chords_length){
-				measures.push(this.generate_single_measure(index + index_start, 4, 4, line_data));
+				measures.push(this.generate_single_measure(index + index_start, 4, 4, line_data, false));
 				index += 4;
 				line_data.check_new_line(measures);
 			}
@@ -199,7 +202,8 @@ console.log("render size");
 				if(pickup){
 					duration = 3;
 				}
-				measures.push(this.generate_single_measure(index + index_start, chords_length - index, duration, line_data));
+				measures.push(this.generate_single_measure(index + index_start, chords_length - index,
+									   duration, line_data, true));
 				line_data.check_new_line(measures);
 			}
 			index_start += chords_length;
@@ -213,6 +217,9 @@ console.log("render size");
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
 			octave += 1;
+		}
+		else if(name.substring(0, 2) == "b#"){
+			octave -= 1;
 		}
 		var note_duration;
 		if(i == index + index_length - 1){
@@ -235,7 +242,7 @@ console.log("render size");
 		return note_data;
 	}
 		
-	generate_single_measure(index, index_length, duration){
+	generate_single_measure(index, index_length, duration, fermata){
 		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = this.get_accidentals_in_key_copy();
 		var needs_ghost_voices = {0: false, 1: false};
@@ -263,6 +270,9 @@ console.log("render size");
 					}
 					if(note_data.duration[note_data.duration.length - 1] == "d"){
 						note = note.addDotToAll();
+					}
+					if(voice == 0 && fermata && i == index + index_length - 1){
+						note = note.addArticulation(0, new this.vf.Articulation("a@a").setPosition(3));
 					}
 					measure.notes[voice].push(note);
 					if(voice % 2 == 0){
