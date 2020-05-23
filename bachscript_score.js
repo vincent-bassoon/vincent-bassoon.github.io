@@ -203,8 +203,8 @@ class Score {
 		
 	generate_single_measure(index, index_length, duration){
 		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [null, null]};
-		var needs_ghost_voices = {0: false, 2: false};
-		var ghost_voices_temp = {0: [], 2: []};
+		var needs_ghost_voices = {0: false, 1: false};
+		var ghost_voices_temp = {0: [], 1: []};
 		var prev_value = null;
 		for(var i = index; i < index + index_length; i++){
 			for(var voice = 0; voice < 4; voice++){
@@ -242,17 +242,18 @@ class Score {
 				if(voice % 2 == 0){
 					prev_value = value;
 					measure.notes[voice].push(note);
-					ghost_voices_temp[voice].push(new this.vf.GhostNote(note_data));
+					ghost_voices_temp[Math.floor(i / 2)].push(new this.vf.GhostNote(note_data));
 				}
 				else if(value == prev_value){
 					measure.notes[voice].push(new this.vf.GhostNote(note_data));
-					ghost_voices_temp[voice].push(note);
+					ghost_voices_temp[Math.floor(i / 2)].push(note);
+					needs_ghost_voices[Math.floor(i / 2)] = true;
 				}
 			}
 		}
 		for(var i = 0; i < 2; i++){
-			if(needs_ghost_voices[2 * i]){
-				measure.ghost_voices[i] = ghost_voices_temp[2 * i];
+			if(needs_ghost_voices[i]){
+				measure.ghost_voices[i] = ghost_voices_temp[i];
 			}
 		}
 		return measure;
