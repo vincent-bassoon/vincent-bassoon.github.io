@@ -232,21 +232,20 @@ class HarmonyFunctions {
 		}
 		return harmony;
 	}
-	generate_harmony(chord_array, chorale_plan){
+	generate_harmony(chords, chorale_plan){
 		var nf = this.note_functions;
 		
 		var chords = [];
 		var sum = -1;
 		var fixed_pitches = {0: [], 1: [], 2: [], 3: []}
-		for(var i = 0; i < chord_array.length; i++){
-			chords.push(...chord_array[i]);
+		for(var i = 0; i < chorale_plan.length; i++){
 			
-			sum += chord_array[i].length;
+			sum += chorale_plan[i].get_phrase_length();
 			this.cadence_indicies.push(sum);
 			
 			var num = choose_int(this.cadence_probabilities[chorale_plan[i].get_cadence()]);
-			var degree = chord_array[i][chord_array[i].length - 1].get_degree(num);
-			var pitch = nf.num_to_pitch_for_cad(num, chord_array[i][chord_array[i].length - 1]);
+			var degree = chords[sum - 1].get_degree(num);
+			var pitch = nf.num_to_pitch_for_cad(num, chords[sum - 1]);
 			pitch = this.get_pitch_in_pref_range(pitch, 3);
 			fixed_pitches[3].unshift({"pitch": pitch, "degree": degree, "index": sum});
 		}
@@ -282,8 +281,7 @@ class HarmonyFunctions {
 		console.log(name_octave_string);
 		harmony.push(...harmony);
 		console.log(harmony);
-		chord_array.push(chord_array[0]);
 		chords.push(...chords);
-		new Score(harmony, chord_array, chords, nf).render_harmony();
+		new Score(harmony, chords, chorale_plan, nf).render_harmony();
 	}
 }
