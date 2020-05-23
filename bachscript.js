@@ -6,6 +6,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	var retry = true;
 	var num_beats = {7: 8, 8: 8, 9: 10, 10: 12};
 	var fermata_index = {7: 6, 8: 6, 9: 8, 10: 8};
+	var fermata_lengths = {7: 2, 8: 1, 9: 3, 10: 2};
 	while(retry){
 		retry = false;
 		var sum = 0;
@@ -44,7 +45,8 @@ function generate_chorale_plan(key, cadence_num, pickup){
 		if(cadence != "pac/iac" && cadence_length == 3 && choose_int({0: 0.8, 1: 0.2}) == 0){
 			cadence_length++;
 		}
-		chorale_plan.push(new PhraseData(key, phrase_lengths[i], i == cadence_num - 1,
+		var fermata_duration = fermata_lengths[phrase_lengths[i]];
+		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration, i == cadence_num - 1,
 						 cadence, cadence_length, previous_cadence_chord));
 		previous_cadence_chord = endings[cadence];
 	}
