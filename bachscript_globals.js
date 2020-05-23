@@ -194,12 +194,10 @@ class NoteFunctions {
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
 	}
-	get_names_in_key(key){
+	get_accidentals_in_key(key){
+		//Note: this function returns an object using lower case letters as keys
 		var start_value = key.get_pitch();
-		var names = {};
-		for(var letter in this.name_to_val){
-			names[letter] = false;
-		}
+		var accidentals = {};
 		var pitches;
 		if(key.get_modality() == "major"){
 			pitches = [0, 2, 4, 5, 7, 9, 11];
@@ -209,12 +207,12 @@ class NoteFunctions {
 		}
 		for(var i = 0; i < pitches.length; i++){
 			var value = (start_value + pitches[i]) % 12;
-			var temp = this.value_to_name(value, key);
-			names[temp] = true;
+			var name = this.value_to_name(value, key);
+			accidentals[name.substring(0, 1).toLowerCase()] = name.substring(1);
 		}
-		return names;
+		return accidentals;
 	}
-	get_accidentals(base_pitch, target_pitch){
+	get_accidental(base_pitch, target_pitch){
 		var accidentals = "";
 		if(base_pitch == target_pitch){
 			return accidentals;
@@ -240,7 +238,7 @@ class NoteFunctions {
 		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
-		return name + this.get_accidentals(this.name_to_val[name], value);
+		return name + this.get_accidental(this.name_to_val[name], value);
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
