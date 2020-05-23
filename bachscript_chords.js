@@ -88,8 +88,8 @@ class ChordFunctions {
 		this.generate_remaining_chords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generate_segment_chords(length, phrase_data){
-		var sub_phrase_lengths = this.generate_sub_phrases(length, phrase_data);
+	generate_segment_chords(phrase_data){
+		var sub_phrase_lengths = this.generate_sub_phrases(phrase_data);
 		var chords = [];
 		var key = phrase_data.get_key();
 		
