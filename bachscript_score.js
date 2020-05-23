@@ -97,7 +97,7 @@ class LineData {
 }
 
 class Score {
-	constructor(harmony, chord_array, chords, note_functions){
+	constructor(harmony, chords, chorale_plan, note_functions){
 		var key_temp = chords[chords.length - 1].get_key();
 		
 		this.accidentals_in_key = note_functions.get_accidentals_in_key(key_temp);
@@ -111,7 +111,7 @@ class Score {
 		
 		this.harmony = harmony;
 		this.chords = chords;
-		this.chord_array = chord_array;
+		this.chorale_plan = chorale_plan;
 		this.note_functions = note_functions;
 		this.vf = Vex.Flow;
 		this.formatter = new this.vf.Formatter();
@@ -184,10 +184,10 @@ class Score {
 		var line_data = new LineData(this);
 		
 		var measures = [];
-		var pickup = (this.chord_array[0].length % 2 == 0);
+		var pickup = (this.chorale_plan[0].get_phrase_length() % 2 == 0);
 		var index_start = 0;
-		for(var i = 0; i < this.chord_array.length; i++){
-			var chords_length = this.chord_array[i].length;
+		for(var i = 0; i < this.chorale_plan.length; i++){
+			var chords_length = this.chorale_plan[i].get_phrase_length();
 			var index = 0;
 			if(pickup){
 				measures.push(this.generate_single_measure(index + index_start, 1, 1, false));
