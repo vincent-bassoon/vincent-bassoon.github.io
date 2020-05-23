@@ -133,16 +133,24 @@ class Score {
 			staves[i].setContext(this.context).draw();
 		}
 		var voices = {};
+		var all_voices = [];
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
 			voices[i].addTickables(measure.notes[i]).setStave(staves[Math.floor(i / 2)]);
+			all_voices.push(voices[i]);
+		}
+		for(var i = 0; i < 2; i++){
+			if(measure.ghost_voices[i] != null){
+				voices[4 + i] = measure.ghost_voices[i];
+				all_voices.push(voices[4 + i]);
+			}
 		}
 		this.formatter.joinVoices([voices[0], voices[1]]);
 		this.formatter.joinVoices([voices[2], voices[3]]);
 		var indent = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
-		this.formatter.format([voices[0], voices[1], voices[2], voices[3]], staves[0].width - (indent - staves[0].x));
-		for(var i = 0; i < 4; i++){
-			voices[i].setContext(this.context).draw();
+		this.formatter.format(all_voices, staves[0].width - (indent - staves[0].x));
+		for(var i = 0; i < all_voices.length; i++){
+			all_voices[i].setContext(this.context).draw();
 		}
 	}
 	render_line(measures, staves){
@@ -194,14 +202,10 @@ class Score {
 	}
 		
 	generate_single_measure(index, index_length, duration){
-		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": null};
-		var ghost_voice;
-		for(var i = index; i < index + index_length; i++){
-			
-			for(var voice = 0; voice < 4; voice++){
-				var value = this.harmony[i][voice].get_end_value();
-			}
-		}
+		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [null, null]};
+		var needs_ghost_voices = {0: false, 2: false};
+		var ghost_voices_temp = {0: [], 2: []};
+		var prev_value = null;
 		for(var i = index; i < index + index_length; i++){
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][3 - voice].get_end_value();
@@ -235,7 +239,20 @@ class Score {
 				if(note_duration == 3){
 					note = note.addDotToAll();
 				}
-				measure.notes[voice].push(note);
+				if(voice % 2 == 0){
+					prev_value = value;
+					measure.notes[voice].push(note);
+					ghost_voices_temp[voice].push(new this.vf.GhostNote(note_data));
+				}
+				else if(value == prev_value){
+					measure.notes[voice].push(new this.vf.GhostNote(note_data));
+					ghost_voices_temp[voice].push(note);
+				}
+			}
+		}
+		for(var i = 0; i < 2; i++){
+			if(needs_ghost_voices[2 * i]){
+				measure.ghost_voices[i] = ghost_voices_temp[2 * i];
 			}
 		}
 		return measure;
