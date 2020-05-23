@@ -118,7 +118,8 @@ class Score {
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
 		
-		this.renderer.resize(1000, 100);
+console.log("render size");
+		this.renderer.resize(1000, 1000);
 		//*********************************************************************************************
 		
 		this.context = this.renderer.getContext();
