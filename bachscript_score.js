@@ -253,14 +253,14 @@ class Score {
 				else{
 					if(accidentals_in_key[name.substring(0, 1)] != name.substring(1)){
 						accidentals_in_key[name.substring(0, 1)] != name.substring(1);
-						if(name.substring(0, 1) == ""){
+						if(name.substring(1) == ""){
 							note = note.addAccidental(0, new this.vf.Accidental("n"));
 						}
 						else{
 							note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
 						}
 					}
-					if(note_duration[note_duration.length - 1] == "d"){
+					if(note_data.duration[note_data.duration.length - 1] == "d"){
 						note = note.addDotToAll();
 					}
 					measure.notes[voice].push(note);
@@ -276,7 +276,7 @@ class Score {
 		}
 		for(var i = 0; i < 2; i++){
 			if(!needs_ghost_voices[i]){
-				measure.ghost_voices[i] = [];
+				measure.ghost_voices[i] = null;
 			}
 		}
 		return measure;
