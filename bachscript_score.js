@@ -121,7 +121,7 @@ class Score {
 		
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
-		this.durations = {1: "q", 2: "h", 3: "hd", 4: "w"};
+		this.duration_strings = {1: "q", 2: "h", 3: "hd", 4: "w"};
 	}
 	get_accidentals_in_key_copy(){
 		var copy = {};
@@ -186,36 +186,67 @@ class Score {
 		var measures = [];
 		var pickup = (this.chorale_plan[0].get_phrase_length() % 2 == 0);
 		var index_start = 0;
-		for(var i = 0; i < this.chorale_plan.length; i++){
-			var chords_length = this.chorale_plan[i].get_phrase_length();
-			var index = 0;
-			if(pickup){
-				measures.push(this.generate_single_measure(index + index_start, 1, 1, false));
+		
+		var phrase_done_indices = [this.chorale_plan[0].get_phrase_length()];
+		for(var i = 1; i < this.chorale_plan.length; i++){
+			phrase_done_indices.push(this.chorale_plan[i].get_phrase_length() + phrase_done_indices[i - 1]);
+		}
+		
+		var num_beats = 0;
+		var index = 0;
+		var phrase_index = 0;
+		while(index < this.chords.length){
+			if(pickup && measures.length == 0){
+				measures.push(this.generate_single_measure(index, [1], 1, null));
 				index++;
-				line_data.check_new_line(measures);
+				num_beats++;
 			}
-			while(index + 4 <= chords_length){
-				measures.push(this.generate_single_measure(index + index_start, 4, 4, false));
+			else if(index + 4 <= phrase_done_indices[phrase_index]){
+				measures.push(this.generate_single_measure(index, [1, 1, 1, 1], 4, null));
 				index += 4;
-				line_data.check_new_line(measures);
+				num_beats += 4;
 			}
-			if(index < chords_length){
-				var duration = 4;
-				if(pickup){
-					duration = 3;
+			else{
+				var durations = [];
+				var sum = 0;
+				while(index < phrase_done_indices[phrase_index] - 1){
+					sum++;
+					durations.push(1);
+					index++;
 				}
-				measures.push(this.generate_single_measure(index + index_start, chords_length - index,
-									   duration, true));
-				line_data.check_new_line(measures);
+				var fermata_duration = this.chorale_plan[phrase_index].get_fermata_duration();
+				durations.push(fermata_duration);
+				var fermata_index = index;
+				index++;
+				sum += fermata_duration;
+				if(phrase_index != phrase_done_indices.length - 1){
+					var max = 4;
+					if(pickup){
+						max = 3;
+					}
+					while(sum < max){
+						durations.push(1);
+						sum++;
+						index++;
+					}
+				}
+				num_beats += sum;
+				measures.push(this.generate_single_measure(index, durations, sum, fermata_index));
 			}
-			index_start += chords_length;
+			if(num_beats >= 15){
+				line_data.generate_line(measures);
+				num_beats = 0;
+			}
+			if(phrase_done_indices.length > 0 && index >= phrase_done_indices[phrase_index]){
+				phrase_index++;
+			}
 		}
 		if(measures.length != 0){
 			line_data.generate_final_line(measures);
 		}
 	}
 	
-	create_note_data(value, name, duration, voice, i, index, index_length, last_in_measure){
+	create_note_data(value, name, duration, voice){
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
 			octave += 1;
@@ -223,13 +254,7 @@ class Score {
 		else if(name.substring(0, 2) == "b#"){
 			octave -= 1;
 		}
-		var note_duration;
-		if(i == index + index_length - 1){
-			note_duration = this.durations[duration - index_length + 1];
-		}
-		else{
-			note_duration = "q";
-		}
+		var note_duration = this.duration_strings[duration];
 		var stem_dir;
 		if(voice % 2 == 0){
 			stem_dir = 1;
@@ -244,16 +269,17 @@ class Score {
 		return note_data;
 	}
 		
-	generate_single_measure(index, index_length, duration, fermata){
-		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [[], []]};
+	generate_single_measure(start_index, durations, total_duration, fermata_index){
+		var measure = {notes: [[], [], [], []], "duration": total_duration, "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = this.get_accidentals_in_key_copy();
 		var needs_ghost_voices = {0: false, 1: false};
 		var prev_value = null;
-		for(var i = index; i < index + index_length; i++){
+		for(var i = 0; i < durations.length; i++){
+			var index = start_index + i;
 			for(var voice = 0; voice < 4; voice++){
-				var value = this.harmony[i][3 - voice].get_end_value();
-				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
-				var note_data = this.create_note_data(value, name, duration, voice, i, index, index_length)
+				var value = this.harmony[index][3 - voice].get_end_value();
+				var name = this.note_functions.value_to_name(value, this.chords[index].get_key()).toLowerCase();
+				var note_data = this.create_note_data(value, name, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
 				if(voice % 2 == 1 && value == prev_value){
 					measure.notes[voice].push(new this.vf.GhostNote(note_data));
@@ -273,7 +299,7 @@ class Score {
 					if(note_data.duration[note_data.duration.length - 1] == "d"){
 						note = note.addDotToAll();
 					}
-					if(voice == 0 && fermata && i == index + index_length - 1){
+					if(voice == 0 && fermata_index != null && index == fermata_index){
 						note = note.addArticulation(0, new this.vf.Articulation("a@a").setPosition(3));
 					}
 					measure.notes[voice].push(note);
