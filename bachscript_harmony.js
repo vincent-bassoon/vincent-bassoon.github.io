@@ -281,6 +281,9 @@ class HarmonyFunctions {
 		console.log(name_string);
 		console.log(name_octave_string);
 		harmony.push(...harmony);
+		console.log(harmony);
+		chord_array.push(chord_array[0]);
+		chords.push(...chords);
 		new Score(harmony, chord_array, chords, nf).render_harmony();
 	}
 }
