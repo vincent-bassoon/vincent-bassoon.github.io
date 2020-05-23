@@ -133,6 +133,7 @@ class Score {
 	
 	render_measure(measure, staves){
 		for(var i = 0; i < 2; i++){
+			staves[i].setBegBarType(this.vf.Barline.type.NONE);
 			if(measure.duration == 4 || measure.duration == 1){
 				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
 			}
@@ -185,12 +186,12 @@ class Score {
 			var chords_length = this.chord_array[i].length;
 			var index = 0;
 			if(pickup){
-				measures.push(this.generate_single_measure(index + index_start, 1, 1, line_data, false));
+				measures.push(this.generate_single_measure(index + index_start, 1, 1, false));
 				index++;
 				line_data.check_new_line(measures);
 			}
 			while(index + 4 <= chords_length){
-				measures.push(this.generate_single_measure(index + index_start, 4, 4, line_data, false));
+				measures.push(this.generate_single_measure(index + index_start, 4, 4, false));
 				index += 4;
 				line_data.check_new_line(measures);
 			}
@@ -200,7 +201,7 @@ class Score {
 					duration = 3;
 				}
 				measures.push(this.generate_single_measure(index + index_start, chords_length - index,
-									   duration, line_data, true));
+									   duration, true));
 				line_data.check_new_line(measures);
 			}
 			index_start += chords_length;
