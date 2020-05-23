@@ -121,7 +121,7 @@ class ChordFunctions {
 		console.log("chords: ", string);
 		return chords;
 	}
-	generate_sub_phrases(length, phrase_data){
+	generate_sub_phrases(phrase_data){
 		var sub_phrase_lengths = [];
 		
 		// sub_phrase_length of 2 means V-I, 1 means I
@@ -143,7 +143,7 @@ class ChordFunctions {
 		sub_phrase_lengths.push(choose_int(probs));
 		
 		var cad_length = phrase_data.get_cadence_length()
-		var spaces = length - cad_length - sub_phrase_lengths[0];
+		var spaces = phrase_data.get_phrase_length() - cad_length - sub_phrase_lengths[0];
 		
 		// frequency of each addition to cadence sub-phrase
 		var freqs = {0: 58, 1: 40, 2: 2};
@@ -154,7 +154,7 @@ class ChordFunctions {
 			}
 		}
 		cad_length += choose_int_from_freqs(freqs, choices);
-		spaces = length - cad_length - sub_phrase_lengths[0];
+		spaces = phrase_data.get_phrase_length() - cad_length - sub_phrase_lengths[0];
 		
 		// frequency of each length of sub-phrase
 		freqs = {2: 10, 3: 46, 4: 37, 5: 6, 6: 1};
