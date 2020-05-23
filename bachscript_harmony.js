@@ -235,7 +235,6 @@ class HarmonyFunctions {
 	generate_harmony(chords, chorale_plan){
 		var nf = this.note_functions;
 		
-		var chords = [];
 		var sum = -1;
 		var fixed_pitches = {0: [], 1: [], 2: [], 3: []}
 		for(var i = 0; i < chorale_plan.length; i++){
@@ -244,8 +243,8 @@ class HarmonyFunctions {
 			this.cadence_indicies.push(sum);
 			
 			var num = choose_int(this.cadence_probabilities[chorale_plan[i].get_cadence()]);
-			var degree = chords[sum - 1].get_degree(num);
-			var pitch = nf.num_to_pitch_for_cad(num, chords[sum - 1]);
+			var degree = chords[sum].get_degree(num);
+			var pitch = nf.num_to_pitch_for_cad(num, chords[sum]);
 			pitch = this.get_pitch_in_pref_range(pitch, 3);
 			fixed_pitches[3].unshift({"pitch": pitch, "degree": degree, "index": sum});
 		}
