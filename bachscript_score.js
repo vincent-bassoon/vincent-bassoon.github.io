@@ -96,7 +96,7 @@ class Score {
 	constructor(harmony, chord_array, chords, note_functions){
 		var key_temp = chords[chords.length - 1].get_key();
 		
-		this.names_in_key = note_functions.get_names_in_key(key_temp);
+		this.accidentals_in_key = note_functions.get_accidentals_in_key(key_temp);
 		
 		if(key_temp.get_modality() == "minor"){
 			this.key_name = note_functions.value_to_name(key_temp.get_pitch() + 3, key_temp);
@@ -119,10 +119,16 @@ class Score {
 		//*********************************************************************************************
 		
 		this.context = this.renderer.getContext();
-		this.voice_clefs = ["bass", "bass", "treble", "treble"];
+		this.voice_clefs = ["treble", "treble", "bass", "bass"];
 		this.durations = {1: "q", 2: "h", 3: "hd", 4: "w"};
 	}
-	
+	get_accidentals_in_key_copy(){
+		var copy = {};
+		for(var key in this.accidentals_in_key){
+			copy[key] = this.accidentals_in_key[key];
+		}
+		return copy;
+	}
 	
 	render_measure(measure, staves){
 		console.log("rendering new measure: ", measure);
@@ -141,7 +147,8 @@ class Score {
 		}
 		for(var i = 0; i < 2; i++){
 			if(measure.ghost_voices[i] != null){
-				voices[4 + i] = measure.ghost_voices[i];
+				voices[4 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+				voices[4 + i].addTickables(measure.ghost_voices[i]).setStave(staves[i]);
 				all_voices.push(voices[4 + i]);
 			}
 		}
@@ -200,60 +207,76 @@ class Score {
 			line_data.generate_final_line(measures);
 		}
 	}
+	
+	create_note_data(value, name, duration, voice, i, index, index_length, last_in_measure){
+		var octave = Math.floor(value / 12);
+		if(name.substring(0, 2) == "cb"){
+			octave += 1;
+		}
+		var note_duration;
+		if(i == index + index_length - 1){
+			note_duration = this.durations[duration - index_length + 1];
+		}
+		else{
+			note_duration = "q";
+		}
+		var stem_dir;
+		if(voice % 2 == 0){
+			stem_dir = 1;
+		}
+		else{
+			stem_dir = -1;
+		}
+		var note_data = {"clef": this.voice_clefs[voice],
+				 "keys": [name + "/" + octave],
+				 "duration": note_duration,
+				 "stem_direction": stem_dir};
+		return note_data;
+	}
 		
 	generate_single_measure(index, index_length, duration){
-		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [null, null]};
+		var measure = {notes: [[], [], [], []], "duration": duration, "width": null, "ghost_voices": [[], []]};
+		var accidentals_in_key = this.get_accidentals_in_key_copy();
 		var needs_ghost_voices = {0: false, 1: false};
-		var ghost_voices_temp = {0: [], 1: []};
 		var prev_value = null;
 		for(var i = index; i < index + index_length; i++){
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[i][3 - voice].get_end_value();
 				var name = this.note_functions.value_to_name(value, this.chords[i].get_key()).toLowerCase();
-				var octave = Math.floor(value / 12);
-				if(name.substring(0, 2) == "cb"){
-					octave += 1;
-				}
-				var note_duration;
-				if(i == index + index_length - 1){
-					note_duration = this.durations[duration - index_length + 1];
-				}
-				else{
-					note_duration = "q";
-				}
-				var stem_dir;
-				if(voice % 2 == 0){
-					stem_dir = -1;
-				}
-				else{
-					stem_dir = 1;
-				}
-				var note_data = {"clef": this.voice_clefs[voice],
-						 "keys": [name + "/" + octave],
-						 "duration": note_duration,
-						 "stem_direction": stem_dir};
+				var note_data = this.create_note_data(value, name, duration, voice, i, index, index_length)
 				var note = new this.vf.StaveNote(note_data);
-				if(name.length != 1){
-					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
-				}
-				if(note_duration == 3){
-					note = note.addDotToAll();
-				}
-				if(voice % 2 == 0){
-					prev_value = value;
-					measure.notes[voice].push(note);
-					ghost_voices_temp[Math.floor(i / 2)].push(new this.vf.GhostNote(note_data));
-				}
-				else if(value == prev_value){
+				if(voice % 2 == 1 && value == prev_value){
 					measure.notes[voice].push(new this.vf.GhostNote(note_data));
-					ghost_voices_temp[Math.floor(i / 2)].push(note);
-					needs_ghost_voices[Math.floor(i / 2)] = true;
+					measure.ghost_voices[Math.floor(voice / 2)].push(note);
+					needs_ghost_voices[Math.floor(voice / 2)] = true;
 				}
+				else{
+					if(accidentals_in_key[name.substring(0, 1)] != name.substring(1)){
+						accidentals_in_key[name.substring(0, 1)] != name.substring(1);
+						if(name.substring(0, 1) == ""){
+							note = note.addAccidental(0, new this.vf.Accidental("n"));
+						}
+						else{
+							note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
+						}
+					}
+					if(note_duration[note_duration.length - 1] == "d"){
+						note = note.addDotToAll();
+					}
+					measure.notes[voice].push(note);
+					if(voice % 2 == 0){
+						prev_value = value;
+					}
+					else{
+						measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
+					}
+				}
+				
 			}
 		}
 		for(var i = 0; i < 2; i++){
-			if(needs_ghost_voices[i]){
-				measure.ghost_voices[i] = ghost_voices_temp[i];
+			if(!needs_ghost_voices[i]){
+				measure.ghost_voices[i] = [];
 			}
 		}
 		return measure;
