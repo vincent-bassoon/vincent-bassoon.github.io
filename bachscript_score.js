@@ -131,7 +131,6 @@ class Score {
 	}
 	
 	render_measure(measure, staves){
-		console.log("rendering new measure: ", measure);
 		for(var i = 0; i < 2; i++){
 			if(measure.duration == 4 || measure.duration == 1){
 				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
@@ -161,7 +160,6 @@ class Score {
 		}
 	}
 	render_line(measures, staves){
-		console.log("rendering new line with " + measures.length + " measures");
 		this.render_measure(measures[0], staves);
 		for(var i = 1; i < measures.length; i++){
 			for(var j = 0; j < 2; j++){
@@ -202,7 +200,6 @@ class Score {
 			}
 			index_start += chords_length;
 		}
-		console.log(measures);
 		if(measures.length != 0){
 			line_data.generate_final_line(measures);
 		}
