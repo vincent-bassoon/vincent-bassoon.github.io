@@ -76,10 +76,10 @@ class LineData {
 			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
 			if(this.line_num == 0){
 				staves[i] = staves[i].addTimeSignature("4/4");
-				staves[i].setNoteStartX(this.initial_note_indent + 100);
+				staves[i].setNoteStartX(this.initial_note_indent);
 			}
 			else{
-				staves[i].setNoteStartX(this.note_indent + 1000);
+				staves[i].setNoteStartX(this.note_indent);
 			}
 		}
 		this.score.render_line(measures, staves);
