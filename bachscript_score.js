@@ -29,7 +29,7 @@ class LineData {
 		
 		this.duration_to_length = {};
 		for(var i = 1; i < 5; i++){
-			this.duration_to_length[i] = this.measure_length * ((i + 1) / 5);
+			this.duration_to_length[i] = this.measure_length * (i / 4);
 		}
 		
 		this.line_num = 0;
