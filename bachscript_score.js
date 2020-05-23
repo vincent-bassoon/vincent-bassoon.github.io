@@ -34,14 +34,6 @@ class LineData {
 		
 		this.line_num = 0;
 	}
-	get_note_indent(){
-		if(this.line_num == 0){
-			return this.initial_note_indent;
-		}
-		else{
-			return this.note_indent;
-		}
-	}
 	check_new_line(measures){
 		var x = this.x_margin + this.get_note_indent();
 		var beats = 0;
@@ -76,8 +68,11 @@ class LineData {
 			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
 			if(this.line_num == 0){
 				staves[i] = staves[i].addTimeSignature("4/4");
+				staves[i].setNoteStartX(this.initial_note_indent);
 			}
-			staves[i].setNoteStartX(this.get_note_indent());
+			else{
+				staves[i].setNoteStartX(this.note_indent);
+			}
 		}
 		this.score.render_line(measures, staves);
 		this.line_num++;
