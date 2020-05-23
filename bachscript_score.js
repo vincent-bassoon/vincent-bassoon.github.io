@@ -16,9 +16,9 @@ class LineData {
 		document.body.clientWidth;
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
 		document.body.clientHeight;
-		var dim = Math.max(width, height);
+		this.dim = Math.max(width, height);
 		
-		this.stave_x_end = dim - 20;
+		this.stave_x_end = this.dim - 20;
 		this.line_height = 250;
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
@@ -92,6 +92,7 @@ class LineData {
 		}
 		this.generate_line(measures, this.stave_x_end, 1);
 		this.line_num++;
+		this.score.renderer.resize(this.dim, this.line_num * this.line_height);
 	}
 }
 
@@ -117,10 +118,6 @@ class Score {
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
-		
-console.log("render size");
-		this.renderer.resize(1000, 1000);
-		//*********************************************************************************************
 		
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
