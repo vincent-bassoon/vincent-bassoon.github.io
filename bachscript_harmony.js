@@ -265,22 +265,6 @@ class HarmonyFunctions {
 		for(var i = chords.length - 1; i >= 0; i--){
 			this.generate_single_harmony(chords, harmony, i, fixed_pitches);
 		}
-		var name_string = "";
-		var name_octave_string = "";
-		for(var voice = 3; voice >= 0; voice--){
-			for(var i = 0; i < chords.length; i++){
-				var name = nf.value_to_name(harmony[i][voice].get_end_value(), chords[i].get_key()) + " ";
-				if(name.length == 2){
-					name += " ";
-				}
-				name_string += name;
-				name_octave_string += name + Math.floor(harmony[i][voice].get_end_value() / 12) + "  ";
-			}
-			name_string += "\n";
-			name_octave_string += "\n";
-		}
-		console.log(name_string);
-		console.log(name_octave_string);
 		new Score(harmony, chords, chorale_plan, nf).render_harmony();
 	}
 }
