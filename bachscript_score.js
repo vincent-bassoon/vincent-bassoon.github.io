@@ -264,7 +264,7 @@ class Score {
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
 	}
 	
-	create_note_data(value, name, , octave, duration, voice){
+	create_note_data(value, name, octave, duration, voice){
 		var note_duration = this.duration_strings[duration];
 		var stem_dir;
 		if(voice % 2 == 0){
