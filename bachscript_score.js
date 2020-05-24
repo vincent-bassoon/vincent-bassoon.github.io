@@ -10,7 +10,7 @@ class LineData {
 		treble_temp = treble_temp.addTimeSignature("4/4");
 		bass_temp = bass_temp.addTimeSignature("4/4");
 		
-		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
+		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX()) + 10;
 		
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
@@ -85,13 +85,9 @@ class LineData {
 			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
 			if(this.line_num == 0){
 				staves[i] = staves[i].addTimeSignature("4/4");
-				staves[i].setNoteStartX(this.initial_note_indent);
-			}
-			else{
-				staves[i].setNoteStartX(this.note_indent);
 			}
 		}
-		this.score.render_line(measures, staves, is_last);
+		this.score.render_line(measures, staves, is_last, this.initial_note_indent);
 		this.line_num++;
 	}
 }
@@ -131,7 +127,7 @@ class Score {
 		return copy;
 	}
 	
-	render_measure(measure, staves, is_last){
+	render_measure(measure, staves, is_last, initial_indent){
 		for(var i = 0; i < 2; i++){
 			staves[i].setBegBarType(this.vf.Barline.type.NONE);
 			if(measure.duration == 4 || measure.duration == 1 || is_last){
@@ -166,21 +162,26 @@ class Score {
 		this.formatter.joinVoices([voices[4], voices[0], voices[1]]);
 		this.formatter.joinVoices([voices[5], voices[2], voices[3]]);
 		var indent = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
+		if(initial_indent != null){
+			indent = initial_indent
+		}
 		this.formatter.format(all_voices, staves[0].width - (indent - staves[0].x));
+		staves[0].setNoteStartX(indent);
+		staves[1].setNoteStartX(indent);
 		for(var i = 0; i < all_voices.length; i++){
 			all_voices[i].setContext(this.context).draw();
 		}
 	}
-	render_line(measures, staves, is_last){
+	render_line(measures, staves, is_last, initial_indent){
 		var brace = new this.vf.StaveConnector(staves[0], staves[1]).setType(3);
 		brace.setContext(this.context).draw();
 		var line_left = new this.vf.StaveConnector(staves[0], staves[1]).setType(1);
 		line_left.setContext(this.context).draw();
 		if(measures.length == 1){
-			this.render_measure(measures[0], staves, is_last);
+			this.render_measure(measures[0], staves, is_last, initial_indent);
 		}
 		else{
-			this.render_measure(measures[0], staves, false);
+			this.render_measure(measures[0], staves, false, initial_indent);
 		}
 		for(var i = 1; i < measures.length; i++){
 			for(var j = 0; j < 2; j++){
@@ -189,10 +190,10 @@ class Score {
 				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
 			if(i == measures.length - 1){
-				this.render_measure(measures[i], staves, is_last);
+				this.render_measure(measures[i], staves, is_last, null);
 			}
 			else{
-				this.render_measure(measures[i], staves, false);
+				this.render_measure(measures[i], staves, false, null);
 			}
 		}
 	}
