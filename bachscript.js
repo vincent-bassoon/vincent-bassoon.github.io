@@ -7,17 +7,18 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	var num_beats = {7: 8, 8: 8, 9: 10, 10: 12};
 	var fermata_index = {7: 6, 8: 6, 9: 8, 10: 8};
 	var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
+	var beats_sum = 0;
 	while(retry){
 		retry = false;
-		var sum = 0;
+		beats_sum = 0;
 		for(var i = 0; i < cadence_num; i++){
 			// 75% 7-8 note segment length, 25% 9-10 note length
 			phrase_lengths[i] = pickup + choose_int({7: 0.75, 9: 0.25});
-			if((sum + fermata_index[phrase_lengths[i]]) % 16 == 0){
+			if((beats_sum + fermata_index[phrase_lengths[i]]) % 16 == 0){
 				i = cadence_num;
 				retry = true;
 			}
-			sum += num_beats[phrase_lengths[i]];
+			beats_sum += num_beats[phrase_lengths[i]];
 		}
 	}
 	
@@ -46,6 +47,9 @@ function generate_chorale_plan(key, cadence_num, pickup){
 			cadence_length++;
 		}
 		var fermata_duration = fermata_lengths[phrase_lengths[i]];
+		if(i == cadence_num - 1 && beats_sum % 4 != 0){
+			fermata_duration += (4 - (beats_sum % 4));
+		}
 		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration, i == cadence_num - 1,
 						 cadence, cadence_length, previous_cadence_chord));
 		previous_cadence_chord = endings[cadence];
