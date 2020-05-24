@@ -124,26 +124,26 @@ class Chord {
 	}
 }
 
-class Voice {
+class HarmonyUnit {
 	constructor(){
-		this.end_note_value = null;
-		this.start_note_value = null;
+		this.end_note_value = [null, null, null, null];
+		this.start_note_value = [null, null, null, null];
 	}
-	get_end_value(){
-		return this.end_note_value;
+	get_end_value(voice){
+		return this.end_note_value[voice];
 	}
-	get_start_value(){
-		return this.start_note_value;
+	get_start_value(voice){
+		return this.start_note_value[voice];
 	}
-	set_end_value(value){
-		this.end_note_value = value;
+	set_end_value(voice, value){
+		this.end_note_value[voice] = value;
 	}
-	set_start_value(value){
-		this.start_note_value = value;
+	set_start_value(voice, value){
+		this.start_note_value[voice] = value;
 	}
-	set_note(value){
-		this.start_note_value = value;
-		this.end_note_value = value;
+	set_note(voice, value){
+		this.start_note_value[voice] = value;
+		this.end_note_value[voice] = value;
 	}
 	
 }
