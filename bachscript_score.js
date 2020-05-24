@@ -16,23 +16,18 @@ class LineData {
 		document.body.clientWidth;
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
 		document.body.clientHeight;
-		this.dim = Math.max(width, height);
+		
+		this.score.measures_per_line = 4;
 		
 		this.stave_x_end = 800;
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
-		this.measure_length = 150;
 		
 		this.clefs = ["treble", "bass"];
 		
-		this.duration_to_length = {};
-		for(var i = 1; i < 5; i++){
-			this.duration_to_length[i] = this.measure_length * (i / 4);
-		}
-		
-		this.min_add_per_beat = 1000;
+		this.min_measure_size = 1000;
 		this.line_num = 0;
 	}
 	get_renderer_width(){
@@ -50,22 +45,19 @@ class LineData {
 		}
 	}
 	generate_line(measures, beats, is_last){
-		var x = this.get_note_indent();
-		for(var i = 0; i < measures.length; i++){
-			var duration = measures[i].duration;
-			measures[i].width = this.duration_to_length[duration]
-			x += this.duration_to_length[duration];
+		var measure_size;
+		if(beats <= this.score.measures_per_line * 4 - 3){
+			measure_size = this.min_measure_size;
 		}
-		var add_per_beat = (this.stave_x_end - x) / beats;
-		if(add_per_beat < this.min_add_per_beat){
-			this.min_add_per_beat = add_per_beat;
-		}
-		if(beats <= 13){
-			add_per_beat = this.min_add_per_beat;
+		else{
+			measure_size = (this.stave_x_end - this.get_note_indent()) / beats;
+			if(measure_size < this.min_measure_size){
+				this.min_measure_size = measure_size;
+			}
 		}
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
-			measures[i].width += add_per_beat * duration;
+			measures[i].width = measure_size * duration;
 		}
 		var staves = {};
 		for(var i = 0; i < 2; i++){
@@ -105,6 +97,7 @@ class Score {
 		this.note_functions = note_functions;
 		this.vf = Vex.Flow;
 		this.formatter = new this.vf.Formatter();
+		this.measures_per_line = 4;
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
@@ -232,7 +225,7 @@ class Score {
 				num_beats += num_beats_change;
 				if(phrase_index != phrase_done_indices.length - 1){
 					var max = 4;
-					if(pickup && num_beats >= 14){
+					if(pickup && num_beats >= 4 * this.measures_per_line - 2){
 						max = 3;
 						needs_pickup = true;
 					}
@@ -246,7 +239,7 @@ class Score {
 				measures.push(this.generate_single_measure(index, durations, num_beats_change, fermata_index));
 				index += index_change;
 			}
-			if(num_beats >= 15){
+			if(num_beats >= 4 * this.measures_per_line - 1){
 				line_data.generate_line(measures, num_beats, index >= this.chords.length);
 				measures = [];
 				num_beats = 0;
