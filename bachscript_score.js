@@ -264,14 +264,7 @@ class Score {
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
 	}
 	
-	create_note_data(value, name, duration, voice){
-		var octave = Math.floor(value / 12);
-		if(name.substring(0, 2) == "cb"){
-			octave += 1;
-		}
-		else if(name.substring(0, 2) == "b#"){
-			octave -= 1;
-		}
+	create_note_data(value, name, , octave, duration, voice){
 		var note_duration = this.duration_strings[duration];
 		var stem_dir;
 		if(voice % 2 == 0){
@@ -289,7 +282,7 @@ class Score {
 		
 	generate_single_measure(start_index, durations, total_duration, fermata_index){
 		var measure = {notes: [[], [], [], []], "duration": total_duration, "width": null, "ghost_voices": [[], []]};
-		var accidentals_in_key = this.get_accidentals_in_key_copy();
+		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
 		var prev_value = null;
 		for(var i = 0; i < durations.length; i++){
@@ -297,17 +290,28 @@ class Score {
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[index][3 - voice].get_end_value();
 				var name = this.note_functions.value_to_name(value, this.chords[index].get_key()).toLowerCase();
-				var note_data = this.create_note_data(value, name, durations[i], voice);
+				var octave = Math.floor(value / 12);
+				if(name.substring(0, 2) == "cb"){
+					octave += 1;
+				}
+				else if(name.substring(0, 2) == "b#"){
+					octave -= 1;
+				}
+				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
+				var clef_index = Math.floor(voice / 2);
 				if(voice % 2 == 1 && value == prev_value){
 					//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
 					measure.notes[voice].push(new this.vf.GhostNote(note_data));
-					measure.ghost_voices[Math.floor(voice / 2)].push(note);
-					needs_ghost_voices[Math.floor(voice / 2)] = true;
+					measure.ghost_voices[clef_index].push(note);
+					needs_ghost_voices[clef_index] = true;
 				}
 				else{
-					if(accidentals_in_key[name.substring(0, 1)] != name.substring(1)){
-						accidentals_in_key[name.substring(0, 1)] = name.substring(1);
+					if(!(octave in accidentals_in_key[clef_index])){
+						accidentals_in_key[clef_index][octave] = this.get_accidentals_in_key_copy();
+					}
+					if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
+						accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
 						if(name.substring(1) == ""){
 							note = note.addAccidental(0, new this.vf.Accidental("n"));
 						}
