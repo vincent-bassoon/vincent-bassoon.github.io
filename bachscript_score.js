@@ -12,11 +12,6 @@ class LineData {
 		
 		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
 		
-		/*var width  = window.innerWidth || document.documentElement.clientWidth || 
-		document.body.clientWidth;
-		var height = window.innerHeight|| document.documentElement.clientHeight|| 
-		document.body.clientHeight;*/
-		
 		this.score.measures_per_line = 4;
 		
 		this.stave_width = 800;
@@ -26,6 +21,17 @@ class LineData {
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 45;
+		
+		var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
+			var height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
+			var factor = this.line_height / height;
+			this.stave_width = width * factor - (2 * this.x_marin) - 2;
+		}
+		else{
+			this.stave_width = width - (2 * this.x_margin) - 2;
+		}
+		
 		
 		this.clefs = ["treble", "bass"];
 		
