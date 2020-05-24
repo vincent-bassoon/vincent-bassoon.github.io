@@ -28,7 +28,7 @@ class LineData {
 				width = temp;
 			}
 			var factor = this.line_height / height;
-			this.stave_width = width * factor - (2 * this.x_marin) - 2;
+			this.stave_width = (width - (2 * this.x_margin) - 2) * factor;
 		}
 		else{
 			this.stave_width = width - (2 * this.x_margin) - 2;
