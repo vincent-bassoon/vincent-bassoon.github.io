@@ -1,4 +1,4 @@
-function generate_chorale_plan(key, cadence_num, pickup){
+function generate_chorale_plan(key, cadence_num, pickup, harmony_functions){
 	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
 	var phrase_lengths = {};
@@ -14,7 +14,8 @@ function generate_chorale_plan(key, cadence_num, pickup){
 		for(var i = 0; i < cadence_num; i++){
 			// 75% 7-8 note segment length, 25% 9-10 note length
 			phrase_lengths[i] = pickup + choose_int({7: 0.75, 9: 0.25});
-			if((beats_sum + fermata_index[phrase_lengths[i]]) % 16 == 0){
+			var beats_per_line = (harmony_functions.score.measures_per_line * 4);
+			if(beats_per_line > 8 && (beats_sum + fermata_index[phrase_lengths[i]]) % beats_per_line == 0){
 				i = cadence_num;
 				retry = true;
 			}
@@ -75,10 +76,10 @@ function run(){
 		pitch = (pitch + 9) % 12;
 	}
 	
-	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num, pickup);
-	
 	var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
+	
+	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num, pickup, harmony_functions);
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
