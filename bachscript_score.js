@@ -49,7 +49,7 @@ class LineData {
 			return this.note_indent;
 		}
 	}
-	generate_line(measures, beats){
+	generate_line(measures, beats, is_last){
 		var x = this.get_note_indent();
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
@@ -81,7 +81,7 @@ class LineData {
 				staves[i].setNoteStartX(this.note_indent);
 			}
 		}
-		this.score.render_line(measures, staves);
+		this.score.render_line(measures, staves, is_last);
 		this.line_num++;
 	}
 }
@@ -121,10 +121,10 @@ class Score {
 		return copy;
 	}
 	
-	render_measure(measure, staves){
+	render_measure(measure, staves, is_last){
 		for(var i = 0; i < 2; i++){
 			staves[i].setBegBarType(this.vf.Barline.type.NONE);
-			if(measure.duration == 4 || measure.duration == 1){
+			if(measure.duration == 4 || measure.duration == 1 || is_last){
 				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
 			}
 			else{
@@ -161,19 +161,29 @@ class Score {
 			all_voices[i].setContext(this.context).draw();
 		}
 	}
-	render_line(measures, staves){
+	render_line(measures, staves, is_last){
 		var brace = new this.vf.StaveConnector(staves[0], staves[1]).setType(3);
 		brace.setContext(this.context).draw();
 		var lineLeft = new this.vf.StaveConnector(staves[0], staves[1]).setType(2);
 		brace.setContext(this.context).draw();
-		this.render_measure(measures[0], staves);
+		if(measures.length == 1){
+			this.render_measure(measures[0], staves, is_last);
+		}
+		else{
+			this.render_measure(measures[0], staves, false);
+		}
 		for(var i = 1; i < measures.length; i++){
 			for(var j = 0; j < 2; j++){
 				var x = staves[j].width + staves[j].x;
 				var y = staves[j].y;
 				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
-			this.render_measure(measures[i], staves);
+			if(i == measures.length - 1){
+				this.render_measure(measures[i], staves, is_last);
+			}
+			else{
+				this.render_measure(measures[i], staves, false);
+			}
 		}
 	}
 	
@@ -237,7 +247,7 @@ class Score {
 				index += index_change;
 			}
 			if(num_beats >= 15){
-				line_data.generate_line(measures, num_beats);
+				line_data.generate_line(measures, num_beats, index >= this.chords.length);
 				measures = [];
 				num_beats = 0;
 			}
@@ -246,7 +256,7 @@ class Score {
 			}
 		}
 		if(num_beats > 0){
-			line_data.generate_line(measures, num_beats);
+			line_data.generate_line(measures, num_beats, true);
 		}
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
 	}
