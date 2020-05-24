@@ -18,6 +18,7 @@ class LineData {
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 45;
+		this.beat_size_list = [];
 		
 		var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
@@ -41,6 +42,13 @@ class LineData {
 		
 		this.line_num = 0;
 	}
+	avg(list){
+		var sum = 0;
+		for(var i = 0; i < list.length; i++){
+			sum += list[i];
+		}
+		return sum / list.length;
+	}
 	get_renderer_width(){
 		return this.stave_width + (this.x_margin * 2);
 	}
@@ -58,10 +66,11 @@ class LineData {
 	generate_line(measures, beats, is_last){
 		var measure_beat_size;
 		if(beats <= this.score.measures_per_line * 4 - 3){
-			measure_beat_size = this.min_measure_beat_size;
+			measure_beat_size = this.avg(this.beat_size_list);
 		}
 		else{
 			measure_beat_size = (this.stave_width - this.get_note_indent()) / beats;
+			this.beat_size_list.push(measure_beat_size);
 		}
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
