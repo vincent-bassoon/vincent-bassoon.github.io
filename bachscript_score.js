@@ -288,7 +288,7 @@ class Score {
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
 			for(var voice = 0; voice < 4; voice++){
-				var value = this.harmony[index][3 - voice].get_end_value();
+				var value = this.harmony[index].get_end_value(3 - voice);
 				var name = this.note_functions.value_to_name(value, this.chords[index].get_key()).toLowerCase();
 				var octave = Math.floor(value / 12);
 				if(name.substring(0, 2) == "cb"){
