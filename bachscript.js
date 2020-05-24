@@ -50,7 +50,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 		if(i == cadence_num - 1 && beats_sum % 4 != 0){
 			fermata_duration += (4 - (beats_sum % 4));
 		}
-		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration, i == cadence_num - 1,
+		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration,
 						 cadence, cadence_length, previous_cadence_chord));
 		previous_cadence_chord = endings[cadence];
 	}
