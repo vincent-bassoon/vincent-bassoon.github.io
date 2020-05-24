@@ -12,9 +12,6 @@ class LineData {
 		
 		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
 		
-		this.score.measures_per_line = 4;
-		
-		this.stave_width = 800;
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
@@ -31,6 +28,8 @@ class LineData {
 		else{
 			this.stave_width = width - (2 * this.x_margin) - 2;
 		}
+		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
+		this.score.measures_per_line = Math.floor(possible_beats / 4);
 		
 		
 		this.clefs = ["treble", "bass"];
@@ -101,7 +100,6 @@ class Score {
 		this.note_functions = note_functions;
 		this.vf = Vex.Flow;
 		this.formatter = new this.vf.Formatter();
-		this.measures_per_line = 4;
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
