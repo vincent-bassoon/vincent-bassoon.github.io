@@ -23,7 +23,7 @@ class LineData {
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
-		this.measure_length = 100;
+		this.measure_length = 150;
 		
 		this.clefs = ["treble", "bass"];
 		
@@ -32,10 +32,11 @@ class LineData {
 			this.duration_to_length[i] = this.measure_length * (i / 4);
 		}
 		
+		this.min_add_per_beat = 1000;
 		this.line_num = 0;
 	}
 	get_renderer_width(){
-		return this.stave_x_end + 10;
+		return this.stave_x_end + (this.x_margin * 2);
 	}
 	get_renderer_height(){
 		return this.line_height * (this.line_num + 0.3);
@@ -56,11 +57,15 @@ class LineData {
 			x += this.duration_to_length[duration];
 		}
 		var add_per_beat = (this.stave_x_end - x) / beats;
+		if(add_per_beat < this.min_add_per_beat){
+			this.min_add_per_beat = add_per_beat;
+		}
+		if(beats <= 13){
+			add_per_beat = this.min_add_per_beat;
+		}
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
-			if(beats > 12){
-				measures[i].width += add_per_beat * duration;
-			}
+			measures[i].width += add_per_beat * duration;
 		}
 		var staves = {};
 		for(var i = 0; i < 2; i++){
@@ -103,7 +108,6 @@ class Score {
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
-		this.renderer.resize(1000, 500);
 		
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
@@ -160,7 +164,7 @@ class Score {
 	render_line(measures, staves){
 		var brace = new this.vf.StaveConnector(staves[0], staves[1]).setType(3);
 		brace.setContext(this.context).draw();
-		var lineLeft = new this.vf.StaveConnector(staves[0], staves[1]).setType(1);
+		var lineLeft = new this.vf.StaveConnector(staves[0], staves[1]).setType(2);
 		brace.setContext(this.context).draw();
 		this.render_measure(measures[0], staves);
 		for(var i = 1; i < measures.length; i++){
@@ -188,8 +192,10 @@ class Score {
 		var num_beats = 0;
 		var index = 0;
 		var phrase_index = 0;
+		var needs_pickup = pickup;
 		while(index < this.chords.length){
-			if(pickup && measures.length == 0){
+			if(needs_pickup){
+				needs_pickup = false;
 				measures.push(this.generate_single_measure(index, [1], 1, null));
 				index++;
 				num_beats++;
@@ -218,6 +224,7 @@ class Score {
 					var max = 4;
 					if(pickup && num_beats >= 14){
 						max = 3;
+						needs_pickup = true;
 					}
 					while(num_beats_change < max){
 						durations.push(1);
@@ -237,6 +244,9 @@ class Score {
 			if(phrase_done_indices.length > 0 && index >= phrase_done_indices[phrase_index]){
 				phrase_index++;
 			}
+		}
+		if(num_beats > 0){
+			line_data.generate_line(measures, num_beats);
 		}
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
 	}
@@ -284,7 +294,7 @@ class Score {
 				}
 				else{
 					if(accidentals_in_key[name.substring(0, 1)] != name.substring(1)){
-						accidentals_in_key[name.substring(0, 1)] != name.substring(1);
+						accidentals_in_key[name.substring(0, 1)] = name.substring(1);
 						if(name.substring(1) == ""){
 							note = note.addAccidental(0, new this.vf.Accidental("n"));
 						}
