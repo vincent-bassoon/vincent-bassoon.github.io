@@ -65,16 +65,18 @@ class HarmonyFunctions {
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < 2; i++){
 			if(this.check_adjacent[order_index][i]){
-				var parity = this.adjacent_direction[i];
-				var voice1 = parity * harmony[index][voice].get_start_value();
-				var voice2 = parity * harmony[index][voice + parity].get_start_value();
-				if(voice1 > voice2){
-					console.log("  crossed");
-					return true;
-				}
-				if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
-					console.log("  voices too far apart");
-					return true;
+				for(var start_or_end = 0; start_or_end < 2; start_or_end++){
+					var parity = this.adjacent_direction[i];
+					var voice1 = parity * harmony[index].get_value(voice, start_or_end);
+					var voice2 = parity * harmony[index].get_value(voice + parity, start_or_end);
+					if(voice1 > voice2){
+						console.log("  crossed");
+						return true;
+					}
+					if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
+						console.log("  voices too far apart");
+						return true;
+					}
 				}
 			}
 		}
@@ -87,10 +89,10 @@ class HarmonyFunctions {
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
-			var interval = Math.abs(harmony[index][voice].get_start_value() - harmony[index][voice2].get_start_value()) % 12;
+			var interval = Math.abs(harmony[index].get_start_value(voice) - harmony[index].get_start_value(voice2)) % 12;
 			for(var j = 0; j < 2; j++){
 				if(interval == this.parallel_pitches[j]){
-					var interval2 = Math.abs(harmony[index + 1][voice].get_start_value() - harmony[index + 1][voice2].get_start_value()) % 12;
+					var interval2 = Math.abs(harmony[index + 1].get_end_value(voice) - harmony[index + 1].get_end_value(voice2)) % 12;
 					if(interval2 == interval){
 						console.log("  parallels");
 						return true;
@@ -125,8 +127,7 @@ class HarmonyFunctions {
 		return this.cadence_indicies.includes(index);
 	}
 	is_in_absolute_range(value, voice_index){
-		return value >= this.absolute_ranges[voice_index].min && 
-			value <= this.absolute_ranges[voice_index].max;
+		return value >= this.absolute_ranges[voice_index].min && value <= this.absolute_ranges[voice_index].max;
 	}
 	get_pitch_in_pref_range(pitch, voice_index){
 		var min = this.preferred_ranges[voice_index].min;
@@ -149,15 +150,15 @@ class HarmonyFunctions {
 		for(var i = 0; i < voicing.length; i++){
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
-				harmony[index][voice].set_note(pitch_options[voice][degree][j]);
+				harmony[index].set_note(voice, pitch_options[voice][degree][j]);
 				if(this.has_errors(harmony, index, order_index)){
-					harmony[index][voice].set_note(null);
+					harmony[index].set_note(voice, null);
 				}
 				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
 					return true;
 				}
 				else{
-					harmony[index][voice].set_note(null);
+					harmony[index].set_note(voice, null);
 				}
 			}
 			voicing.push(degree);
@@ -228,7 +229,7 @@ class HarmonyFunctions {
 	create_empty_harmony(length){
 		var harmony = [];
 		for(var i = 0; i < length; i++){
-			harmony.push({0: new Voice(null), 1: new Voice(null), 2: new Voice(null), 3: new Voice(null)});
+			harmony.push(new HarmonyUnit());
 		}
 		return harmony;
 	}
