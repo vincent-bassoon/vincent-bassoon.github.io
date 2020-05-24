@@ -12,30 +12,27 @@ class LineData {
 		
 		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
 		
-		var width  = window.innerWidth || document.documentElement.clientWidth || 
+		/*var width  = window.innerWidth || document.documentElement.clientWidth || 
 		document.body.clientWidth;
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
-		document.body.clientHeight;
-		
-		if(width != null && width != 0 && height != null && height != 0){
-			
-		}
+		document.body.clientHeight;*/
 		
 		this.score.measures_per_line = 4;
 		
-		this.stave_x_end = 800;
+		this.stave_width = 800;
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
 		
+		this.min_measure_beat_size = 45;
+		
 		this.clefs = ["treble", "bass"];
 		
-		this.min_measure_size = 1000;
 		this.line_num = 0;
 	}
 	get_renderer_width(){
-		return this.stave_x_end + (this.x_margin * 2);
+		return this.stave_width + (this.x_margin * 2);
 	}
 	get_renderer_height(){
 		return this.line_height * (this.line_num + 0.3);
@@ -49,19 +46,16 @@ class LineData {
 		}
 	}
 	generate_line(measures, beats, is_last){
-		var measure_size;
+		var measure_beat_size;
 		if(beats <= this.score.measures_per_line * 4 - 3){
-			measure_size = this.min_measure_size;
+			measure_beat_size = this.min_measure_beat_size;
 		}
 		else{
-			measure_size = (this.stave_x_end - this.get_note_indent()) / beats;
-			if(measure_size < this.min_measure_size){
-				this.min_measure_size = measure_size;
-			}
+			measure_beat_size = (this.stave_width - this.get_note_indent()) / beats;
 		}
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
-			measures[i].width = measure_size * duration;
+			measures[i].width = measure_beat_size * duration;
 		}
 		var staves = {};
 		for(var i = 0; i < 2; i++){
@@ -256,7 +250,6 @@ class Score {
 			line_data.generate_line(measures, num_beats, true);
 		}
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
-		console.log(line_data.min_measure_size);
 	}
 	
 	create_note_data(value, name, duration, voice){
