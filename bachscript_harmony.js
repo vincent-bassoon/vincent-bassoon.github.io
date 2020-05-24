@@ -258,6 +258,9 @@ class HarmonyFunctions {
 				fixed_pitches[0].unshift({"pitch": pitch, "degree": inversion, "index": i});
 			}
 		}
+		//COMMENT OUT LATER
+		fixed_pitches = {0: [], 1: [], 2: [], 3: []};
+		//COMMENT OUT LATER
 		
 		for(var i = chords.length - 1; i >= 0; i--){
 			this.generate_single_harmony(chords, harmony, i, fixed_pitches);
