@@ -6,7 +6,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	var retry = true;
 	var num_beats = {7: 8, 8: 8, 9: 10, 10: 12};
 	var fermata_index = {7: 6, 8: 6, 9: 8, 10: 8};
-	var fermata_lengths = {7: 2, 8: 1, 9: 3, 10: 2};
+	var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
 	while(retry){
 		retry = false;
 		var sum = 0;
