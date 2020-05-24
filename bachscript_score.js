@@ -5,12 +5,12 @@ class LineData {
 		var treble_temp = new score.vf.Stave(20, 40, 100).addClef('treble').addKeySignature(score.key_name);
 		var bass_temp = new score.vf.Stave(20, 40, 100).addClef('bass').addKeySignature(score.key_name);
 		
-		this.note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX());
+		this.note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX()) + 25;
 		
 		treble_temp = treble_temp.addTimeSignature("4/4");
 		bass_temp = bass_temp.addTimeSignature("4/4");
 		
-		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX()) + 10;
+		this.initial_note_indent = Math.max(treble_temp.getNoteStartX(), bass_temp.getNoteStartX()) + 25;
 		
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
@@ -87,7 +87,7 @@ class LineData {
 				staves[i] = staves[i].addTimeSignature("4/4");
 			}
 		}
-		this.score.render_line(measures, staves, is_last, this.initial_note_indent);
+		this.score.render_line(measures, staves, is_last, this.get_note_indent());
 		this.line_num++;
 	}
 }
