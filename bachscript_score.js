@@ -23,7 +23,7 @@ class LineData {
 		this.stave_y_indents = [0, 140];
 		this.x_margin = 20;
 		this.y_margin = 40;
-		this.measure_length = 150;
+		this.measure_length = 100;
 		
 		this.clefs = ["treble", "bass"];
 		
@@ -45,12 +45,12 @@ class LineData {
 	generate_line(measures, beats){
 		var x = this.get_note_indent();
 		for(var i = 0; i < measures.length; i++){
-			var duration = measures[i].duration
+			var duration = measures[i].duration;
 			x += this.duration_to_length[duration];
 		}
 		var add_per_beat = (this.stave_x_end - x) / beats;
 		for(var i = 0; i < measures.length; i++){
-			var duration = measures[i].duration
+			var duration = measures[i].duration;
 			measures[i].width = this.duration_to_length[duration] + add_per_beat * duration;
 		}
 		var staves = {};
@@ -196,21 +196,23 @@ class Score {
 				var fermata_index = index;
 				index++;
 				sum += fermata_duration;
+				num_beats += sum;
 				if(phrase_index != phrase_done_indices.length - 1){
 					var max = 4;
-					if(pickup){
+					if(pickup && num_beats >= 14){
 						max = 3;
 					}
 					while(sum < max){
 						durations.push(1);
 						sum++;
+						num_beats++;
 						index++;
 					}
 				}
-				num_beats += sum;
 				measures.push(this.generate_single_measure(index, durations, sum, fermata_index));
 			}
 			if(num_beats >= 15){
+				console.log(measures);
 				line_data.generate_line(measures, num_beats);
 				num_beats = 0;
 			}
@@ -244,6 +246,7 @@ class Score {
 	}
 		
 	generate_single_measure(start_index, durations, total_duration, fermata_index){
+		console.log(durations);
 		var measure = {notes: [[], [], [], []], "duration": total_duration, "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = this.get_accidentals_in_key_copy();
 		var needs_ghost_voices = {0: false, 1: false};
