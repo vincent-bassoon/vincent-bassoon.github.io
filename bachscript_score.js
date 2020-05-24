@@ -14,7 +14,7 @@ class LineData {
 		
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
-		this.x_margin = 40;
+		this.x_margin = 30;
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 45;
@@ -23,13 +23,14 @@ class LineData {
 		var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
 			var height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
+			var max = width;
+			var min = height;
 			if(height > width){
-				var temp = height;
-				height = width;
-				width = temp;
+				max = height;
+				min = width;
 			}
-			var factor = this.line_height / height;
-			this.stave_width = (width - (2 * this.x_margin) - 2) * factor;
+			var factor = this.line_height * 2 / height;
+			this.stave_width = (height - (2 * this.x_margin) - 2) * factor;
 		}
 		else{
 			this.stave_width = width - (2 * this.x_margin) - 2;
