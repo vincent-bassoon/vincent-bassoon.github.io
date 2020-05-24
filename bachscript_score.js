@@ -174,8 +174,8 @@ class Score {
 	render_line(measures, staves, is_last){
 		var brace = new this.vf.StaveConnector(staves[0], staves[1]).setType(3);
 		brace.setContext(this.context).draw();
-		var lineLeft = new this.vf.StaveConnector(staves[0], staves[1]).setType(1);
-		brace.setContext(this.context).draw();
+		var line_left = new this.vf.StaveConnector(staves[0], staves[1]).setType(1);
+		line_left.setContext(this.context).draw();
 		if(measures.length == 1){
 			this.render_measure(measures[0], staves, is_last);
 		}
