@@ -42,28 +42,13 @@ class LineData {
 			return this.note_indent;
 		}
 	}
-	check_new_line(measures){
-		var x = this.x_margin + this.get_note_indent();
-		var beats = 0;
-		for(var i = 0; i < measures.length - 1; i++){
-			var next = x + this.duration_to_length[measures[i + 1].duration]
-			if(next > this.stave_x_end){
-				this.generate_line(measures.splice(0, i + 1), x, beats);
-				return;
-			}
-			else if(i + 2 < measures.length && measures[i + 1].duration == 1){
-				next += this.duration_to_length[measures[i + 2].duration]
-				if(next > this.stave_x_end){
-					this.generate_line(measures.splice(0, i + 1), x, beats);
-					return;
-				}
-			}
-			beats += measures[i].duration;
-			x += this.duration_to_length[measures[i].duration];
-		}
-	}
 	generate_line(measures, beats){
-		var add_per_beat = (this.stave_x_end - this.get_note_indent()) / beats;
+		var x = this.get_note_indent();
+		for(var i = 0; i < measures.length; i++){
+			var duration = measures[i].duration
+			x += this.duration_to_length[duration];
+		}
+		var add_per_beat = (this.stave_x_end - x) / beats;
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration
 			measures[i].width = this.duration_to_length[duration] + add_per_beat * duration;
