@@ -17,6 +17,10 @@ class LineData {
 		var height = window.innerHeight|| document.documentElement.clientHeight|| 
 		document.body.clientHeight;
 		
+		if(width != null && width != 0 && height != null && height != 0){
+			
+		}
+		
 		this.score.measures_per_line = 4;
 		
 		this.stave_x_end = 800;
@@ -172,7 +176,6 @@ class Score {
 				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
 			if(i == measures.length - 1){
-				console.log(staves[0].x + staves[0].width);
 				this.render_measure(measures[i], staves, is_last);
 			}
 			else{
@@ -253,6 +256,7 @@ class Score {
 			line_data.generate_line(measures, num_beats, true);
 		}
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
+		console.log(line_data.min_measure_size);
 	}
 	
 	create_note_data(value, name, duration, voice){
