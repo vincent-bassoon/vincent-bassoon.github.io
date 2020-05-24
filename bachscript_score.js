@@ -172,6 +172,7 @@ class Score {
 				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
 			if(i == measures.length - 1){
+				console.log(staves[0].x + staves[0].width);
 				this.render_measure(measures[i], staves, is_last);
 			}
 			else{
