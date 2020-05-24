@@ -81,11 +81,10 @@ class Key {
 
 class PhraseData {
 	// note: previous_cadence_chord means be careful updating a single PhraseData object without updating them all
-	constructor(key, phrase_length, fermata_duration, is_last, cadence, cadence_length, previous_cadence_chord){
+	constructor(key, phrase_length, fermata_duration, cadence, cadence_length, previous_cadence_chord){
 		this.key = key;
 		this.phrase_length = phrase_length;
 		this.fermata_duration = fermata_duration;
-		this.is_last = is_last;
 		this.cadence = cadence;
 		this.cadence_length = cadence_length;
 		this.previous_cadence_chord = previous_cadence_chord;
@@ -93,7 +92,6 @@ class PhraseData {
 	get_key(){return this.key;}
 	get_phrase_length(){return this.phrase_length;}
 	get_fermata_duration(){return this.fermata_duration;}
-	is_last_phrase(){return this.is_last;}
 	get_cadence(){return this.cadence;}
 	get_cadence_length(){return this.cadence_length;}
 	get_previous_cadence_chord(){return this.previous_cadence_chord;}
