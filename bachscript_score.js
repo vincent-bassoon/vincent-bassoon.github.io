@@ -62,8 +62,8 @@ class LineData {
 			x += this.duration_to_length[measures[i].duration];
 		}
 	}
-	generate_line(measures, x, beats){
-		var add_per_beat = (this.stave_x_end - x) / beats;
+	generate_line(measures, beats){
+		var add_per_beat = (this.stave_x_end - this.get_note_indent()) / beats;
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration
 			measures[i].width = this.duration_to_length[duration] + add_per_beat * duration;
@@ -84,15 +84,6 @@ class LineData {
 		}
 		this.score.render_line(measures, staves);
 		this.line_num++;
-	}
-	generate_final_line(measures){
-		for(var i = 0; i < measures.length; i++){
-			var duration = measures[i].duration
-			measures[i].width = this.duration_to_length[duration];
-		}
-		this.generate_line(measures, this.stave_x_end, 1);
-		this.line_num++;
-		this.score.renderer.resize(this.dim, this.line_num * this.line_height);
 	}
 }
 
@@ -118,6 +109,7 @@ class Score {
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
+		this.renderer.resize(1000, 500);
 		
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
@@ -234,15 +226,12 @@ class Score {
 				measures.push(this.generate_single_measure(index, durations, sum, fermata_index));
 			}
 			if(num_beats >= 15){
-				line_data.generate_line(measures);
+				line_data.generate_line(measures, num_beats);
 				num_beats = 0;
 			}
 			if(phrase_done_indices.length > 0 && index >= phrase_done_indices[phrase_index]){
 				phrase_index++;
 			}
-		}
-		if(measures.length != 0){
-			line_data.generate_final_line(measures);
 		}
 	}
 	
