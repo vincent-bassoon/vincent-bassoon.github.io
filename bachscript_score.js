@@ -34,6 +34,12 @@ class LineData {
 		
 		this.line_num = 0;
 	}
+	get_renderer_width(){
+		return this.stave_x_end + 10;
+	}
+	get_renderer_height(){
+		return this.line_height * this.line_num;
+	}
 	get_note_indent(){
 		if(this.line_num == 0){
 			return this.initial_note_indent;
@@ -46,12 +52,15 @@ class LineData {
 		var x = this.get_note_indent();
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
+			measures[i].width = this.duration_to_length[duration]
 			x += this.duration_to_length[duration];
 		}
 		var add_per_beat = (this.stave_x_end - x) / beats;
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
-			measures[i].width = this.duration_to_length[duration] + add_per_beat * duration;
+			if(beats > 12){
+				measures[i].width += add_per_beat * duration;
+			}
 		}
 		var staves = {};
 		for(var i = 0; i < 2; i++){
@@ -185,41 +194,44 @@ class Score {
 			}
 			else{
 				var durations = [];
-				var sum = 0;
-				while(index < phrase_done_indices[phrase_index] - 1){
-					sum++;
+				var index_change = 0;
+				var num_beats_change = 0;
+				while(index + index_change < phrase_done_indices[phrase_index] - 1){
 					durations.push(1);
-					index++;
+					num_beats_change++;
+					index_change++;
 				}
 				var fermata_duration = this.chorale_plan[phrase_index].get_fermata_duration();
 				durations.push(fermata_duration);
-				var fermata_index = index;
-				index++;
-				sum += fermata_duration;
-				num_beats += sum;
+				var fermata_index = index + index_change;
+				index_change++;
+				num_beats_change += fermata_duration;
+				num_beats += num_beats_change;
 				if(phrase_index != phrase_done_indices.length - 1){
 					var max = 4;
 					if(pickup && num_beats >= 14){
 						max = 3;
 					}
-					while(sum < max){
+					while(num_beats_change < max){
 						durations.push(1);
-						sum++;
+						num_beats_change++;
 						num_beats++;
-						index++;
+						index_change++;
 					}
 				}
-				measures.push(this.generate_single_measure(index, durations, sum, fermata_index));
+				measures.push(this.generate_single_measure(index, durations, num_beats_change, fermata_index));
+				index += index_change;
 			}
 			if(num_beats >= 15){
-				console.log(measures);
 				line_data.generate_line(measures, num_beats);
+				measures = [];
 				num_beats = 0;
 			}
 			if(phrase_done_indices.length > 0 && index >= phrase_done_indices[phrase_index]){
 				phrase_index++;
 			}
 		}
+		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
 	}
 	
 	create_note_data(value, name, duration, voice){
@@ -246,7 +258,6 @@ class Score {
 	}
 		
 	generate_single_measure(start_index, durations, total_duration, fermata_index){
-		console.log(durations);
 		var measure = {notes: [[], [], [], []], "duration": total_duration, "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = this.get_accidentals_in_key_copy();
 		var needs_ghost_voices = {0: false, 1: false};
