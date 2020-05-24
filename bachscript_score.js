@@ -14,7 +14,7 @@ class LineData {
 		
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
-		this.x_margin = 20;
+		this.x_margin = 40;
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 45;
