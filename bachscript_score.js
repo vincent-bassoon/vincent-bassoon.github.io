@@ -20,19 +20,11 @@ class LineData {
 		this.min_measure_beat_size = 45;
 		this.beat_size_list = [];
 		
-		var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
-			var height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
-			var max = width;
-			var min = height;
-			if(height > width){
-				max = height;
-				min = width;
-			}
-			var factor = this.line_height * 2 / height;
-			this.stave_width = (height - (2 * this.x_margin) - 2) * factor;
+			this.stave_width = this.min_measure_beat_size * 13 + this.initial_note_indent;
 		}
 		else{
+			var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 			this.stave_width = width - (2 * this.x_margin) - 2;
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
