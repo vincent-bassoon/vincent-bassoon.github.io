@@ -160,7 +160,7 @@ class HarmonyFunctions {
 		}
 		return pitch;
 	}
-	get_fp_index(fixed_pitches, index){
+	get_fp_index(fixed_pitches, voice, index){
 		for(var i = 0; i < fixed_pitches[voice].length; i++){
 			if(fixed_pitches[voice][i].index < index){
 				if(i - 1 < 0){
