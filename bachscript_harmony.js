@@ -58,6 +58,8 @@ class HarmonyFunctions {
 		
 		this.adjacent_direction = [-1, 1];
 		this.parallel_pitches = [0, 7];
+		this.max_total_score = 100;
+		this.max_single_score = 100;
 	}
 	
 	
@@ -153,6 +155,9 @@ class HarmonyFunctions {
 	is_in_absolute_range(value, voice_index){
 		return value >= this.absolute_ranges[voice_index].min && value <= this.absolute_ranges[voice_index].max;
 	}
+	is_in_pref_range(value, voice_index){
+		return value >= this.preferred_ranges[voice_index].min && value <= this.preferred_ranges[voice_index].max;
+	}
 	get_pitch_in_pref_range(pitch, voice_index){
 		var min = this.preferred_ranges[voice_index].min;
 		while(pitch < min){
@@ -181,6 +186,19 @@ class HarmonyFunctions {
 		}
 		return pitch;
 	}
+	get_fp_range_score(value, index, fixed_pitch){
+		if(fixed_pitch == null || fixed_pitch.index - index > 4){
+			return 0;
+		}
+		var desired_diff = (fixed_pitch.index - index) * 2;
+		var actual_diff = Math.abs(value - fixed_pitch.value);
+		if(actual_diff < desired_diff){
+			return 0;
+		}
+		else{
+			return (actual_diff - desired_diff) * 5;
+		}
+	}
 	get_fp_index(fixed_pitches, voice, index){
 		for(var i = 0; i < fixed_pitches[voice].length; i++){
 			if(index < fixed_pitches[voice][i].index){
@@ -198,7 +216,7 @@ class HarmonyFunctions {
 		if(order_index == 4){
 			return true;
 		}
-		if(score > 100){//NEEDS ADJUSTMENT **************************
+		if(score > this.max_total_score){//NEEDS ADJUSTMENT **************************
 			return false;
 		}
 		var voice = this.voice_order[order_index];
@@ -226,9 +244,9 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	add_option(options, harmony, index, voice, value, next_value){
+	add_option(options, harmony, index, voice, value, next_value, fixed_pitch){
 		if(next_value == null){
-			options.push({"value": value, "score": 0, "leap": 0});
+			options.unshift({"value": value, "score": 0, "leap": 0});
 			return;
 		}
 		var score = 0;
@@ -236,18 +254,34 @@ class HarmonyFunctions {
 		if(Math.abs(change) == 6){
 			return;
 		}
+		
 		var this_leap = this.calc_leap(change);
 		var next_leap = harmony[index + 1].get_leap(voice);
 		if(this_leap * next_leap > 0){
 			score += 1;
 		}
 		if(Math.abs(this_leap * next_leap) == 4){
-			return;
+			score += 20;
 		}
 		if(this_leap == 0 && next_leap == 0){
 			score += 1;
 		}
-		options.push({"value": value, "score": score, "leap": this_leap});
+		
+		if(!this.is_in_pref_range(value)){
+			score += 5;
+		}
+		
+		score += this.get_fp_range_score(value, index, fixed_pitch);
+		
+		if(score < this.max_single_score){
+			for(var i = 0; i < options.length; i++){
+				if(score < options[i].score){
+					options.splice(i, 0, {"value": value, "score": score, "leap": this_leap});
+					return;
+				}
+			}
+			options.push({"value": value, "score": score, "leap": this_leap});
+		}
 	}
 	generate_single_harmony(chords, harmony, index, fixed_pitches){
 		this.reset_pitch_options();
@@ -267,9 +301,13 @@ class HarmonyFunctions {
 				next_value = harmony[index + 1].get_start_value(voice);
 			}
 			var fp_index = this.get_fp_index(fixed_pitches, voice, index);
-			if(fp_index != null && fixed_pitches[voice][fp_index].index == index){
-				var fixed_pitch = fixed_pitches[voice][fp_index];
-				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice, fixed_pitch.value, next_value);
+			var fixed_pitch = null;
+			if(fp_index != null){
+				fixed_pitch = fixed_pitches[voice][fp_index];
+			}
+			if(fixed_pitch.index == index){
+				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice,
+						fixed_pitch.value, next_value, fixed_pitch);
 				if(options[voice][fixed_pitch.degree].length == 0){
 					if(index + 1 > harmony.length - 1){
 						console.log("COMPLETE FAILURE");
@@ -292,13 +330,15 @@ class HarmonyFunctions {
 				for(var degree = min_degree; degree <= max_degree; degree++){
 					if(next_value == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
-						this.add_option(options[voice][degree], harmony, index, voice, value, next_value);
+						this.add_option(options[voice][degree], harmony, index, voice,
+								value, next_value, fixed_pitch);
 					}
 					else{
 						//could also add the octave and the fifth
 						var value = this.get_pitch_closest_to(pitches[degree], next_value);
 						if(this.is_in_absolute_range(value, voice)){
-							this.add_option(options[voice][degree], harmony, index, voice, value, next_value);
+							this.add_option(options[voice][degree], harmony, index, voice,
+									value, next_value, fixed_pitch);
 						}
 					}
 				}
