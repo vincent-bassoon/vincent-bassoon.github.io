@@ -264,17 +264,14 @@ class HarmonyFunctions {
 		}
 		console.log("root doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
-			console.log("finished at index ", index);
 			return;
 		}
 		console.log("third doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
-			console.log("finished at index ", index);
 			return;
 		}
 		console.log("fifth doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
-			console.log("finished at index ", index);
 			return;
 		}
 		console.log("failure at index ", index);
