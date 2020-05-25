@@ -305,7 +305,7 @@ class HarmonyFunctions {
 			if(fp_index != null){
 				fixed_pitch = fixed_pitches[voice][fp_index];
 			}
-			if(fixed_pitch.index == index){
+			if(fixed_pitch != null && fixed_pitch.index == index){
 				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice,
 						fixed_pitch.value, next_value, fixed_pitch);
 				if(options[voice][fixed_pitch.degree].length == 0){
