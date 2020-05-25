@@ -127,7 +127,8 @@ class Chord {
 class HarmonyUnit {
 	constructor(){
 		this.note_values = [[null, null, null, null], [null, null, null, null]];
-		this.history = []
+		this.history = [];
+		this.leap = [null, null, null, null];
 	}
 	add_to_history(){
 		var copy = [[], []];
@@ -177,11 +178,14 @@ class HarmonyUnit {
 	set_start_value(voice, value){
 		this.note_values[0][voice] = value;
 	}
-	set_note(voice, value){
+	set_note(voice, value, is_leap){
 		this.note_values[0][voice] = value;
 		this.note_values[1][voice] = value;
+		this.leap[voice] = is_leap;
 	}
-	
+	is_leap(voice){
+		return this.leap[voice];
+	}
 }
 
 
