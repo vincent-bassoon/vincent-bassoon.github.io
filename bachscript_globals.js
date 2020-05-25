@@ -183,7 +183,7 @@ class HarmonyUnit {
 		this.note_values[1][voice] = value;
 		this.leap[voice] = leap;
 	}
-	leap(voice){
+	get_leap(voice){
 		return this.leap[voice];
 	}
 }
