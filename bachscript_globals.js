@@ -126,35 +126,60 @@ class Chord {
 
 class HarmonyUnit {
 	constructor(){
-		this.end_note_value = [null, null, null, null];
-		this.start_note_value = [null, null, null, null];
+		this.note_values = [[null, null, null, null], [null, null, null, null]];
+		this.history = []
+	}
+	add_to_history(){
+		var copy = [[], []];
+		for(var i = 0; i < 4; i++){
+			copy[0][i] = this.note_values[0][i];
+			copy[1][i] = this.note_values[1][i];
+		}
+		this.history.push(copy);
+	}
+	equals_history(){
+		var equals;
+		for(var i = 0; i < this.history.length; i++){
+			equals = true;
+			for(var j = 0; j < 2; j++){
+				for(var k = 0; k < 4; k++){
+					if(this.history[i][j][k] != this.note_values[j][k]){
+						equals = false;
+					}
+				}
+			}
+			if(equals){
+				return true;
+			}
+		}
+		return false;
 	}
 	has_two_values(voice){
-		return this.end_note_value[voice] == this.start_note_value[voice];
+		return this.note_values[0][voice] == this.note_values[1][voice];
 	}
 	get_value(voice, index){
 		if(index == 0){
-			return this.start_note_value[voice];
+			return this.note_values[0][voice];
 		}
 		else{
-			return this.end_note_value[voice];
+			return this.note_values[1][voice];
 		}
 	}
 	get_end_value(voice){
-		return this.end_note_value[voice];
+		return this.note_values[1][voice];
 	}
 	get_start_value(voice){
-		return this.start_note_value[voice];
+		return this.note_values[0][voice];
 	}
 	set_end_value(voice, value){
-		this.end_note_value[voice] = value;
+		this.note_values[1][voice] = value;
 	}
 	set_start_value(voice, value){
-		this.start_note_value[voice] = value;
+		this.note_values[0][voice] = value;
 	}
 	set_note(voice, value){
-		this.start_note_value[voice] = value;
-		this.end_note_value[voice] = value;
+		this.note_values[0][voice] = value;
+		this.note_values[1][voice] = value;
 	}
 	
 }
