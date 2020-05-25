@@ -185,7 +185,7 @@ class HarmonyFunctions {
 					prev_note = null;
 				}
 				else{
-					prev_note = harmony[index + 1][voice].get_start_value();
+					prev_note = harmony[index + 1].get_start_value(voice);
 				}
 				var min_degree = 0;
 				var max_degree = 2;
