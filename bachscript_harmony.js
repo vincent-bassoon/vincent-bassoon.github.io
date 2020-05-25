@@ -90,7 +90,6 @@ class HarmonyFunctions {
 				var interval2 = Math.abs(harmony[index2].get_value(voice1, 0) -
 							 harmony[index2].get_value(voice2, 0)) % 12;
 				if(interval2 == interval){
-					console.log("  parallels");
 					return true;
 				}
 			}
@@ -124,6 +123,11 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
+			console.log("  parallels");
+			return true;
+		}
+		if(order_index == 3 && harmony[index].equals_history()){
+			console.log("  equals history");
 			return true;
 		}
 		return false;
@@ -179,6 +183,10 @@ class HarmonyFunctions {
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				harmony[index].set_note(voice, pitch_options[voice][degree][j]);
 				if(this.has_errors(harmony, index, order_index)){
+					if(order_index == 3){
+						harmony[index].add_to_history();
+						console.log("    added to history");
+					}
 					harmony[index].set_note(voice, null);
 				}
 				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
