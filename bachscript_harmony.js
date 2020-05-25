@@ -82,16 +82,10 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	parallels_helper(harmony, voice1, voice2, index1, index2){
-		var interval = Math.abs(harmony[index1].get_value(voice1, 1) -
-					harmony[index1].get_value(voice2, 1)) % 12;
-		for(var j = 0; j < 2; j++){
-			if(interval == this.parallel_pitches[j]){
-				var interval2 = Math.abs(harmony[index2].get_value(voice1, 0) -
-							 harmony[index2].get_value(voice2, 0)) % 12;
-				if(interval2 == interval){
-					return true;
-				}
+	check_parallel_intervals(interval1, interval2){
+		for(var i = 0; i < 2; i++){
+			if(interval1 == this.parallel_pitches[i] && interval1 == interval2){
+				return true;
 			}
 		}
 		return false;
@@ -101,15 +95,27 @@ class HarmonyFunctions {
 			return false;
 		}
 		var voice1 = this.voice_order[order_index];
-		var check_within_unit = harmony[index].has_two_values(voice1);
+		var voice1_has_two_values = harmony[index].has_two_values(voice1);
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
-			if(this.parallels_helper(harmony, voice1, voice2, index, index + 1)){
+			var interval1 = Math.abs(harmony[index].get_value(voice1, 0) -
+					harmony[index].get_value(voice2, 0)) % 12;
+			var interval2 = Math.abs(harmony[index + 1].get_value(voice1, 0) -
+						 harmony[index + 1].get_value(voice2, 0)) % 12;
+			if(this.check_parallel_intervals(interval1, interval2)){
 				return true;
 			}
-			if(check_within_unit && harmony[index].has_two_values(voice2)){
-				if(this.parallels_helper(harmony, voice1, voice2, index, index)){
+			var voice2_has_two_values = harmony[index].has_two_values(voice2)
+			if(voice1_has_two_values || voice2_has_two_values){
+				var interval3 = Math.abs(harmony[index].get_value(voice1, 1) -
+							 harmony[index].get_value(voice2, 1)) % 12;
+				if(this.check_parallel_intervals(interval3, interval2)){
 					return true;
+				}
+				if(voice1_has_two_values && voice2_has_two_values){
+					if(this.check_parallel_intervals(interval1, interval3)){
+						return true;
+					}
 				}
 			}
 		}
