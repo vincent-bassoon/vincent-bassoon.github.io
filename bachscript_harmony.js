@@ -237,7 +237,7 @@ class HarmonyFunctions {
 			return;
 		}
 		var this_leap = this.calc_leap(change);
-		var next_leap = harmony[index + 1].leap(voice);
+		var next_leap = harmony[index + 1].get_leap(voice);
 		if(this_leap * next_leap > 0){
 			score += 1;
 		}
