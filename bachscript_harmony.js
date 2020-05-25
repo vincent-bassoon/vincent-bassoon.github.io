@@ -156,6 +156,19 @@ class HarmonyFunctions {
 		}
 		return pitch;
 	}
+	get_fp_index(fixed_pitches, index){
+		for(var i = 0; i < fixed_pitches[voice].length; i++){
+			if(fixed_pitches[voice][i].index < index){
+				if(i - 1 < 0){
+					return null;
+				}
+				else{
+					return fixed_pitches[voice][i - 1].index;
+				}
+			}
+		}
+		return null;
+	}
 	fill_harmony(harmony, voicing, pitch_options, index, order_index){
 		if(order_index == 4){
 			return true;
@@ -187,10 +200,11 @@ class HarmonyFunctions {
 		for(var degree = 0; degree < 3; degree++){
 			pitches[degree] = this.note_functions.get_pitch(chords[index], degree);
 		}
-		
+		var fp_indices_change = [0, 0, 0, 0];
 		for(var voice = 0; voice < 4; voice++){
-			if(fixed_pitches[voice].length != 0 && fixed_pitches[voice][0].index == index){
-				var fixed_pitch = fixed_pitches[voice].shift();
+			var fp_index = this.get_fp_index(fixed_pitches, voice, index);
+			if(fp_index != null && fixed_pitches[voice][fp_index].index == index){
+				var fixed_pitch = fixed_pitches[voice][fp_index];
 				options[voice][fixed_pitch.degree].push(fixed_pitch.pitch);
 			}
 			else{
@@ -239,6 +253,12 @@ class HarmonyFunctions {
 			return;
 		}
 		console.log("failure at index ", index);
+		if(index - 1 < 0){
+			console.log("COMPLETE FAILURE");
+		}
+		else{
+			this.generate_single_harmony(chords, harmony, index - 1, fixed_pitches);
+		}
 	}
 	create_empty_harmony(length){
 		var harmony = [];
