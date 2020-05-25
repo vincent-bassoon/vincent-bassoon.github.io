@@ -82,21 +82,35 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
+	parallels_helper(harmony, voice1, voice2, index1, index2){
+		var interval = Math.abs(harmony[index1].get_value(voice1, 1) -
+					harmony[index1].get_value(voice2, 1)) % 12;
+		for(var j = 0; j < 2; j++){
+			if(interval == this.parallel_pitches[j]){
+				var interval2 = Math.abs(harmony[index2].get_value(voice1, 0) -
+							 harmony[index2].get_value(voice2, 0)) % 12;
+				if(interval2 == interval){
+					console.log("  parallels");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	parallels(harmony, index, order_index){
 		if(index == harmony.length - 1 || order_index == 0){
 			return false;
 		}
-		var voice = this.voice_order[order_index];
+		var voice1 = this.voice_order[order_index];
+		var check_within_unit = harmony[index].has_two_values(voice1);
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
-			var interval = Math.abs(harmony[index].get_start_value(voice) - harmony[index].get_start_value(voice2)) % 12;
-			for(var j = 0; j < 2; j++){
-				if(interval == this.parallel_pitches[j]){
-					var interval2 = Math.abs(harmony[index + 1].get_end_value(voice) - harmony[index + 1].get_end_value(voice2)) % 12;
-					if(interval2 == interval){
-						console.log("  parallels");
-						return true;
-					}
+			if(this.parallels_helper(harmony, voice1, voice2, index, index + 1)){
+				return true;
+			}
+			if(check_within_unit && harmony[index].has_two_values(voice2)){
+				if(this.parallels_helper(harmony, voice1, voice2, index, index)){
+					return true;
 				}
 			}
 		}
