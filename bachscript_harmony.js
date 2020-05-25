@@ -211,7 +211,7 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	create_option(options, harmony, index, voice, pitch){
+	add_option(options, harmony, index, voice, pitch){
 		if(index == harmony.length - 1){
 			options.push({"pitch": pitch, "score": 0});
 		}
