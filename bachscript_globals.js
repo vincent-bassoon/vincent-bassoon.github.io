@@ -155,7 +155,7 @@ class HarmonyUnit {
 		return false;
 	}
 	has_two_values(voice){
-		return this.note_values[0][voice] == this.note_values[1][voice];
+		return this.note_values[0][voice] != this.note_values[1][voice];
 	}
 	get_value(voice, index){
 		if(index == 0){
