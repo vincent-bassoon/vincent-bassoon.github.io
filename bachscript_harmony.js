@@ -179,15 +179,19 @@ class HarmonyFunctions {
 		}
 		return null;
 	}
-	fill_harmony(harmony, voicing, pitch_options, index, order_index){
+	fill_harmony(harmony, voicing, pitch_options, index, order_index, score){
 		if(order_index == 4){
 			return true;
+		}
+		if(score > 100){//NEEDS ADJUSTMENT **************************
+			return false;
 		}
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < voicing.length; i++){
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
-				harmony[index].set_note(voice, pitch_options[voice][degree][j]);
+				var option = pitch_options[voice][degree][j];
+				harmony[index].set_note(voice, option.pitch);
 				if(this.has_errors(harmony, index, order_index)){
 					if(order_index == 3){
 						harmony[index].add_to_history();
@@ -195,7 +199,8 @@ class HarmonyFunctions {
 					}
 					harmony[index].set_note(voice, null);
 				}
-				else if(this.fill_harmony(harmony, voicing, pitch_options, index, order_index + 1)){
+				else if(this.fill_harmony(harmony, voicing, pitch_options, index,
+							  order_index + 1, score + option.score)){
 					return true;
 				}
 				else{
@@ -205,6 +210,12 @@ class HarmonyFunctions {
 			voicing.push(degree);
 		}
 		return false;
+	}
+	create_option(options, harmony, index, voice, pitch){
+		if(index == harmony.length - 1){
+			options.push({"pitch": pitch, "score": 0});
+		}
+		options.push({"pitch": pitch, "score": 0});
 	}
 	generate_single_harmony(chords, harmony, index, fixed_pitches){
 		this.reset_pitch_options();
@@ -219,7 +230,7 @@ class HarmonyFunctions {
 			var fp_index = this.get_fp_index(fixed_pitches, voice, index);
 			if(fp_index != null && fixed_pitches[voice][fp_index].index == index){
 				var fixed_pitch = fixed_pitches[voice][fp_index];
-				options[voice][fixed_pitch.degree].push(fixed_pitch.pitch);
+				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice, fixed_pitch.pitch);
 			}
 			else{
 				var prev_note;
@@ -240,29 +251,29 @@ class HarmonyFunctions {
 				for(var degree = min_degree; degree <= max_degree; degree++){
 					if(true){//prev_note == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
-						options[voice][degree].push(value);
+						this.add_option(options[voice][degree], harmony, index, voice, value);
 					}
 					else{
 						var value = this.get_pitch_closest_to(pitches[degree], prev_note);
 						if(this.is_in_absolute_range(value, voice)){
-							options[voice][degree].push(value);
+							this.add_option(options[voice][degree], harmony, index, voice, value);
 						}
 					}
 				}
 			}
 		}
 		console.log("root doubling, starting at index ", index);
-		if(this.fill_harmony(harmony, [0, 0, 1, 2], options, index, 0)){
+		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			console.log("finished at index ", index);
 			return;
 		}
 		console.log("third doubling, starting at index ", index);
-		if(this.fill_harmony(harmony, [0, 1, 1, 2], options, index, 0)){
+		if(this.fill_harmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
 			console.log("finished at index ", index);
 			return;
 		}
 		console.log("fifth doubling, starting at index ", index);
-		if(this.fill_harmony(harmony, [0, 1, 2, 2], options, index, 0)){
+		if(this.fill_harmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
 			console.log("finished at index ", index);
 			return;
 		}
