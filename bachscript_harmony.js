@@ -168,7 +168,7 @@ class HarmonyFunctions {
 	}
 	get_fp_index(fixed_pitches, voice, index){
 		for(var i = 0; i < fixed_pitches[voice].length; i++){
-			if(fixed_pitches[voice][i].index < index){
+			if(index < fixed_pitches[voice][i].index){
 				if(i - 1 < 0){
 					return null;
 				}
@@ -307,9 +307,6 @@ class HarmonyFunctions {
 				fixed_pitches[0].unshift({"pitch": pitch, "degree": inversion, "index": i});
 			}
 		}
-		//COMMENT OUT LATER
-		fixed_pitches = {0: [], 1: [], 2: [], 3: []};
-		//COMMENT OUT LATER
 		
 		for(var i = chords.length - 1; i >= 0; i--){
 			this.generate_single_harmony(chords, harmony, i, fixed_pitches);
