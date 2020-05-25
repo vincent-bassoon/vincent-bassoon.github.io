@@ -129,6 +129,9 @@ class HarmonyUnit {
 		this.end_note_value = [null, null, null, null];
 		this.start_note_value = [null, null, null, null];
 	}
+	has_two_values(voice){
+		return this.end_note_value[voice] == this.start_note_value[voice];
+	}
 	get_value(voice, index){
 		if(index == 0){
 			return this.start_note_value[voice];
