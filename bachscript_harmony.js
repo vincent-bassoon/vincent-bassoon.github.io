@@ -316,6 +316,8 @@ class HarmonyFunctions {
 						console.log("COMPLETE FAILURE");
 					}
 					else{
+						harmony[index + 1].add_to_history();
+						console.log("    added to history");
 						this.generate_single_harmony(chords, harmony, index + 1, fixed_pitches);
 					}
 					return;
@@ -367,6 +369,8 @@ class HarmonyFunctions {
 			console.log("COMPLETE FAILURE");
 		}
 		else{
+			harmony[index + 1].add_to_history();
+			console.log("    added to history");
 			this.generate_single_harmony(chords, harmony, index + 1, fixed_pitches);
 		}
 	}
