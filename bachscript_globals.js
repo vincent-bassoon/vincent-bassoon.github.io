@@ -178,12 +178,12 @@ class HarmonyUnit {
 	set_start_value(voice, value){
 		this.note_values[0][voice] = value;
 	}
-	set_note(voice, value, is_leap){
+	set_note(voice, value, leap){
 		this.note_values[0][voice] = value;
 		this.note_values[1][voice] = value;
-		this.leap[voice] = is_leap;
+		this.leap[voice] = leap;
 	}
-	is_leap(voice){
+	leap(voice){
 		return this.leap[voice];
 	}
 }
