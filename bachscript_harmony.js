@@ -223,31 +223,33 @@ class HarmonyFunctions {
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
-				harmony[index].set_note(voice, option.value, option.leap);
+				harmony[index].set_note(voice, option.value, option.name, option.leap);
 				this.scores[index][voice] = option.score;
 				if(this.has_errors(harmony, index, order_index)){
-					harmony[index].set_note(voice, null, null);
+					harmony[index].set_note(voice, null, null, null);
 				}
 				else if(this.fill_harmony(harmony, voicing, pitch_options, index,
 							  order_index + 1, score + option.score)){
 					return true;
 				}
 				else{
-					harmony[index].set_note(voice, null, null);
+					harmony[index].set_note(voice, null, null, null);
 				}
 			}
 			voicing.push(degree);
 		}
 		return false;
 	}
-	add_option(options, harmony, index, voice, value, next_value, fixed_pitch){
-		if(next_value == null){
-			options.unshift({"value": value, "score": 0, "leap": 0});
+	add_option(options, harmony, chords, index, voice, value, fixed_pitch){
+		var name = this.note_functions.value_to_name(value, chords[index].get_key());
+		if(index + 1 == harmony.length){
+			options.unshift({"value": value, "name": name, "score": 0, "leap": 0});
 			return;
 		}
+		var next_value = harmony[index + 1].get_value(voice, 0);
 		var score = 0;
 		var change = next_value - value;
-		if(Math.abs(change) == 6){
+		if(this.note_functions.is_aug_or_dim(change, harmony[index + 1].get_name(voice, 0), name)){
 			return;
 		}
 		
@@ -272,11 +274,11 @@ class HarmonyFunctions {
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
-					options.splice(i, 0, {"value": value, "score": score, "leap": this_leap});
+					options.splice(i, 0, {"value": value, "name": name, "score": score, "leap": this_leap});
 					return;
 				}
 			}
-			options.push({"value": value, "score": score, "leap": this_leap});
+			options.push({"value": value, "name": name, "score": score, "leap": this_leap});
 		}
 	}
 	generate_single_harmony(chords, harmony, fixed_pitches){
@@ -291,18 +293,12 @@ class HarmonyFunctions {
 		for(var degree = 0; degree < 3; degree++){
 			pitches[degree] = this.note_functions.get_pitch(chords[index], degree);
 		}
+		var has_next_value = (index != chords.length - 1);
 		for(var voice = 0; voice < 4; voice++){
-			var next_value;
-			if(index == chords.length - 1){
-				next_value = null;
-			}
-			else{
-				next_value = harmony[index + 1].get_start_value(voice);
-			}
 			var fixed_pitch = this.get_fixed_pitch(fixed_pitches, voice, index);
 			if(fixed_pitch != null && fixed_pitch.index == index){
-				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice,
-						fixed_pitch.value, next_value, fixed_pitch);
+				this.add_option(options[voice][fixed_pitch.degree], harmony, chords,
+						index, voice, fixed_pitch.value, fixed_pitch);
 				if(options[voice][fixed_pitch.degree].length == 0){
 					console.log("fixed pitch unreachable at index ", index);
 					if(index + 1 > harmony.length - 1){
@@ -330,15 +326,16 @@ class HarmonyFunctions {
 				for(var degree = min_degree; degree <= max_degree; degree++){
 					if(next_value == null){
 						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
-						this.add_option(options[voice][degree], harmony, index, voice,
-								value, next_value, fixed_pitch);
+						this.add_option(options[voice][degree], harmony, chords,
+								index, voice, value, fixed_pitch);
 					}
 					else{
 						//could also add the octave and the fifth
-						var value = this.get_pitch_closest_to(pitches[degree], next_value);
+						var value = this.get_pitch_closest_to(pitches[degree],
+										      harmony[index + 1].get_value(voice, 0));
 						if(this.is_in_absolute_range(value, voice)){
-							this.add_option(options[voice][degree], harmony, index, voice,
-									value, next_value, fixed_pitch);
+							this.add_option(options[voice][degree], harmony, chords,
+									index, voice, value, fixed_pitch);
 						}
 					}
 				}
