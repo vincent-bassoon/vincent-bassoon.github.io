@@ -241,15 +241,20 @@ class HarmonyFunctions {
 		return false;
 	}
 	add_option(options, harmony, chords, index, voice, value, fixed_pitch){
-		var name = this.note_functions.value_to_name(value, chords[index].get_key());
+		var key = chords[index].get_key();
+		var name = this.note_functions.value_to_name(value, key);
 		if(index + 1 == harmony.length){
 			options.unshift({"value": value, "name": name, "score": 0, "leap": 0});
 			return;
 		}
 		var next_value = harmony[index + 1].get_value(voice, 0);
+		if(this.note_functions.val_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
+			return;
+		}
+		var next_name = harmony[index + 1].get_name(voice, 0);
 		var score = 0;
 		var change = next_value - value;
-		if(this.note_functions.is_aug_or_dim(change, harmony[index + 1].get_name(voice, 0), name)){
+		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
 			return;
 		}
 		
