@@ -72,11 +72,9 @@ class HarmonyFunctions {
 					var voice1 = parity * harmony[index].get_value(voice, start_or_end);
 					var voice2 = parity * harmony[index].get_value(voice + parity, start_or_end);
 					if(voice1 > voice2){
-						console.log("  crossed");
 						return true;
 					}
 					if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
-						console.log("  voices too far apart");
 						return true;
 					}
 				}
@@ -131,7 +129,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
-			console.log("  parallels");
 			return true;
 		}
 		if(order_index == 3 && harmony[index].equals_history()){
@@ -199,14 +196,14 @@ class HarmonyFunctions {
 			return (actual_diff - desired_diff) * 5;
 		}
 	}
-	get_fp_index(fixed_pitches, voice, index){
+	get_fixed_pitch(fixed_pitches, voice, index){
 		for(var i = 0; i < fixed_pitches[voice].length; i++){
 			if(index < fixed_pitches[voice][i].index){
 				if(i - 1 < 0){
 					return null;
 				}
 				else{
-					return fixed_pitches[voice][i - 1].index;
+					return fixed_pitches[voice][i - 1];
 				}
 			}
 		}
@@ -295,7 +292,6 @@ class HarmonyFunctions {
 		for(var degree = 0; degree < 3; degree++){
 			pitches[degree] = this.note_functions.get_pitch(chords[index], degree);
 		}
-		var fp_indices_change = [0, 0, 0, 0];
 		for(var voice = 0; voice < 4; voice++){
 			var next_value;
 			if(index == chords.length - 1){
@@ -304,15 +300,12 @@ class HarmonyFunctions {
 			else{
 				next_value = harmony[index + 1].get_start_value(voice);
 			}
-			var fp_index = this.get_fp_index(fixed_pitches, voice, index);
-			var fixed_pitch = null;
-			if(fp_index != null){
-				fixed_pitch = fixed_pitches[voice][fp_index];
-			}
+			var fixed_pitch = this.get_fixed_pitch(fixed_pitches, voice, index);
 			if(fixed_pitch != null && fixed_pitch.index == index){
 				this.add_option(options[voice][fixed_pitch.degree], harmony, index, voice,
 						fixed_pitch.value, next_value, fixed_pitch);
 				if(options[voice][fixed_pitch.degree].length == 0){
+					console.log("fixed pitch unreachable at index ", index);
 					if(index + 1 > harmony.length - 1){
 						console.log("COMPLETE FAILURE");
 					}
@@ -323,6 +316,7 @@ class HarmonyFunctions {
 					}
 					return;
 				}
+				console.log("fixed pitch at index " + index + ": ", fixed_pitch);
 			}
 			else{
 				var min_degree = 0;
