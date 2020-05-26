@@ -74,5 +74,7 @@ function run(){
 	for(var i = 0; i < cadence_num; i++){
 		chords.push(...chord_functions.generate_segment_chords(chorale_plan[i]));
 	}
-	harmony_functions.generate_harmony(chords, chorale_plan);
+	if(harmony_functions.generate_harmony(chords, chorale_plan)){
+		run();
+	}
 }
