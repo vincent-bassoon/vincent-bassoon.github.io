@@ -198,7 +198,7 @@ class HarmonyFunctions {
 	}
 	get_fixed_pitch(fixed_pitches, voice, index){
 		for(var i = 0; i < fixed_pitches[voice].length; i++){
-			if(index < fixed_pitches[voice][i].index){
+			if(index > fixed_pitches[voice][i].index){
 				if(i - 1 < 0){
 					return null;
 				}
@@ -316,7 +316,6 @@ class HarmonyFunctions {
 					}
 					return;
 				}
-				console.log("fixed pitch at index " + index + ": ", fixed_pitch);
 			}
 			else{
 				var min_degree = 0;
