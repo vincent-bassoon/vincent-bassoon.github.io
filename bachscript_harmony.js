@@ -225,10 +225,6 @@ class HarmonyFunctions {
 				var option = pitch_options[voice][degree][j];
 				harmony[index].set_note(voice, option.value, option.leap);
 				if(this.has_errors(harmony, index, order_index)){
-					if(order_index == 3){
-						harmony[index].add_to_history();
-						console.log("    added to history");
-					}
 					harmony[index].set_note(voice, null, null);
 				}
 				else if(this.fill_harmony(harmony, voicing, pitch_options, index,
