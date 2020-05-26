@@ -283,7 +283,8 @@ class HarmonyFunctions {
 			options.push({"value": value, "score": score, "leap": this_leap});
 		}
 	}
-	generate_single_harmony(chords, harmony, index, fixed_pitches){
+	generate_single_harmony(chords, harmony, fixed_pitches){
+		var index = this.global_index;
 		if(index == -1){
 			return;
 		}
@@ -318,7 +319,7 @@ class HarmonyFunctions {
 					else{
 						harmony[index + 1].add_to_history();
 						console.log("    added to history");
-						this.generate_single_harmony(chords, harmony, index + 1, fixed_pitches);
+						this.global_index += 1;
 					}
 					return;
 				}
@@ -351,17 +352,17 @@ class HarmonyFunctions {
 		}
 		console.log("root doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
-			this.generate_single_harmony(chords, harmony, index - 1, fixed_pitches);
+			this.global_index -= 1;
 			return;
 		}
 		console.log("third doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
-			this.generate_single_harmony(chords, harmony, index - 1, fixed_pitches);
+			this.global_index -= 1;
 			return;
 		}
 		console.log("fifth doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
-			this.generate_single_harmony(chords, harmony, index - 1, fixed_pitches);
+			this.global_index -= 1;
 			return;
 		}
 		console.log("failure at index ", index);
@@ -371,7 +372,7 @@ class HarmonyFunctions {
 		else{
 			harmony[index + 1].add_to_history();
 			console.log("    added to history");
-			this.generate_single_harmony(chords, harmony, index + 1, fixed_pitches);
+			this.global_index += 1;
 		}
 	}
 	create_empty_harmony(length){
@@ -408,7 +409,10 @@ class HarmonyFunctions {
 			}
 		}
 		
-		this.generate_single_harmony(chords, harmony, chords.length - 1, fixed_pitches);
+		this.global_index = chords.length - 1;
+		while(this.global_index >= 0){
+			this.generate_single_harmony(chords, harmony, fixed_pitches);
+		}
 		new Score(harmony, chords, chorale_plan, nf).render_harmony();
 	}
 }
