@@ -60,6 +60,8 @@ class HarmonyFunctions {
 		this.parallel_pitches = [0, 7];
 		this.max_total_score = 100;
 		this.max_single_score = 100;
+		
+		this.repeat = false;
 	}
 	
 	
@@ -309,6 +311,7 @@ class HarmonyFunctions {
 					if(index + 1 > harmony.length - 1){
 						console.log("COMPLETE FAILURE");
 						this.global_index = -1;
+						this.repeat = true;
 					}
 					else{
 						harmony[index + 1].add_to_history();
@@ -363,6 +366,7 @@ class HarmonyFunctions {
 		if(index + 1 > harmony.length - 1){
 			console.log("COMPLETE FAILURE");
 			this.global_index = -1;
+			this.repeat = true;
 		}
 		else{
 			harmony[index + 1].add_to_history();
@@ -408,6 +412,11 @@ class HarmonyFunctions {
 		while(this.global_index >= 0){
 			this.generate_single_harmony(chords, harmony, fixed_pitches);
 		}
+		
+		if(this.repeat){
+			return false
+		}
 		new Score(harmony, chords, chorale_plan, nf).render_harmony();
+		return true;
 	}
 }
