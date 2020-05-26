@@ -405,6 +405,7 @@ class HarmonyFunctions {
 				fixed_pitches[0].unshift({"value": value, "degree": inversion, "index": i});
 			}
 		}
+		console.log(fixed_pitches);
 		
 		this.global_index = chords.length - 1;
 		while(this.global_index >= 0){
