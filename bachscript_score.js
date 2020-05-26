@@ -299,6 +299,7 @@ class Score {
 				}
 				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
+				note.setLedgerLineStyle({strokeStyle: "black"});
 				var clef_index = Math.floor(voice / 2);
 				if(voice % 2 == 1 && value == prev_value){
 					//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
