@@ -135,7 +135,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(order_index == 3 && harmony[index].equals_history()){
-			console.log("  equals history");
 			return true;
 		}
 		return false;
@@ -312,8 +311,8 @@ class HarmonyFunctions {
 						this.repeat = true;
 					}
 					else{
+						console.log("going back to index ", (index + 1));
 						harmony[index + 1].add_to_history();
-						console.log("    added to history");
 						this.global_index += 1;
 					}
 					return;
