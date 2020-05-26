@@ -343,28 +343,27 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		console.log("root doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			return;
 		}
-		console.log("third doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
 			this.global_index -= 1;
+			console.log("third doubling at index ", index);
 			return;
 		}
-		console.log("fifth doubling, starting at index ", index);
 		if(this.fill_harmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
 			this.global_index -= 1;
+			console.log("fifth doubling at index ", index);
 			return;
 		}
-		console.log("failure at index ", index);
 		if(index + 1 > harmony.length - 1){
 			console.log("COMPLETE FAILURE");
 			this.global_index = -1;
 			this.repeat = true;
 		}
 		else{
+			console.log("going back to index ", (index + 1));
 			harmony[index + 1].add_to_history();
 			console.log("    added to history");
 			this.global_index += 1;
