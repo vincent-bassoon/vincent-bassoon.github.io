@@ -125,8 +125,11 @@ class Chord {
 }
 
 class HarmonyUnit {
-	constructor(){
+	constructor(note_functions, key){
+		this.note_functions = note_functions;
+		this.key = key;
 		this.note_values = [[null, null, null, null], [null, null, null, null]];
+		this.note_names = [[null, null, null, null], [null, null, null, null]];
 		this.history = [];
 		this.leap = [null, null, null, null];
 	}
@@ -166,22 +169,21 @@ class HarmonyUnit {
 			return this.note_values[1][voice];
 		}
 	}
-	get_end_value(voice){
-		return this.note_values[1][voice];
-	}
-	get_start_value(voice){
-		return this.note_values[0][voice];
-	}
-	set_end_value(voice, value){
-		this.note_values[1][voice] = value;
-	}
-	set_start_value(voice, value){
-		this.note_values[0][voice] = value;
-	}
 	set_note(voice, value, leap){
 		this.note_values[0][voice] = value;
 		this.note_values[1][voice] = value;
 		this.leap[voice] = leap;
+		if(value == null){
+			this.note_names[0][voice] = null;
+			this.note_names[1][voice] = null;
+		}
+		else{
+			this.note_names[0][voice] = this.note_functions.value_to_name(value, this.key);
+			this.note_names[1][voice] = this.note_functions.value_to_name(value, this.key);
+		}
+	}
+	get_name(voice, index){
+		return this.note_names[index][voice];
 	}
 	get_leap(voice){
 		return this.leap[voice];
