@@ -255,6 +255,7 @@ class HarmonyFunctions {
 		var score = 0;
 		var change = next_value - value;
 		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
+			// this check ignores augmented/diminished unison
 			return;
 		}
 		
