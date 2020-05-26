@@ -62,6 +62,7 @@ class HarmonyFunctions {
 		this.max_single_score = 100;
 		
 		this.repeat = false;
+		this.scores = null;
 	}
 	
 	
@@ -224,6 +225,7 @@ class HarmonyFunctions {
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
 				harmony[index].set_note(voice, option.value, option.leap);
+				this.scores[index][voice] = option.score;
 				if(this.has_errors(harmony, index, order_index)){
 					harmony[index].set_note(voice, null, null);
 				}
@@ -371,7 +373,9 @@ class HarmonyFunctions {
 	}
 	create_empty_harmony(length){
 		var harmony = [];
+		this.scores = [];
 		for(var i = 0; i < length; i++){
+			this.scores.push([null, null, null, null]);
 			harmony.push(new HarmonyUnit());
 		}
 		return harmony;
@@ -407,7 +411,7 @@ class HarmonyFunctions {
 		while(this.global_index >= 0){
 			this.generate_single_harmony(chords, harmony, fixed_pitches);
 		}
-		
+		console.log(this.scores);
 		if(this.repeat){
 			return true;
 		}
