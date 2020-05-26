@@ -414,9 +414,9 @@ class HarmonyFunctions {
 		}
 		
 		if(this.repeat){
-			return false
+			return true;
 		}
 		new Score(harmony, chords, chorale_plan, nf).render_harmony();
-		return true;
+		return false;
 	}
 }
