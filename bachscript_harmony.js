@@ -308,6 +308,7 @@ class HarmonyFunctions {
 					console.log("fixed pitch unreachable at index ", index);
 					if(index + 1 > harmony.length - 1){
 						console.log("COMPLETE FAILURE");
+						this.global_index = -1;
 					}
 					else{
 						harmony[index + 1].add_to_history();
@@ -361,6 +362,7 @@ class HarmonyFunctions {
 		console.log("failure at index ", index);
 		if(index + 1 > harmony.length - 1){
 			console.log("COMPLETE FAILURE");
+			this.global_index = -1;
 		}
 		else{
 			harmony[index + 1].add_to_history();
