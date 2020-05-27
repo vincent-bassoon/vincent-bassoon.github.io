@@ -385,8 +385,8 @@ class HarmonyFunctions {
 		for(var i = 0; i < length; i++){
 			this.scores.push([null, null, null, null]);
 			if(phrase_ends[0] == i){
-				phrase_ends.unshift();
-				target_avgs.unshift();
+				phrase_ends.shift();
+				target_avgs.shift();
 				harmony.push(new HarmonyUnit([null, null, null, null]));
 			}
 			else{
