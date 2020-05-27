@@ -376,7 +376,7 @@ class HarmonyFunctions {
 				value = this.note_functions.name_to_value("Ab", 4) + choose_int({0: 0.36, 1: 0.34, 2: 0.3});
 			}
 			else{
-				value = this.target_soprano_avgs[i - 1] + choose_int({1: 0.6, 2: 0.4});
+				value = target_avgs[i - 1] + choose_int({1: 0.6, 2: 0.4});
 			}
 			index += chorale_plan[i].get_phrase_length();
 			phrase_ends.push(index - 1);
