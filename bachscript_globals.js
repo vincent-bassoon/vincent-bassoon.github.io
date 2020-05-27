@@ -125,11 +125,33 @@ class Chord {
 }
 
 class HarmonyUnit {
-	constructor(){
+	constructor(target_avgs){
 		this.note_values = [[null, null, null, null], [null, null, null, null]];
 		this.note_names = [[null, null, null, null], [null, null, null, null]];
 		this.history = [];
 		this.leap = [null, null, null, null];
+		
+		this.avgs = [0, 0, 0, 0];
+		this.avg_nums = [0, 0, 0, 0];
+		this.target_avgs = target_avgs;
+	}
+	update_avgs(next_harmony){
+		for(var voice = 0; voice < 4; voice++){
+			if(this.target_avgs[voice] != null){
+				var value = (this.get_value(voice, 0) + this.get_value(voice, 1)) / 2;
+				this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
+				this.avgs[voice] = next_harmony.get_next_avg(voice, value);
+			}
+		}
+	}
+	get_next_avg(voice, value){
+		return (this.avgs[voice] * this.avg_nums[voice] + value) / (this.avg_nums[voice] + 1);
+	}
+	get_avg_num(voice){
+		return this.avg_nums[voice];
+	}
+	get_target_avg(voice){
+		return this.target_avgs[voice];
 	}
 	add_to_history(){
 		var copy = [[], []];
