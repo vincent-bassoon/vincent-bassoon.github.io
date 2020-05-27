@@ -396,6 +396,8 @@ class HarmonyFunctions {
 		
 		this.create_target_soprano_avgs(chorale_plan.length);
 		
+		var harmony = this.create_empty_harmony(chords.length);
+		
 		this.global_index = chords.length - 1;
 		while(this.global_index >= 0){
 			this.generate_single_harmony(chords, harmony);
