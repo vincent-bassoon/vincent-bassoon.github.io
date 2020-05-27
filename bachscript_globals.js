@@ -137,11 +137,9 @@ class HarmonyUnit {
 	}
 	update_avgs(next_harmony){
 		for(var voice = 0; voice < 4; voice++){
-			if(this.target_avgs[voice] != null){
-				var value = (this.get_value(voice, 0) + this.get_value(voice, 1)) / 2;
-				this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
-				this.avgs[voice] = next_harmony.get_next_avg(voice, value);
-			}
+			var value = (this.get_value(voice, 0) + this.get_value(voice, 1)) / 2;
+			this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
+			this.avgs[voice] = next_harmony.get_next_avg(voice, value);
 		}
 	}
 	get_next_avg(voice, value){
@@ -152,6 +150,9 @@ class HarmonyUnit {
 	}
 	get_target_avg(voice){
 		return this.target_avgs[voice];
+	}
+	is_end_of_phrase(){
+		return this.target_avgs[0] == null;
 	}
 	add_to_history(){
 		var copy = [[], []];
