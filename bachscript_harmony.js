@@ -358,36 +358,21 @@ class HarmonyFunctions {
 				}
 			}*/
 			var fixed_pitch = null;
-			var inversion = chords[index].get_inversion();
-			if(voice == 0 && inversion != null){
-				var value = this.get_pitch_closest_to(nf.get_bass_pitch(chords[index]),
-								      harmony[index + 1].get_value(voice, 0));
-				if(this.is_in_absolute_range(value, voice)){
-					this.add_option(options[voice][degree], harmony, chords,
-							index, voice, value, fixed_pitch);
-				}
-				if(options[voice][fixed_pitch.degree].length == 0){
-					console.log("bass pitch unreachable at index ", index);
-					if(index + 1 > harmony.length - 1){
-						console.log("COMPLETE FAILURE");
-						this.global_index = -1;
-						this.repeat = true;
-					}
-					else{
-						console.log("going back to index ", (index + 1));
-						harmony[index + 1].add_to_history();
-						this.global_index += 1;
-					}
-					return;
-				}
-			}
-			else{
+			//else{
+				
+				var inversion = chords[index].get_inversion();
 				var min_degree = 0;
 				var max_degree = 2;
 				if(voice == 0){
-					max_degree = 1;
-					if(chords[index].get_modality() == "dim"){
-						min_degree = 1;
+					if(inversion != null){
+						max_degree = inversion;
+						min_degree = inversion;
+					}
+					else{
+						max_degree = 1;
+						if(chords[index].get_modality() == "dim"){
+							min_degree = 1;
+						}
 					}
 				}
 				for(var degree = min_degree; degree <= max_degree; degree++){
@@ -405,7 +390,21 @@ class HarmonyFunctions {
 									index, voice, value, fixed_pitch);
 						}
 					}
-				}
+					if(options[voice][fixed_pitch.degree].length == 0){
+						console.log("no options at index ", index);
+						if(index + 1 > harmony.length - 1){
+							console.log("COMPLETE FAILURE");
+							this.global_index = -1;
+							this.repeat = true;
+						}
+						else{
+							console.log("going back to index ", (index + 1));
+							harmony[index + 1].add_to_history();
+							this.global_index += 1;
+						}
+						return;
+					}
+				//}
 			}
 		}
 		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
