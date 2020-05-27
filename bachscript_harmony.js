@@ -248,7 +248,7 @@ class HarmonyFunctions {
 			return;
 		}
 		var next_value = harmony[index + 1].get_value(voice, 0);
-		if(this.note_functions.val_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
+		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
 			return;
 		}
 		var next_name = harmony[index + 1].get_name(voice, 0);
