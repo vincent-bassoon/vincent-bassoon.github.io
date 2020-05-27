@@ -269,10 +269,10 @@ class HarmonyFunctions {
 			var diff = Math.abs(target_avg - avg);
 			if(diff > 2){
 				if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
-					score += diff * 10;
+					score += diff * 6;
 				}
 				else if(value == avg){
-					score += diff * 5;
+					score += diff * 3;
 				}
 			}
 		}
