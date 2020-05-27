@@ -273,12 +273,17 @@ class NoteFunctions {
 	}
 	value_to_name(value, key){
 		value = value % 12;
-		var adjusted_value = (value - key.get_pitch() + 12) % 12
+		var adjusted_value = (value - key.get_pitch() + 12) % 12;
 		var key_letter = this.val_to_key_name[key.get_modality()][key.get_pitch()];
 		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
 		return name + this.get_accidental(this.name_to_val[name], value);
+	}
+	value_to_num(value, key){
+		value = value % 12;
+		var adjusted_value = (value - key.get_pitch() + 12) % 12;
+		return this.pitch_to_num[adjusted_value];
 	}
 	num_to_pitch_for_cad(roman_num, chord){
 		var key = chord.get_key();
