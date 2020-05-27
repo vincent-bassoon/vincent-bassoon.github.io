@@ -207,32 +207,6 @@ class HarmonyFunctions {
 		}
 		return null;
 	}
-	/*get_fp_range_score(value, index, fixed_pitch){
-		if(fixed_pitch == null || fixed_pitch.index - index > 4){
-			return 0;
-		}
-		var desired_diff = (fixed_pitch.index - index) * 2;
-		var actual_diff = Math.abs(value - fixed_pitch.value);
-		if(actual_diff < desired_diff){
-			return 0;
-		}
-		else{
-			return (actual_diff - desired_diff) * 5;
-		}
-	}
-	get_fixed_pitch(fixed_pitches, voice, index){
-		for(var i = 0; i < fixed_pitches[voice].length; i++){
-			if(index > fixed_pitches[voice][i].index){
-				if(i - 1 < 0){
-					return null;
-				}
-				else{
-					return fixed_pitches[voice][i - 1];
-				}
-			}
-		}
-		return null;
-	}*/
 	fill_harmony(harmony, voicing, pitch_options, index, order_index, score){
 		if(order_index == 4){
 			return true;
@@ -262,7 +236,7 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	add_option(options, harmony, chords, index, voice, value, fixed_pitch){
+	add_option(options, harmony, chords, index, voice, value){
 		var key = chords[index].get_key();
 		var name = this.note_functions.value_to_name(value, key);
 		if(index + 1 == harmony.length){
@@ -312,8 +286,6 @@ class HarmonyFunctions {
 			
 		}
 		
-		//score += this.get_fp_range_score(value, index, fixed_pitch);
-		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
@@ -324,7 +296,7 @@ class HarmonyFunctions {
 			options.push({"value": value, "name": name, "score": score, "leap": this_leap});
 		}
 	}
-	generate_single_harmony(chords, harmony, fixed_pitches){
+	generate_single_harmony(chords, harmony){
 		var index = this.global_index;
 		if(index == -1){
 			return;
@@ -338,73 +310,50 @@ class HarmonyFunctions {
 		}
 		var has_next_value = (index != chords.length - 1);
 		for(var voice = 0; voice < 4; voice++){
-			/*var fixed_pitch = this.get_fixed_pitch(fixed_pitches, voice, index);
-			if(fixed_pitch != null && fixed_pitch.index == index){
-				this.add_option(options[voice][fixed_pitch.degree], harmony, chords,
-						index, voice, fixed_pitch.value, fixed_pitch);
-				if(options[voice][fixed_pitch.degree].length == 0){
-					console.log("fixed pitch unreachable at index ", index);
-					if(index + 1 > harmony.length - 1){
-						console.log("COMPLETE FAILURE");
-						this.global_index = -1;
-						this.repeat = true;
-					}
-					else{
-						console.log("going back to index ", (index + 1));
-						harmony[index + 1].add_to_history();
-						this.global_index += 1;
-					}
-					return;
+			var no_options = true;
+			var inversion = chords[index].get_inversion();
+			var min_degree = 0;
+			var max_degree = 2;
+			if(voice == 0){
+				if(inversion != null){
+					max_degree = inversion;
+					min_degree = inversion;
 				}
-			}*/
-			var fixed_pitch = null;
-			//else{
-				
-				var inversion = chords[index].get_inversion();
-				var min_degree = 0;
-				var max_degree = 2;
-				if(voice == 0){
-					if(inversion != null){
-						max_degree = inversion;
-						min_degree = inversion;
-					}
-					else{
-						max_degree = 1;
-						if(chords[index].get_modality() == "dim"){
-							min_degree = 1;
-						}
+				else{
+					max_degree = 1;
+					if(chords[index].get_modality() == "dim"){
+						min_degree = 1;
 					}
 				}
-				for(var degree = min_degree; degree <= max_degree; degree++){
-					if(!has_next_value){
-						var value = this.get_pitch_in_pref_range(pitches[degree], voice);
-						this.add_option(options[voice][degree], harmony, chords,
-								index, voice, value, fixed_pitch);
+			}
+			for(var degree = min_degree; degree <= max_degree; degree++){
+				if(!has_next_value){
+					var value = this.get_pitch_in_pref_range(pitches[degree], voice);
+					this.add_option(options[voice][degree], harmony, chords, index, voice, value);
+				}
+				else{
+					//could also add the octave and the fifth
+					var value = this.get_pitch_closest_to(pitches[degree], harmony[index + 1].get_value(voice, 0));
+					if(this.is_in_absolute_range(value, voice)){
+						this.add_option(options[voice][degree], harmony, chords, index, voice, value);
 					}
-					else{
-						//could also add the octave and the fifth
-						var value = this.get_pitch_closest_to(pitches[degree],
-										      harmony[index + 1].get_value(voice, 0));
-						if(this.is_in_absolute_range(value, voice)){
-							this.add_option(options[voice][degree], harmony, chords,
-									index, voice, value, fixed_pitch);
-						}
-					}
-					if(options[voice][fixed_pitch.degree].length == 0){
-						console.log("no options at index ", index);
-						if(index + 1 > harmony.length - 1){
-							console.log("COMPLETE FAILURE");
-							this.global_index = -1;
-							this.repeat = true;
-						}
-						else{
-							console.log("going back to index ", (index + 1));
-							harmony[index + 1].add_to_history();
-							this.global_index += 1;
-						}
-						return;
-					}
-				//}
+				}
+				if(options[voice][degree].length != 0){
+					no_options = false;
+				}
+			}
+			if(no_options){
+				if(index + 1 > harmony.length - 1){
+					console.log("COMPLETE FAILURE");
+					this.global_index = -1;
+					this.repeat = true;
+				}
+				else{
+					console.log("going back to index ", (index + 1));
+					harmony[index + 1].add_to_history();
+					console.log("    added to history");
+					this.global_index += 1;
+				}
 			}
 		}
 		if(this.fill_harmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
@@ -447,33 +396,9 @@ class HarmonyFunctions {
 		
 		this.create_target_soprano_avgs(chorale_plan.length);
 		
-		//var sum = -1;
-		var fixed_pitches = {0: [], 1: [], 2: [], 3: []}
-		/*for(var i = 0; i < chorale_plan.length; i++){
-			
-			sum += chorale_plan[i].get_phrase_length();
-			
-			var num = choose_int(this.cadence_probabilities[chorale_plan[i].get_cadence()]);
-			var degree = chords[sum].get_degree(num);
-			var value = nf.num_to_pitch_for_cad(num, chords[sum]);
-			value = this.get_pitch_in_pref_range(value, 3);
-			fixed_pitches[3].unshift({"value": value, "degree": degree, "index": sum});
-		}*/
-		
-		var harmony = this.create_empty_harmony(chords.length);
-		/*for(var i = 0; i < chords.length; i++){
-			var inversion = chords[i].get_inversion();
-			if(inversion != null){
-				var value = nf.get_bass_pitch(chords[i]);
-				value = this.get_pitch_in_pref_range(value, 0);
-				fixed_pitches[0].unshift({"value": value, "degree": inversion, "index": i});
-			}
-		}
-		console.log(fixed_pitches);*/
-		
 		this.global_index = chords.length - 1;
 		while(this.global_index >= 0){
-			this.generate_single_harmony(chords, harmony, fixed_pitches);
+			this.generate_single_harmony(chords, harmony);
 		}
 		console.log(this.scores);
 		if(this.repeat){
