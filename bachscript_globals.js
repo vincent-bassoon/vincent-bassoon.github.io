@@ -225,7 +225,7 @@ class NoteFunctions {
 		
 		this.pitch_to_num = {0: 1, 2: 2, 3: 3, 4: 3, 5: 4, 7: 5, 8: 6, 9: 6, 10: 7, 11: 7};
 		
-		this.interval_mapping = {];
+		this.interval_mapping = {0: 0, 1: 1.5, 2: 3.5, 3: 5, 4: 7, 5: 8.5, 6: 10.5};
 		
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
@@ -304,11 +304,11 @@ class NoteFunctions {
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 	is_aug_or_dim(change, name1, name2){
-		if(Math.abs(change) == 6){
-			return true;
-		}
 		if(Math.abs(change) == 1){
 			return false;
+		}
+		if(Math.abs(change) > 11){
+			change = change % 12;
 		}
 		var letter_index1 = this.letter_index(name1[0]);
 		var letter_index2 = this.letter_index(name2[0]);
@@ -319,7 +319,7 @@ class NoteFunctions {
 		else{
 			letter_index_diff = (letter_index2 - letter_index1 + 7) % 7;
 		}
-		return;
+		return Math.abs(Math.abs(change) - this.interval_mapping[letter_index_diff]) <= 0.5;
 	}
 }
 
