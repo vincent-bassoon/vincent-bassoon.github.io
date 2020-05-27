@@ -249,7 +249,7 @@ class HarmonyFunctions {
 		}
 		if(Math.abs(this_leap * next_leap) == 4){
 			// consecutive leaps of a third
-			score += 20;
+			score += 15;
 			if(this_leap == -1 * next_leap){
 				//leap down then up, or up then down
 				score += 20;
@@ -258,10 +258,16 @@ class HarmonyFunctions {
 		if(Math.abs(this_leap) == 3 && this_leap * next_leap != -3){
 			// big leap must be followed by step in opposite direction
 			score += 20;
+			if(voice == 3){
+				score += 20;
+			}
 		}
 		if(this_leap == 0 && next_leap == 0){
 			//consecutive stagnation
 			score += 10;
+			if(voice == 3){
+				score += 10;
+			}
 		}
 		if(!this.is_in_pref_range(value, voice)){
 			score += 10;
