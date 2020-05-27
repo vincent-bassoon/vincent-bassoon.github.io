@@ -315,8 +315,8 @@ class NoteFunctions {
 		if(Math.abs(change) > 11){
 			change = change % 12;
 		}
-		var letter_index1 = this.letter_index(name1[0]);
-		var letter_index2 = this.letter_index(name2[0]);
+		var letter_index1 = this.letter_index[name1[0]];
+		var letter_index2 = this.letter_index[name2[0]];
 		var letter_index_diff;
 		if(change > 0){
 			letter_index_diff = (letter_index1 - letter_index2 + 7) % 7;
