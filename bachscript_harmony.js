@@ -232,7 +232,7 @@ class HarmonyFunctions {
 		var next_name = harmony[index + 1].get_name(voice, 0);
 		var score = 0;
 		var change = next_value - value;
-		if(Math.abs(change) > 5 && !(voice == 0 && Math.abs(change) == 7 || Math.abs(change) == 12)){
+		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
 			//leaps greater than a fourth not allowed except for fifths and octaves in bass
 			return;
 		}
