@@ -187,7 +187,7 @@ class HarmonyFunctions {
 	}
 	fill_harmony(harmony, voicing, pitch_options, index, order_index, score){
 		if(order_index == 4){
-			if(index + 1 < harmony.length){
+			if(index + 1 < harmony.length && !harmony[index].is_end_of_phrase()){
 				harmony[index].update_avgs(harmony[index + 1]);
 			}
 			return true;
@@ -263,8 +263,20 @@ class HarmonyFunctions {
 			score += 5;
 		}
 		
-		if(voice == 3){
-			
+		if(voice == 3 && !harmony[index].is_end_of_phrase()){
+			var target_avg = harmony[index + 1].get_target_avg(voice);
+			var avg = harmony[index + 1].get_next_avg(voice, value);
+			if(Math.abs(target_avg - avg) > 2){
+				if(value > avg && avg > target_avg){
+					score += 20;
+				}
+				else if(value < avg && avg < target_avg){
+					score += 20;
+				}
+				else if(value == avg){
+					score += 15;
+				}
+			}
 		}
 		
 		if(score < this.max_single_score){
