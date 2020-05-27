@@ -255,12 +255,16 @@ class HarmonyFunctions {
 				score += 20;
 			}
 		}
+		if(Math.abs(this_leap) == 3 && this_leap * next_leap != -3){
+			// big leap must be followed by step in opposite direction
+			score += 20;
+		}
 		if(this_leap == 0 && next_leap == 0){
 			//consecutive stagnation
 			score += 10;
 		}
 		if(!this.is_in_pref_range(value, voice)){
-			score += 5;
+			score += 10;
 		}
 		
 		if(voice == 3 && !harmony[index].is_end_of_phrase()){
