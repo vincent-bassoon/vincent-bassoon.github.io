@@ -185,30 +185,11 @@ class HarmonyFunctions {
 		}
 		return pitch;
 	}
-	create_target_soprano_avgs(chorale_plan){
-		var index = 0;
-		for(var i = 0; i < chorale_plan.length; i++){
-			var value;
-			if(i == 0 || i == chorale_plan.length - 1){
-				value = this.note_functions.name_to_value("Ab", 4) + choose_int({0: 0.36, 1: 0.34, 2: 0.3});
-			}
-			else{
-				value = this.target_soprano_avgs[i - 1] + choose_int({1: 0.6, 2: 0.4});
-			}
-			this.target_soprano_avgs.unshift({"index": index, "value": value});
-			index += chorale_plan[i].get_phrase_length();
-		}
-	}
-	get_target_soprano_avg(index){
-		for(var i = 0; i < this.target_soprano_avgs.length; i++){
-			if(index > this.target_soprano_avgs[i].index){
-				return this.target_soprano_avgs[i].value;
-			}
-		}
-		return null;
-	}
 	fill_harmony(harmony, voicing, pitch_options, index, order_index, score){
 		if(order_index == 4){
+			if(index + 1 < harmony.length){
+				harmony[index].update_avgs(harmony[index + 1]);
+			}
 			return true;
 		}
 		if(score > this.max_total_score){//NEEDS ADJUSTMENT **************************
@@ -382,21 +363,42 @@ class HarmonyFunctions {
 			this.global_index += 1;
 		}
 	}
-	create_empty_harmony(length){
+	create_empty_harmony(chorale_plan, length){
 		var harmony = [];
 		this.scores = [];
+		
+		var target_avgs = [];
+		var phrase_ends = [];
+		var index = 0;
+		for(var i = 0; i < chorale_plan.length; i++){
+			var value;
+			if(i == 0 || i == chorale_plan.length - 1){
+				value = this.note_functions.name_to_value("Ab", 4) + choose_int({0: 0.36, 1: 0.34, 2: 0.3});
+			}
+			else{
+				value = this.target_soprano_avgs[i - 1] + choose_int({1: 0.6, 2: 0.4});
+			}
+			index += chorale_plan[i].get_phrase_length();
+			phrase_ends.push(index - 1);
+			target_avgs.push(value);
+		}
 		for(var i = 0; i < length; i++){
 			this.scores.push([null, null, null, null]);
-			harmony.push(new HarmonyUnit());
+			if(phrase_ends[0] == i){
+				phrase_ends.unshift();
+				target_avgs.unshift();
+				harmony.push(new HarmonyUnit([null, null, null, null]));
+			}
+			else{
+				harmony.push(new HarmonyUnit([null, null, null, target_avgs[0]]));
+			}
 		}
 		return harmony;
 	}
 	generate_harmony(chords, chorale_plan){
 		var nf = this.note_functions;
 		
-		this.create_target_soprano_avgs(chorale_plan.length);
-		
-		var harmony = this.create_empty_harmony(chords.length);
+		var harmony = this.create_empty_harmony(chorale_plan, chords.length);
 		
 		this.global_index = chords.length - 1;
 		while(this.global_index >= 0){
@@ -407,6 +409,7 @@ class HarmonyFunctions {
 			return true;
 		}
 		new Score(harmony, chords, chorale_plan, nf).render_harmony();
+		console.log(harmony);
 		return false;
 	}
 }
