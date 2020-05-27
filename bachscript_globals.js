@@ -324,7 +324,7 @@ class NoteFunctions {
 		else{
 			letter_index_diff = (letter_index2 - letter_index1 + 7) % 7;
 		}
-		return Math.abs(Math.abs(change) - this.interval_mapping[letter_index_diff]) <= 0.5;
+		return Math.abs(Math.abs(change) - this.interval_mapping[letter_index_diff]) > 0.5;
 	}
 }
 
