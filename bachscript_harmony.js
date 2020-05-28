@@ -285,6 +285,9 @@ class HarmonyFunctions {
 					score += diff * 3;
 				}
 			}
+			if(Math.abs(value - target_avg) > 5){
+				score += 20;
+			}
 		}
 		
 		if(score < this.max_single_score){
