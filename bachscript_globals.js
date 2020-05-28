@@ -152,7 +152,7 @@ class HarmonyUnit {
 		return this.target_avgs[voice];
 	}
 	is_end_of_phrase(){
-		return this.target_avgs[0] == null;
+		return this.target_avgs[3] == null;
 	}
 	add_to_history(){
 		var copy = [[], []];
