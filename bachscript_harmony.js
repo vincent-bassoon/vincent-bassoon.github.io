@@ -218,6 +218,9 @@ class HarmonyFunctions {
 		return false;
 	}
 	add_option(options, harmony, chords, index, voice, value){
+		if(!this.is_in_absolute_range(value, voice)){
+			return;
+		}
 		var key = chords[index].get_key();
 		var name = this.note_functions.value_to_name(value, key);
 		if(index + 1 == harmony.length){
@@ -338,8 +341,18 @@ class HarmonyFunctions {
 				else{
 					//could also add the octave and the fifth
 					var value = this.get_pitch_closest_to(pitches[degree], harmony[index + 1].get_value(voice, 0));
-					if(this.is_in_absolute_range(value, voice)){
-						this.add_option(options[voice][degree], harmony, chords, index, voice, value);
+					this.add_option(options[voice][degree], harmony, chords, index, voice, value);
+					if(voice == 0){
+						var change = value - harmony[index + 1].get_value(voice, 0);
+						if(change == 0 || change == 5){
+							this.add_option(options[voice][degree], harmony,
+									chords, index, voice, value - 12);
+						}
+						if(change == 0 || change == -5){
+							this.add_option(options[voice][degree], harmony,
+									chords, index, voice, value + 12);
+						}
+						
 					}
 				}
 				if(options[voice][degree].length != 0){
