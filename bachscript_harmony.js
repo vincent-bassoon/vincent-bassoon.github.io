@@ -279,14 +279,14 @@ class HarmonyFunctions {
 			var diff = Math.abs(target_avg - avg);
 			if(diff > 2){
 				if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
-					score += diff * 6;
+					//score += diff * 6;
 				}
 				else if(value == avg){
-					score += diff * 3;
+					//score += diff * 3;
 				}
 			}
 			if(Math.abs(value - target_avg) > 5){
-				score += 20;
+				//score += 20;
 			}
 		}
 		
@@ -351,12 +351,14 @@ class HarmonyFunctions {
 					console.log("COMPLETE FAILURE");
 					this.global_index = -1;
 					this.repeat = true;
+					return;
 				}
 				else{
 					console.log("going back to index ", (index + 1));
 					harmony[index + 1].add_to_history();
 					console.log("    added to history");
 					this.global_index += 1;
+					return;
 				}
 			}
 		}
@@ -378,12 +380,14 @@ class HarmonyFunctions {
 			console.log("COMPLETE FAILURE");
 			this.global_index = -1;
 			this.repeat = true;
+			return;
 		}
 		else{
 			console.log("going back to index ", (index + 1));
 			harmony[index + 1].add_to_history();
 			console.log("    added to history");
 			this.global_index += 1;
+			return;
 		}
 	}
 	create_empty_harmony(chorale_plan, length){
