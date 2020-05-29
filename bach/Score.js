@@ -40,13 +40,22 @@ class Player {
 					})(schedule[i]);
 					beat_num += schedule[i].duration;
 					time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
-					(function(unit){
-						transport.schedule(function(time){
-							sampler.release = "0:1:0";
-							sampler.curve = "exponential";
-							sampler.triggerRelease(unit.names, time);
-						}, time_string);
-					})(schedule[i]);
+					if(i != schedule.length - 1){
+						(function(unit){
+							transport.schedule(function(time){
+								sampler.triggerRelease(unit.names, time);
+							}, time_string);
+						})(schedule[i]);
+					}
+					else{
+						(function(unit){
+							transport.schedule(function(time){
+								sampler.release = "0:1:0";
+								sampler.curve = "exponential";
+								sampler.triggerRelease(unit.names, time);
+							}, time_string);
+						})(schedule[i]);
+					}
 				}
 				transport.schedule(function(time){
 					transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
