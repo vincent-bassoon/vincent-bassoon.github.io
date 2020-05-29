@@ -15,9 +15,8 @@ class Player {
 				sources[name + i] = names_to_files[name] + i + file_end;
 			}
 		}
-		this.sampler = new Tone.Sampler(sources, function(){this.finalize()}, "samples/");
-	}
-	finalize(){
+		this.sampler = null;
+		
 		var transport = Tone.Transport;
 		var sampler = this.sampler;
 		transport.timeSignature = 4;
@@ -39,7 +38,11 @@ class Player {
 				sampler.triggerAttackRelease(unit.notes, "0:" + unit.duration + ":0", time);
 			}, time_string);
 		}
-		transport.start("+1", start);
+		
+		this.sampler = new Tone.Sampler(sources, function(){
+			console.log("loaded");
+			Tone.Transport.start("+1", start);
+		}, "samples/");
 	}
 }
 
