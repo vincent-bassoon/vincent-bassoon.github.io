@@ -1,10 +1,12 @@
 class Player {
-	constructor(pickup){
+	constructor(){
 		this.schedule = [];
-		this.pickup = pickup;
 	}
-	schedule_notes(names, duration, is_fermata){
-		this.schedule.push({"names": names, "duration": duration, "is_fermata": is_fermata});
+	schedule_notes(names, duration_num, is_fermata){
+		if(is_fermata && duration_num < 3){
+			duration_num = 3;
+		}
+		this.schedule.push({"names": names, "duration": "0:" + duration_num + ":0"});
 	}
 	generate_audio(){
 		var sources = {};
@@ -15,33 +17,25 @@ class Player {
 				sources[name + i] = names_to_files[name] + i + file_end;
 			}
 		}
-		var beat_num;
-		var start;
-		if(this.pickup){
-			beat_num = 3;
-			start = "0:3:0";
-		}
-		else{
-			beat_num = 0;
-			start = "0:0:0";
-		}
-		(function(sampler, sources, schedule, beat_num, start){
+		(function(sampler, sources, schedule){
 			sampler = new Tone.Sampler(sources, function(){
 				var transport = Tone.Transport;
 				transport.timeSignature = 4;
+				var beat_num = 0;
+				var start = "0:0:0";
 				transport.bpm.value = 80;
 				for(var i = 0; i < schedule.length; i++){
 					var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
 					(function(unit){
 						transport.schedule(function(time){
-							sampler.triggerAttackRelease(unit.names, "0:" + unit.duration + ":0", time);
+							sampler.triggerAttackRelease(unit.names, unit.duration, time);
 						}, time_string);
 					})(schedule[i]);
 					beat_num += schedule[i].duration;
 				}
 				transport.start("+.5", start);
 			}, "samples/").toMaster();
-		})(this.sampler, sources, this.schedule, beat_num, start);
+		})(this.sampler, sources, this.schedule);
 	}
 }
 
@@ -159,7 +153,7 @@ class Score {
 		this.duration_strings = {1: "q", 2: "h", 3: "hd", 4: "w"};
 		
 		
-		this.player = new Player(this.chorale_plan[0].get_phrase_length() % 2 == 0);
+		this.player = new Player();
 	}
 	get_accidentals_in_key_copy(){
 		var copy = {};
