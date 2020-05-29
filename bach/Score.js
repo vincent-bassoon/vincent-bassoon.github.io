@@ -39,7 +39,7 @@ class Player {
 					})(schedule[i]);
 					beat_num += schedule[i].duration;
 				}
-				transport.start("+0", start);
+				transport.start("+.5", start);
 			}, "samples/").toMaster();
 		})(this.sampler, sources, this.schedule, beat_num, start);
 	}
@@ -352,7 +352,9 @@ class Score {
 				else if(name.substring(0, 2) == "B#"){
 					octave -= 1;
 				}
-				names.push(name + octave);
+				if(!names.includes(name + octave)){
+					names.push(name + octave);
+				}				
 				name = name.toLowerCase();
 				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
