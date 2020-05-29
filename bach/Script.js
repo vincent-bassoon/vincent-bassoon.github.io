@@ -47,7 +47,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	return chorale_plan;
 }
 
-function run(){
+function generate_new_chorale(sampler){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -74,7 +74,35 @@ function run(){
 	for(var i = 0; i < cadence_num; i++){
 		chords.push(...chord_functions.generate_segment_chords(chorale_plan[i]));
 	}
-	if(harmony_functions.generate_harmony(chords, chorale_plan)){
-		run();
+	var counter = 0;
+	if(harmony_functions.generate_harmony(chords, chorale_plan, sampler) && counter < 10){
+		generate_new_chorale(sampler);
+		counter++;
 	}
 }
+
+function configure_sampler(){
+	var sources = {};
+	var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
+	var file_end = "v5.mp3";
+	for(var name in names_to_files){
+		for(var i = 2; i <= 5; i++){
+			sources[name + i] = names_to_files[name] + i + file_end;
+		}
+	}
+	Tone.context.lookAhead = 0.3;
+	var start = document.getElementById("start_button");
+	var sampler = new Tone.Sampler(sources, function(){
+		start.classList.remove("running");
+		function run(){
+			start.onclick = "";
+			start.classList.add("running");
+			generate_new_chorale(sampler);
+			start.classList.remove("running");
+			start.onclick = run;
+		}
+		start.onclick = run;
+	}, "samples/").toMaster();
+}
+
+window.onload = configure_sampler;
