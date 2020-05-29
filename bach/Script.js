@@ -93,19 +93,16 @@ function configure_sampler(){
 	Tone.context.lookAhead = 0.3;
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
-	var restart = document.getElementById("restart_button");
-	var buttons = [start, play, restart];
 	var sampler = new Tone.Sampler(sources, function(){
 		generate_new_chorale(sampler);
 		start.classList.remove("running");
 		start.innerText = "Generate Another";
 		function run(){
-			for(var i = 0; i < 3; i++){
-				buttons[i].onclick = "";
-				buttons.classList.add("running");
-			}
+			play.onclick = "";
+			play.classList.add("running");
+			start.onclick = "";
+			start.classList.add("running");
 			play.innerText = "Loading...";
-			restart.innerText = "Loading...";
 			start.innerText = "Generating...";
 			generate_new_chorale(sampler);
 			start.classList.remove("running");
