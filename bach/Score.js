@@ -2,11 +2,11 @@ class Player {
 	constructor(){
 		this.schedule = [];
 	}
-	schedule_notes(names, duration_num, is_fermata){
-		if(is_fermata && duration_num < 3){
-			duration_num = 3;
+	schedule_notes(names, duration, is_fermata){
+		if(is_fermata && duration < 3){
+			duration = 3;
 		}
-		this.schedule.push({"names": names, "duration": "0:" + duration_num + ":0"});
+		this.schedule.push({"names": names, "duration": duration});
 	}
 	generate_audio(){
 		var sources = {};
@@ -24,15 +24,23 @@ class Player {
 				var beat_num = 0;
 				var start = "0:0:0";
 				transport.bpm.value = 80;
+				var rit_time_string;
+				var rit_length = 3;
 				for(var i = 0; i < schedule.length; i++){
 					var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+					if(i + rit_length == schedule.length - 1){
+						rit_time_string = time_string;
+					}
 					(function(unit){
 						transport.schedule(function(time){
-							sampler.triggerAttackRelease(unit.names, unit.duration, time);
+							sampler.triggerAttackRelease(unit.names, "0:" + unit.duration + ":0", time);
 						}, time_string);
 					})(schedule[i]);
 					beat_num += schedule[i].duration;
 				}
+				transport.schedule(function(time){
+					transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
+				}, rit_time_string);
 				transport.start("+.5", start);
 			}, "samples/").toMaster();
 		})(this.sampler, sources, this.schedule);
