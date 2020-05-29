@@ -23,7 +23,6 @@ class Player {
 		transport.timeSignature = 4;
 		transport.bpm.value = 80;
 		var beat_num = 0;
-		var start = "0:0:0";
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
@@ -61,7 +60,20 @@ class Player {
 		transport.schedule(function(time){
 			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
 		}, rit_time_string);
-		transport.start("+.5", start);
+		var play = document.getElementById("play_button");
+		play.classList.remove("running");
+		play.innerText = "Play";
+		function play_stop(){
+			if(transport.state == "stopped"){
+				transport.start("+.4", "0:0:0");
+				play.innerText = "Stop";
+			}
+			else{
+				transport.stop();
+				play.innerText = "Play";
+			}
+		}
+		play.onclick = play_stop;
 	}
 }
 
