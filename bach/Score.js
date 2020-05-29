@@ -15,7 +15,10 @@ class Player {
 				sources[name + i] = names_to_files[name] + i + file_end;
 			}
 		}
-		this.sampler = null;
+		
+		this.sampler = new Tone.Sampler(sources, function(){
+			console.log("samples loaded");
+		}, "samples/");
 		
 		var transport = Tone.Transport;
 		var sampler = this.sampler;
@@ -35,14 +38,13 @@ class Player {
 			var unit = this.schedule.shift();
 			var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
 			transport.schedule(function(time){
+				console.log(unit.notes);
+				console.log(time_string);
 				sampler.triggerAttackRelease(unit.notes, "0:" + unit.duration + ":0", time);
 			}, time_string);
 		}
-		
-		this.sampler = new Tone.Sampler(sources, function(){
-			console.log("loaded");
-			Tone.Transport.start("+1", start);
-		}, "samples/");
+		console.log("starting audio in one second");
+		Tone.Transport.start("+1", start);
 	}
 }
 
