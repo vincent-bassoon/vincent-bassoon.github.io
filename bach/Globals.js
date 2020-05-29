@@ -343,6 +343,9 @@ class NoteFunctions {
 		var degree_pitch = this.chord_mapping[chord.get_modality()][degree];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
+	chords_equal(chord1, chord2){
+		return chord1.get_modality() == chord2.get_modality() && this.get_pitch(chord1, 0) == this.get_pitch(chord2, 0);
+	}
 	is_aug_or_dim(change, name1, name2){
 		if(Math.abs(change) == 1){
 			return false;
