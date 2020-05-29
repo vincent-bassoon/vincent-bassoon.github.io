@@ -212,9 +212,18 @@ class NoteFunctions {
 		this.name_to_val = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
 		this.letter_index = {};
+		this.simple_val_to_name = {};
+		for(var i = 0; i < letters.length; i++){
+			this.simple_val_to_name[this.name_to_val[letters[i]]] = letters[i];
+		}
 		for(var i = 0; i < letters.length; i++){
 			this.letter_index[letters[i]] = i;
-			this.name_to_val[letters[i] + "b"] = (this.name_to_val[letters[i]] + 11) % 12;
+			var flat = letters[i] + "b";
+			var flat_val = (this.name_to_val[letters[i]] + 11) % 12;
+			this.name_to_val[flat] = flat_val;
+			if(!(flat_val in this.simple_val_to_name)){
+				this.simple_val_to_name[flat_val] = flat;
+			}
 			this.name_to_val[letters[i] + "#"] = (this.name_to_val[letters[i]] + 1) % 12;
 		}
 		this.letters = letters;
@@ -252,7 +261,6 @@ class NoteFunctions {
 		
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
-		
 	}
 	name_to_value(name, octave){
 		return this.name_to_val[name] + 12 * octave;
@@ -293,6 +301,10 @@ class NoteFunctions {
 			}
 		}
 		return accidentals;
+	}
+	value_to_simple_name_octave(value){
+		var octave = Math.floor(value / 12);
+		return this.simple_val_to_name[value % 12] + octave;
 	}
 	value_to_name(value, key){
 		value = value % 12;
