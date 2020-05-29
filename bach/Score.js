@@ -38,6 +38,7 @@ class Player {
 					sampler.triggerAttack(unit.names, time);
 					if(is_last){
 						sampler.release = 1;
+						sampler.curve = "linear";
 					}
 				}, time_string);
 			})(schedule[i], i == schedule.length - 1);
@@ -57,6 +58,7 @@ class Player {
 			play.innerText = "Playing...";
 			transport.bpm.value = 80;
 			sampler.release = 0.1;
+			sampler.curve = "exponential";
 			transport.start("+.4", "0:0:0");
 		}
 		beat_num += 1;
