@@ -432,7 +432,7 @@ class HarmonyFunctions {
 		}
 		return harmony;
 	}
-	generate_harmony(chords, chorale_plan){
+	generate_harmony(chords, chorale_plan, sampler){
 		var nf = this.note_functions;
 		
 		var harmony = this.create_empty_harmony(chorale_plan, chords.length);
@@ -445,7 +445,7 @@ class HarmonyFunctions {
 		if(this.repeat){
 			return true;
 		}
-		new Score(harmony, chords, chorale_plan, nf).render_harmony();
+		new Score(harmony, chords, chorale_plan, nf, sampler).render_harmony();
 		console.log(harmony);
 		return false;
 	}
