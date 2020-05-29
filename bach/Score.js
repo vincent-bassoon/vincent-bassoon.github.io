@@ -12,7 +12,7 @@ class Player {
 		var file_end = "v5.mp3";
 		for(var name in names_to_files){
 			for(var i = 2; i <= 5; i++){
-				sources[name] = names_to_files[name] + i + file_end;
+				sources[name + i] = names_to_files[name] + i + file_end;
 			}
 		}
 		this.sampler = new Tone.Sampler(sources, function(){this.finalize()}, "samples/");
