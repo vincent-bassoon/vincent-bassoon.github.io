@@ -277,19 +277,16 @@ class HarmonyFunctions {
 		}
 		
 		if(voice == 3 && !harmony[index].is_end_of_phrase()){
-			var target_avg = harmony[index + 1].get_target_avg(voice);
+			var target_avg = harmony[index].get_target_avg(voice);
 			var avg = harmony[index + 1].get_next_avg(voice, value);
 			var diff = Math.abs(target_avg - avg);
 			if(diff > 2){
 				if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
-					//score += diff * 6;
-				}
-				else if(value == avg){
-					//score += diff * 3;
+					score += diff * 5;
 				}
 			}
 			if(Math.abs(value - target_avg) > 5){
-				//score += 20;
+				score += 20;
 			}
 		}
 		
