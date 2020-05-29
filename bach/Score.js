@@ -15,15 +15,6 @@ class Player {
 				sources[name + i] = names_to_files[name] + i + file_end;
 			}
 		}
-		
-		this.sampler = new Tone.Sampler(sources, function(){
-			console.log("samples loaded");
-		}, "samples/");
-		
-		var transport = Tone.Transport;
-		var sampler = this.sampler;
-		transport.timeSignature = 4;
-		transport.bpm.value = 80;
 		var beat_num;
 		var start;
 		if(this.pickup){
@@ -34,17 +25,23 @@ class Player {
 			beat_num = 0;
 			start = "0:0:0";
 		}
-		while(this.schedule.length > 0){
-			var unit = this.schedule.shift();
-			var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
-			transport.schedule(function(time){
-				console.log(unit.notes);
-				console.log(time_string);
-				sampler.triggerAttackRelease(unit.notes, "0:" + unit.duration + ":0", time);
-			}, time_string);
-		}
-		console.log("starting audio in one second");
-		Tone.Transport.start("+1", start);
+		(function(sampler, sources, schedule, beat_num, start){
+			sampler = new Tone.Sampler(sources, function(){
+				var transport = Tone.Transport;
+				transport.timeSignature = 4;
+				transport.bpm.value = 80;
+				for(var i = 0; i < schedule.length; i++){
+					var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+					(function(unit){
+						transport.schedule(function(time){
+							sampler.triggerAttackRelease(unit.names, "0:" + unit.duration + ":0", time);
+						}, time_string);
+					})(schedule[i]);
+					beat_num += schedule[i].duration;
+				}
+				transport.start("+0", start);
+			}, "samples/").toMaster();
+		})(this.sampler, sources, this.schedule, beat_num, start);
 	}
 }
 
