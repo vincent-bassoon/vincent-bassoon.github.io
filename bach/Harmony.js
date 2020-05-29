@@ -445,7 +445,7 @@ class HarmonyFunctions {
 		if(this.repeat){
 			return true;
 		}
-		new Score(harmony, chords, chorale_plan, nf).render_harmony();
+		new Score(harmony, chords, chorale_plan, nf).run();
 		console.log(harmony);
 		return false;
 	}
