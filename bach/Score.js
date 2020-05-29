@@ -172,7 +172,10 @@ class Score {
 	render_measure(measure, staves, is_last, initial_indent){
 		for(var i = 0; i < 2; i++){
 			staves[i].setBegBarType(this.vf.Barline.type.NONE);
-			if(measure.duration == 4 || measure.duration == 1 || is_last){
+			if(is_last){
+				staves[i].setEndBarType(this.vf.Barline.type.END);
+			}
+			else if(measure.duration == 4 || measure.duration == 1){
 				staves[i].setEndBarType(this.vf.Barline.type.SINGLE);
 			}
 			else{
