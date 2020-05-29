@@ -94,15 +94,15 @@ function configure_sampler(){
 	var start = document.getElementById("start_button");
 	var sampler = new Tone.Sampler(sources, function(){
 		start.classList.remove("running");
-		start.innerText = "Generate Chorale";
+		start.innerText = "Generate Another";
 		function run(){
 			start.onclick = "";
 			start.classList.add("running");
-			start.innerText = "Generating Chorale...";
+			start.innerText = "Generating...";
 			generate_new_chorale(sampler);
 			start.classList.remove("running");
 			start.onclick = run;
-			start.innerText = "Generate Chorale";
+			start.innerText = "Generate Another";
 		}
 		start.onclick = run;
 	}, "samples/").toMaster();
