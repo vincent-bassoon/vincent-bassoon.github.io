@@ -3,8 +3,8 @@ class Player {
 		this.schedule = [];
 	}
 	schedule_notes(names, duration, is_fermata){
-		if(is_fermata && duration < 3){
-			duration = 3;
+		if(is_fermata && duration < 2){
+			duration = 2;
 		}
 		this.schedule.push({"names": names, "duration": duration});
 	}
@@ -26,6 +26,7 @@ class Player {
 				transport.bpm.value = 80;
 				var rit_time_string;
 				var rit_length = 3;
+				schedule[schedule.length - 1].duration = 3;
 				for(var i = 0; i < schedule.length; i++){
 					var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
 					if(i + rit_length == schedule.length - 1){
@@ -33,10 +34,18 @@ class Player {
 					}
 					(function(unit){
 						transport.schedule(function(time){
-							sampler.triggerAttackRelease(unit.names, "0:" + unit.duration + ":0", time);
+							sampler.triggerAttack(unit.names, time);
 						}, time_string);
 					})(schedule[i]);
 					beat_num += schedule[i].duration;
+					time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+					(function(unit){
+						transport.schedule(function(time){
+							sampler.release = "0:1:0";
+							sampler.curve = "exponential";
+							sampler.triggerRelease(unit.names, time);
+						}, time_string);
+					})(schedule[i]);
 				}
 				transport.schedule(function(time){
 					transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
