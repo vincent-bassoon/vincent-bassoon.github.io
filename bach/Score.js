@@ -289,14 +289,15 @@ class Score {
 			var index = start_index + i;
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[index].get_value(3 - voice, 1);
-				var name = this.harmony[index].get_name(3 - voice, 1).toLowerCase();
+				var name = this.harmony[index].get_name(3 - voice, 1);
 				var octave = Math.floor(value / 12);
-				if(name.substring(0, 2) == "cb"){
+				if(name.substring(0, 2) == "Cb"){
 					octave += 1;
 				}
-				else if(name.substring(0, 2) == "b#"){
+				else if(name.substring(0, 2) == "B#"){
 					octave -= 1;
 				}
+				name = name.toLowerCase();
 				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
 				note.setLedgerLineStyle({strokeStyle: "black"});
