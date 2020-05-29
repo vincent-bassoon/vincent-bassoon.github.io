@@ -28,6 +28,14 @@ class Player {
 		var schedule = this.schedule;
 		var sampler = this.sampler;
 		schedule[schedule.length - 1].duration = 3;
+		var play = document.getElementById("play_button");
+		function play_audio(){
+			play.onclick = "";
+			play.classList.add("running");
+			play.innerText = "Playing...";
+			transport.bpm.value = 80;
+			transport.start("+.4", "0:0:0");
+		}
 		for(var i = 0; i < schedule.length; i++){
 			var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
 			if(i + rit_length == schedule.length - 1){
@@ -50,30 +58,27 @@ class Player {
 			else{
 				(function(unit){
 					transport.schedule(function(time){
-						sampler.release = "0:1:0";
-						sampler.curve = "linear";
+						sampler.release = 1;
 						sampler.triggerRelease(unit.names, time);
 					}, time_string);
 				})(schedule[i]);
+				beat_num += 1;
+				time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":2";
+				(function(button){
+					transport.schedule(function(time){
+						play.classList.remove("running");
+						play.innerText = "Play";
+						play.onclick = play_audio;
+					}, time_string);
+				})(play);
 			}
 		}
 		transport.schedule(function(time){
 			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
 		}, rit_time_string);
-		var play = document.getElementById("play_button");
 		play.classList.remove("running");
 		play.innerText = "Play";
-		function play_stop(){
-			if(transport.state == "stopped"){
-				transport.start("+.4", "0:0:0");
-				play.innerText = "Stop";
-			}
-			else{
-				transport.stop();
-				play.innerText = "Play";
-			}
-		}
-		play.onclick = play_stop;
+		play.onclick = play_audio;
 	}
 }
 
