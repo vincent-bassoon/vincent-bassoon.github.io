@@ -1,6 +1,7 @@
 class Player {
-	constructor(){
+	constructor(note_functions){
 		this.schedule = [];
+		this.note_functions = note_functions
 	}
 	schedule_notes(names, duration, is_fermata){
 		if(is_fermata && duration < 2){
@@ -355,18 +356,18 @@ class Score {
 			var names = [];
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[index].get_value(3 - voice, 1);
-				var name = this.harmony[index].get_name(3 - voice, 1);
+				var simple_name = this.note_functions.value_to_simple_name_octave(value);
+				if(!names.includes(simple_name)){
+					names.push(simple_name);
+				}
+				var name = this.harmony[index].get_name(3 - voice, 1).toLowerCase();
 				var octave = Math.floor(value / 12);
-				if(name.substring(0, 2) == "Cb"){
+				if(name.substring(0, 2) == "cb"){
 					octave += 1;
 				}
-				else if(name.substring(0, 2) == "B#"){
+				else if(name.substring(0, 2) == "b#"){
 					octave -= 1;
 				}
-				if(!names.includes(name + octave)){
-					names.push(name + octave);
-				}				
-				name = name.toLowerCase();
 				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
 				note.setLedgerLineStyle({strokeStyle: "black"});
