@@ -197,7 +197,7 @@ class HarmonyFunctions {
 				if(index + i < harmony.length && this.note_functions.chords_equal(chords[index], chords[index + i])){
 					for(var voice = 0; voice < 4; voice += 3){
 						if(harmony[index].get_value(voice, 0) == harmony[index + i].get_value(voice, 0)){
-							return false;
+							score += 40;
 						}
 					}
 				}
