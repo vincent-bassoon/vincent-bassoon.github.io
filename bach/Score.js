@@ -1,3 +1,48 @@
+class Player {
+	constructor(pickup){
+		this.schedule = [];
+		this.pickup = pickup;
+	}
+	schedule_notes(names, duration, is_fermata){
+		this.schedule.push({"names": names, "duration": duration, "is_fermata": is_fermata});
+	}
+	generate_audio(){
+		var sources = {};
+		var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
+		var file_end = "v5.mp3";
+		for(var name in names_to_files){
+			for(var i = 2; i <= 5; i++){
+				sources[name] = names_to_files[name] + i + file_end;
+			}
+		}
+		this.sampler = new Tone.Sampler(sources, function(){this.finalize()}, "samples/");
+	}
+	finalize(){
+		var transport = Tone.Transport;
+		var sampler = this.sampler;
+		transport.timeSignature = 4;
+		transport.bpm.value = 80;
+		var beat_num;
+		var start;
+		if(this.pickup){
+			beat_num = 3;
+			start = "0:3:0";
+		}
+		else{
+			beat_num = 0;
+			start = "0:0:0";
+		}
+		while(this.schedule.length > 0){
+			var unit = this.schedule.shift();
+			var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+			transport.schedule(function(time){
+				sampler.triggerAttackRelease(unit.notes, "0:" + unit.duration + ":0", time);
+			}, time_string);
+		}
+		transport.start("+1", start);
+	}
+}
+
 class LineData {
 	constructor(score){
 		this.score = score;
@@ -110,6 +155,9 @@ class Score {
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
 		this.duration_strings = {1: "q", 2: "h", 3: "hd", 4: "w"};
+		
+		
+		this.player = new Player(this.chorale_plan[0].get_phrase_length() % 2 == 0);
 	}
 	get_accidentals_in_key_copy(){
 		var copy = {};
@@ -193,8 +241,8 @@ class Score {
 	render_harmony(){
 		var line_data = new LineData(this);
 		
-		var measures = [];
 		var pickup = (this.chorale_plan[0].get_phrase_length() % 2 == 0);
+		var measures = [];
 		var index_start = 0;
 		
 		var phrase_done_indices = [this.chorale_plan[0].get_phrase_length()];
@@ -262,6 +310,7 @@ class Score {
 			line_data.generate_line(measures, num_beats, true);
 		}
 		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
+		this.player.generate_audio();
 	}
 	
 	create_note_data(value, name, octave, duration, voice){
@@ -287,6 +336,7 @@ class Score {
 		var prev_value = null;
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
+			var names = [];
 			for(var voice = 0; voice < 4; voice++){
 				var value = this.harmony[index].get_value(3 - voice, 1);
 				var name = this.harmony[index].get_name(3 - voice, 1);
@@ -297,6 +347,7 @@ class Score {
 				else if(name.substring(0, 2) == "B#"){
 					octave -= 1;
 				}
+				names.push(name + octave);
 				name = name.toLowerCase();
 				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
 				var note = new this.vf.StaveNote(note_data);
@@ -335,8 +386,8 @@ class Score {
 						measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
 					}
 				}
-				
 			}
+			this.player.schedule_notes(names, durations[i], (fermata_index != null && index == fermata_index));
 		}
 		for(var i = 0; i < 2; i++){
 			if(!needs_ghost_voices[i]){
