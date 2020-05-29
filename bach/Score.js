@@ -63,10 +63,11 @@ class Player {
 		time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":2";
 		(function(button){
 			transport.schedule(function(time){
+				transport.stop();
 				play.classList.remove("running");
 				play.innerText = "Play";
 				play.onclick = play_audio;
-				}, time_string);
+			}, time_string);
 		})(play);
 		transport.schedule(function(time){
 			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
