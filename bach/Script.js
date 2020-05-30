@@ -111,7 +111,7 @@ function configure_sampler(){
 			play.innerText = "Loading...";
 			start.innerText = "Generating...";
 			while(staff.children.length != 0){
-				staff.removeChild(staff.lasChild);
+				staff.removeChild(staff.lastChild);
 			}
 			generate_new_chorale(sampler);
 			start.classList.remove("running");
