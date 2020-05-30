@@ -44,19 +44,18 @@ class Player {
 		}, this.get_time_string(beat_num));
 		
 		for(var i = 1; i < schedule.length - 1; i++){
-			beat_num += 4 * schedule[i].duration;
-			var time_string = this.get_time_string(beat_num);
+			beat_num += 4 * schedule[i - 1].duration;
 			if(i + rit_length == schedule.length - 1){
-				rit_time_string = time_string;
+				rit_time_string = this.get_time_string(beat_num);
 			}
-			(function(unit, prev_unit){
+			(function(unit, prev_unit, time_string){
 				transport.schedule(function(time){
 					sampler.triggerRelease(prev_unit.names, time);
 					sampler.triggerAttack(unit.names, time);
 				}, time_string);
-			})(schedule[i], schedule[i - 1]);
+			})(schedule[i], schedule[i - 1], this.get_time_string(beat_num));
 		}
-		beat_num += 4 * schedule[i].duration;
+		beat_num += 4 * schedule[schedule.length - 2].duration;
 		transport.schedule(function(time){
 			sampler.triggerRelease(schedule[schedule.length - 2].names, time);
 			sampler.release = 2;
