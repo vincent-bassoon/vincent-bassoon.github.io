@@ -94,6 +94,7 @@ function configure_sampler(){
 	var transport = Tone.Transport;
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
+	var staff = document.getElementById("staff");
 	var sampler = new Tone.Sampler(sources, function(){
 		generate_new_chorale(sampler);
 		start.classList.remove("running");
@@ -109,6 +110,9 @@ function configure_sampler(){
 			start.classList.add("running");
 			play.innerText = "Loading...";
 			start.innerText = "Generating...";
+			while(staff.children.length != 0){
+				staff.removeChild(staff.lasChild);
+			}
 			generate_new_chorale(sampler);
 			start.classList.remove("running");
 			start.onclick = run;
