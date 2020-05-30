@@ -55,11 +55,9 @@ class Player {
 			if(transport.state == "started"){
 				transport.stop();
 				sampler.releaseAll();
-				play.onclick = play_stop;
 				play.innerText = "Play";
 			}
 			else{
-				play.onclick = "";
 				play.innerText = "Stop";
 				transport.bpm.value = 80;
 				sampler.release = 0.1;
