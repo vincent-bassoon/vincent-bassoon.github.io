@@ -113,7 +113,9 @@ function configure_sampler(){
 			while(staff.children.length != 0){
 				staff.removeChild(staff.lastChild);
 			}
-			generate_new_chorale(sampler);
+			setTimeout(function(){
+				generate_new_chorale(sampler);
+			}, 0);
 			start.classList.remove("running");
 			start.onclick = run;
 			start.innerText = "Generate Another";
