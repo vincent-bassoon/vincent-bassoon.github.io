@@ -54,6 +54,7 @@ class Player {
 		function play_stop(){
 			if(transport.state == "started"){
 				transport.stop();
+				sampler.releaseAll();
 				play.onclick = play_stop;
 				play.innerText = "Play";
 			}
