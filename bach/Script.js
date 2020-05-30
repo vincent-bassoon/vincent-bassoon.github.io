@@ -98,9 +98,11 @@ function configure_sampler(){
 	var sampler = new Tone.Sampler(sources, function(){
 		generate_new_chorale(sampler);
 		start.classList.remove("running");
-		start.innerText = "Generate Another";
+		start.innerText = "NEW CHORALE";
 		function run(){
 			play.onclick = "";
+			play.innerText = "LOADING...";
+			start.innerText = "GENERATING...";
 			play.classList.add("running");
 			if(transport.state == "started"){
 				transport.stop();
@@ -109,8 +111,6 @@ function configure_sampler(){
 			}
 			start.onclick = "";
 			start.classList.add("running");
-			play.innerText = "Loading...";
-			start.innerText = "Generating...";
 			setTimeout(function(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
@@ -118,7 +118,7 @@ function configure_sampler(){
 				generate_new_chorale(sampler);
 				start.classList.remove("running");
 				start.onclick = run;
-				start.innerText = "Generate Another";
+				start.innerText = "NEW CHORALE";
 			}, 1);
 		}
 		start.onclick = run;
