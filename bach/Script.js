@@ -91,6 +91,7 @@ function configure_sampler(){
 		}
 	}
 	Tone.context.lookAhead = 0.3;
+	var transport = Tone.Transport;
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
 	var sampler = new Tone.Sampler(sources, function(){
@@ -100,6 +101,9 @@ function configure_sampler(){
 		function run(){
 			play.onclick = "";
 			play.classList.add("running");
+			if(transport.state == "started"){
+				transport.stop();
+			}
 			start.onclick = "";
 			start.classList.add("running");
 			play.innerText = "Loading...";
