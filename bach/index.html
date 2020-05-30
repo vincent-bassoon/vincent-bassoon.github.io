@@ -17,7 +17,7 @@
 				display: flex;
 				flex-wrap: nowrap;
 			}
-			.button {
+			a {
 				border-radius: 7px;
 				padding: 10px 20px;
 				box-sizing: border-box;
@@ -42,7 +42,7 @@
 			.playButton{
 				width: 132px;
 			}
-			.button:hover{
+			body.hasHover a:hover{
 				background-color: #878c94;
 			}
 			.running{
@@ -56,8 +56,8 @@
 	</head>
 	<body>
 		<div class="flex-container">
-			<a id="start_button" class="button startButton running">Generating...</a>
-			<a id="play_button" class="button playButton running">Loading...</a>
+			<a id="start_button" class="startButton running">Generating...</a>
+			<a id="play_button" class="playButton running">Loading...</a>
 		</div>
 		
 		<div id="staff"></div>
