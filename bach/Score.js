@@ -130,7 +130,9 @@ class LineData {
 				this.stave_width = this.min_measure_beat_size * 13 + this.initial_note_indent;
 				this.score.measures_per_line = Math.floor(13 / 4);
 			}
-			this.score.measures_per_line = Math.floor(possible_beats / 4);
+			else{
+				this.score.measures_per_line = Math.floor(possible_beats / 4);
+			}
 		}
 		
 		
