@@ -9,6 +9,9 @@ class Player {
 		}
 		this.schedule.push({"names": names, "duration": duration});
 	}
+	time_string(beat_num){
+		return "" + Math.floor(beat_num / 16) + ":" + Math.floor(beat_num / 4) + ":" + (beat_num % 4);
+	}
 	generate_audio(){
 		var sources = {};
 		var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
@@ -22,14 +25,14 @@ class Player {
 		transport.cancel();
 		transport.timeSignature = 4;
 		transport.bpm.value = 80;
-		var beat_num = 0;
+		var beat_num = 1;
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
 		var sampler = this.sampler;
 		schedule[schedule.length - 1].duration = 3;
 		for(var i = 0; i < schedule.length; i++){
-			var time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+			var time_string = this.time_string(beat_num);
 			if(i + rit_length == schedule.length - 1){
 				rit_time_string = time_string;
 			}
@@ -41,8 +44,8 @@ class Player {
 					sampler.triggerAttack(unit.names, time);
 				}, time_string);
 			})(schedule[i], i == schedule.length - 1);
-			beat_num += schedule[i].duration;
-			time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":0";
+			beat_num += 4 * schedule[i].duration;
+			time_string = this.time_string(beat_num);
 			(function(unit){
 				transport.schedule(function(time){
 					sampler.triggerRelease(unit.names, time);
@@ -52,34 +55,37 @@ class Player {
 		
 		var play = document.getElementById("play_button");
 		function play_stop(){
-			if(transport.state == "started"){
+			if(play.innerText == "STOP"){
 				transport.stop();
 				sampler.releaseAll();
-				play.innerText = "Play";
+				play.innerText = "PLAY";
 			}
 			else{
-				play.innerText = "Stop";
+				play.innerText = "STOP";
 				transport.bpm.value = 80;
 				sampler.release = 0.1;
-				transport.start("+.4", "0:0:0");
+				transport.start("+.3", "0:0:0");
 			}
 		}
-		beat_num += 1;
-		time_string = "" + Math.floor(beat_num / 4) + ":" + (beat_num % 4) + ":2";
-		(function(button){
-			transport.schedule(function(time){
-				if(transport.state == "started"){
-					transport.stop();
-				}
-				play.innerText = "Play";
-				play.onclick = play_stop;
-			}, time_string);
-		})(play);
+		transport.schedule(function(time){
+			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
+				transport.stop();
+				sampler.releaseAll();
+			}
+		}, this.time_string(0));
+		beat_num += 6;
+		transport.schedule(function(time){
+			if(transport.state == "started"){
+				transport.stop();
+			}
+			play.innerText = "PLAY";
+			play.onclick = play_stop;
+		}, this.time_string(beat_num));
 		transport.schedule(function(time){
 			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
 		}, rit_time_string);
 		play.classList.remove("running");
-		play.innerText = "Play";
+		play.innerText = "PLAY";
 		play.onclick = play_stop;
 	}
 }
