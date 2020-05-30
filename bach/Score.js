@@ -61,7 +61,7 @@ class Player {
 				play.innerText = "Stop";
 				transport.bpm.value = 80;
 				sampler.release = 0.1;
-				transport.start("+.4", "0:0:0");
+				transport.start("+.2", "0:0:0");
 			}
 		}
 		beat_num += 1;
