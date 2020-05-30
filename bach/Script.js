@@ -102,8 +102,8 @@ function configure_sampler(){
 			play.onclick = "";
 			play.classList.add("running");
 			if(transport.state == "started"){
-				sampler.releaseAll();
 				transport.stop();
+				sampler.releaseAll();
 			}
 			start.onclick = "";
 			start.classList.add("running");
