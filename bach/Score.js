@@ -120,13 +120,19 @@ class LineData {
 		
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
 			this.stave_width = this.min_measure_beat_size * 13 + this.initial_note_indent;
+			this.score.measures_per_line = Math.floor(13 / 4);
 		}
 		else{
 			var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 			this.stave_width = width - (2 * this.x_margin) - 2;
+			var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
+			if(possible_beats < 13){
+				this.stave_width = this.min_measure_beat_size * 13 + this.initial_note_indent;
+				this.score.measures_per_line = Math.floor(13 / 4);
+			}
+			this.score.measures_per_line = Math.floor(possible_beats / 4);
 		}
-		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
-		this.score.measures_per_line = Math.floor(possible_beats / 4);
+		
 		
 		
 		this.clefs = ["treble", "bass"];
