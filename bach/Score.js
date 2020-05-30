@@ -9,7 +9,7 @@ class Player {
 		}
 		this.schedule.push({"names": names, "duration": duration});
 	}
-	time_string(beat_num){
+	get_time_string(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
 	}
 	generate_audio(){
@@ -31,28 +31,41 @@ class Player {
 		var schedule = this.schedule;
 		var sampler = this.sampler;
 		schedule[schedule.length - 1].duration = 3;
-		for(var i = 0; i < schedule.length; i++){
-			var time_string = this.time_string(beat_num);
+		
+		
+		transport.schedule(function(time){
+			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
+				transport.stop();
+				sampler.releaseAll();
+			}
+		}, this.get_time_string(0));
+		transport.schedule(function(time){
+			sampler.triggerAttack(schedule[0].names, time);
+		}, this.get_time_string(beat_num));
+		
+		for(var i = 1; i < schedule.length - 1; i++){
+			beat_num += 4 * schedule[i].duration;
+			var time_string = this.get_time_string(beat_num);
 			if(i + rit_length == schedule.length - 1){
 				rit_time_string = time_string;
 			}
-			(function(unit, is_last){
+			(function(unit, prev_unit){
 				transport.schedule(function(time){
-					if(is_last){
-						sampler.release = 2;
-					}
+					sampler.triggerRelease(prev_unit.names, time);
 					sampler.triggerAttack(unit.names, time);
 				}, time_string);
-			})(schedule[i], i == schedule.length - 1);
-			beat_num += 4 * schedule[i].duration;
-			time_string = this.time_string(beat_num);
-			(function(unit){
-				transport.schedule(function(time){
-					sampler.triggerRelease(unit.names, time);
-				}, time_string);
-			})(schedule[i]);
+			})(schedule[i], schedule[i - 1]);
 		}
-		
+		beat_num += 4 * schedule[i].duration;
+		transport.schedule(function(time){
+			sampler.triggerRelease(schedule[schedule.length - 2].names, time);
+			sampler.release = 2;
+			sampler.triggerAttack(schedule[schedule.length - 1].names, time);
+		}, this.get_time_string(beat_num));
+		beat_num += 4 * schedule[i].duration;
+		transport.schedule(function(time){
+			sampler.triggerRelease(schedule[schedule.length - 1].names, time);
+		}, this.get_time_string(beat_num));
 		var play = document.getElementById("play_button");
 		function play_stop(){
 			if(play.innerText == "STOP"){
@@ -67,12 +80,6 @@ class Player {
 				transport.start("+.3", "0:0:0");
 			}
 		}
-		transport.schedule(function(time){
-			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
-				transport.stop();
-				sampler.releaseAll();
-			}
-		}, this.time_string(0));
 		beat_num += 6;
 		transport.schedule(function(time){
 			if(transport.state == "started"){
@@ -80,7 +87,7 @@ class Player {
 			}
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
-		}, this.time_string(beat_num));
+		}, this.get_time_string(beat_num));
 		transport.schedule(function(time){
 			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
 		}, rit_time_string);
