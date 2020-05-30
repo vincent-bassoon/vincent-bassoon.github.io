@@ -105,6 +105,7 @@ function configure_sampler(){
 			if(transport.state == "started"){
 				transport.stop();
 				sampler.releaseAll();
+				transport.cancel();
 			}
 			start.onclick = "";
 			start.classList.add("running");
