@@ -10,7 +10,7 @@ class Player {
 		this.schedule.push({"names": names, "duration": duration});
 	}
 	time_string(beat_num){
-		return "" + Math.floor(beat_num / 16) + ":" + Math.floor(beat_num / 4) + ":" + (beat_num % 4);
+		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
 	}
 	generate_audio(){
 		var sources = {};
