@@ -36,7 +36,7 @@ class Player {
 			(function(unit, is_last){
 				transport.schedule(function(time){
 					if(is_last){
-						sampler.release = 2.5;
+						sampler.release = 2;
 					}
 					sampler.triggerAttack(unit.names, time);
 				}, time_string);
