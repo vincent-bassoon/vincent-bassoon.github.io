@@ -3,19 +3,17 @@ function watchForHover(){
 	let lastTouchTime = 0
 
 	function enableHover(){
-		console.log("hover enabled");
 		if(new Date() - lastTouchTime < 500){
-			return document.body.classList.add('hasHover');
+			return;
 		}
+		document.body.classList.add('hasHover');
 	}
 	
 	function disableHover(){
-		console.log("hover disabled");
 		document.body.classList.remove('hasHover');
 	}
 
 	function updateLastTouchTime(){
-		console.log("time updated");
 		lastTouchTime = new Date();
 	}
 
