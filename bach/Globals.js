@@ -154,8 +154,8 @@ class Chord {
 
 class HarmonyUnit {
 	constructor(target_avgs){
-		this.note_values = [[null, null, null, null], [null, null, null, null]];
-		this.note_names = [[null, null, null, null], [null, null, null, null]];
+		this.note_values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
+		this.note_names = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
 		this.history = [];
 		this.leap = [null, null, null, null];
 		
@@ -183,10 +183,11 @@ class HarmonyUnit {
 		return this.target_avgs[3] == null;
 	}
 	add_to_history(){
-		var copy = [[], []];
+		var copy = [[], [], []];
 		for(var i = 0; i < 4; i++){
 			copy[0][i] = this.note_values[0][i];
 			copy[1][i] = this.note_values[1][i];
+			copy[2][i] = this.note_values[2][i];
 		}
 		this.history.push(copy);
 	}
@@ -194,7 +195,7 @@ class HarmonyUnit {
 		var equals;
 		for(var i = 0; i < this.history.length; i++){
 			equals = true;
-			for(var j = 0; j < 2; j++){
+			for(var j = 0; j < 3; j++){
 				for(var k = 0; k < 4; k++){
 					if(this.history[i][j][k] != this.note_values[j][k]){
 						equals = false;
@@ -207,23 +208,26 @@ class HarmonyUnit {
 		}
 		return false;
 	}
-	has_two_values(voice){
-		return this.note_values[0][voice] != this.note_values[1][voice];
+	has_eighths(voice){
+		return this.note_values[0][voice] != this.note_values[2][voice] ||
+			this.note_values[0][voice] != this.note_values[1][voice] ||
+			this.note_values[1][voice] != this.note_values[2][voice];
+	}
+	has_sixteenths(voice){
+		return this.note_values[0][voice] != this.note_values[1][voice] ||
+			this.note_values[2][voice] != this.note_values[1][voice];
 	}
 	get_value(voice, index){
-		if(index == 0){
-			return this.note_values[0][voice];
-		}
-		else{
-			return this.note_values[1][voice];
-		}
+		return this.note_values[index][voice];
 	}
 	set_note(voice, value, name, leap){
 		this.note_values[0][voice] = value;
 		this.note_values[1][voice] = value;
+		this.note_values[2][voice] = value;
 		this.leap[voice] = leap;
 		this.note_names[0][voice] = name;
 		this.note_names[1][voice] = name;
+		this.note_names[2][voice] = name;
 	}
 	get_name(voice, index){
 		return this.note_names[index][voice];
