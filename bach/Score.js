@@ -3,11 +3,8 @@ class Player {
 		this.schedule = [];
 		this.sampler = sampler;
 	}
-	schedule_notes(names, duration, is_fermata){
-		if(is_fermata && duration < 2){
-			duration = 2;
-		}
-		this.schedule.push({"names": names, "duration": duration});
+	schedule_notes(start_list, release_list, duration){
+		this.schedule.push({"start": start_list, "release": release_list, "duration": duration});
 	}
 	get_time_string(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
@@ -30,8 +27,9 @@ class Player {
 		var rit_length = 3;
 		var schedule = this.schedule;
 		var sampler = this.sampler;
-		schedule[schedule.length - 1].duration = 3;
+		schedule[schedule.length - 1].duration = 12;
 		
+		var play = document.getElementById("play_button");
 		
 		transport.schedule(function(time){
 			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
@@ -39,33 +37,28 @@ class Player {
 				sampler.releaseAll();
 			}
 		}, this.get_time_string(0));
+		
+		for(var i = 0; i < schedule.length; i++){
+			(function(unit, time_string, rit, last){
+				transport.schedule(function(time){
+					if(unit.release.length != 0){
+						sampler.triggerRelease(unit.release, time);
+					}
+					if(rit){
+						transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
+					}
+					if(last){
+						sampler.release = 2;
+					}
+					sampler.triggerAttack(unit.start, time);
+				}, time_string);
+			})(schedule[i], this.get_time_string(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
+			beat_num += schedule[i].duration;
+		}
 		transport.schedule(function(time){
-			sampler.triggerAttack(schedule[0].names, time);
+			sampler.triggerRelease(schedule[schedule.length - 1].release, time);
 		}, this.get_time_string(beat_num));
 		
-		for(var i = 1; i < schedule.length - 1; i++){
-			beat_num += 4 * schedule[i - 1].duration;
-			if(i + rit_length == schedule.length - 1){
-				rit_time_string = this.get_time_string(beat_num);
-			}
-			(function(unit, prev_unit, time_string){
-				transport.schedule(function(time){
-					sampler.triggerRelease(prev_unit.names, time);
-					sampler.triggerAttack(unit.names, time);
-				}, time_string);
-			})(schedule[i], schedule[i - 1], this.get_time_string(beat_num));
-		}
-		beat_num += 4 * schedule[schedule.length - 2].duration;
-		transport.schedule(function(time){
-			sampler.triggerRelease(schedule[schedule.length - 2].names, time);
-			sampler.release = 2;
-			sampler.triggerAttack(schedule[schedule.length - 1].names, time);
-		}, this.get_time_string(beat_num));
-		beat_num += 4 * schedule[i].duration;
-		transport.schedule(function(time){
-			sampler.triggerRelease(schedule[schedule.length - 1].names, time);
-		}, this.get_time_string(beat_num));
-		var play = document.getElementById("play_button");
 		function play_stop(){
 			if(play.innerText == "STOP"){
 				transport.stop();
@@ -87,9 +80,6 @@ class Player {
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
 		}, this.get_time_string(beat_num));
-		transport.schedule(function(time){
-			transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
-		}, rit_time_string);
 		play.classList.remove("running");
 		play.innerText = "PLAY";
 		play.onclick = play_stop;
@@ -210,8 +200,10 @@ class Score {
 		
 		this.context = this.renderer.getContext();
 		this.voice_clefs = ["treble", "treble", "bass", "bass"];
-		this.duration_strings = {1: "q", 2: "h", 3: "hd", 4: "w"};
+		this.duration_strings = {1: "16", 2: "8", 4: "q", 8: "h", 12: "hd", 16: "w"};
+		this.num_notes_to_durations = {2: {0: 2, 1: 2}, 3: {0: 2, 1: 1, 2: 1}};
 		
+		this.prev_names = [null, null, null, null];
 		
 		this.player = new Player(sampler);
 	}
@@ -373,7 +365,6 @@ class Score {
 	}
 	
 	create_note_data(value, name, octave, duration, voice){
-		var note_duration = this.duration_strings[duration];
 		var stem_dir;
 		if(voice % 2 == 0){
 			stem_dir = 1;
@@ -383,72 +374,73 @@ class Score {
 		}
 		var note_data = {"clef": this.voice_clefs[voice],
 				 "keys": [name + "/" + octave],
-				 "duration": note_duration,
+				 "duration": duration,
 				 "stem_direction": stem_dir};
 		return note_data;
 	}
 		
 	generate_single_measure(start_index, durations, total_duration, fermata_index){
-		var measure = {notes: [[], [], [], []], "duration": total_duration, "width": null, "ghost_voices": [[], []]};
+		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
+			       "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
-		var prev_value = null;
+		var prev_value = [null];
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
-			var names = [];
+			var voice_to_max = {0: 1, 1: 1, 2: 1, 3: 1};
+			var max = 1;
 			for(var voice = 0; voice < 4; voice++){
-				var value = this.harmony[index].get_value(3 - voice, 1);
-				var simple_name = this.note_functions.value_to_simple_name_octave(value);
-				if(!names.includes(simple_name)){
-					names.push(simple_name);
+				if(this.harmony[index].has_sixteenths(3 - voice)){
+					voice_to_max[voice] = 3;
+					if(max < 3){
+						max = 3;
+					}
 				}
-				var name = this.harmony[index].get_name(3 - voice, 1).toLowerCase();
-				var octave = Math.floor(value / 12);
-				if(name.substring(0, 2) == "cb"){
-					octave += 1;
-				}
-				else if(name.substring(0, 2) == "b#"){
-					octave -= 1;
-				}
-				var note_data = this.create_note_data(value, name, octave, durations[i], voice);
-				var note = new this.vf.StaveNote(note_data);
-				note.setLedgerLineStyle({strokeStyle: "black"});
-				var clef_index = Math.floor(voice / 2);
-				if(voice % 2 == 1 && value == prev_value){
-					//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
-					measure.notes[voice].push(new this.vf.GhostNote(note_data));
-					measure.ghost_voices[clef_index].push(note);
-					needs_ghost_voices[clef_index] = true;
-				}
-				else{
-					if(!(octave in accidentals_in_key[clef_index])){
-						accidentals_in_key[clef_index][octave] = this.get_accidentals_in_key_copy();
-					}
-					if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
-						accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
-						if(name.substring(1) == ""){
-							note = note.addAccidental(0, new this.vf.Accidental("n"));
-						}
-						else{
-							note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
-						}
-					}
-					if(note_data.duration[note_data.duration.length - 1] == "d"){
-						note = note.addDotToAll();
-					}
-					if(voice == 0 && fermata_index != null && index == fermata_index){
-						note = note.addArticulation(0, new this.vf.Articulation("a@a").setPosition(3));
-					}
-					measure.notes[voice].push(note);
-					if(voice % 2 == 0){
-						prev_value = value;
-					}
-					else{
-						measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
+				else if(this.harmony[index].has_eighths(3 - voice)){
+					voice_to_max[voice] = 2;
+					if(max < 2){
+						max = 2;
 					}
 				}
 			}
-			this.player.schedule_notes(names, durations[i], (fermata_index != null && index == fermata_index));
+			for(var sub_index = 0; sub_index < max; sub_index++){
+				var names = {0: null, 1: null, 2: null, 3: null};
+				var min_duration = null;
+				for(var voice = 0; voice < 4; voice++){
+					if(sub_index < voice_to_max[voice]){
+						var duration;
+						if(voice_to_max[voice] == 1){
+							duration = 4 * durations[i];
+						}
+						else{
+							duration = this.num_notes_to_durations[voice_to_max[voice]][sub_index];
+						}
+						if(min_duration == null || min_duration > duration){
+							min_duration = duration;
+						}
+						this.generate_single_beat(measure, index, fermata_index, voice,
+									  this.duration_strings[duration], names,
+									  prev_value, accidentals_in_key, needs_ghost_voices);
+					}
+				}
+				var start_list = [];
+				var release_list = [];
+				for(var voice = 0; voice < 4; voice++){
+					if(names[voice] != null){
+						if(this.prev_names[voice] != null && !release_list.includes(this.prev_names[voice])){
+							release_list.push(this.prev_names[voice]);
+						}
+						if(!start_list.includes(names[voice])){
+							start_list.push(names[voice]);
+							this.prev_names[voice] = names[voice];
+						}
+					}
+				}
+				if(fermata_index != null && index == fermata_index && min_duration < 8){
+					min_duration = 8;
+				}
+				this.player.schedule_notes(start_list, release_list, min_duration);
+			}
 		}
 		for(var i = 0; i < 2; i++){
 			if(!needs_ghost_voices[i]){
@@ -456,5 +448,55 @@ class Score {
 			}
 		}
 		return measure;
+	}
+	generate_single_beat(measure, index, fermata_index, voice, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
+		var value = this.harmony[index].get_value(3 - voice, 1);
+		var simple_name = this.note_functions.value_to_simple_name_octave(value);
+		names[voice] = simple_name;
+		var name = this.harmony[index].get_name(3 - voice, 1).toLowerCase();
+		var octave = Math.floor(value / 12);
+		if(name.substring(0, 2) == "cb"){
+			octave += 1;
+		}
+		else if(name.substring(0, 2) == "b#"){
+			octave -= 1;
+		}
+		var note_data = this.create_note_data(value, name, octave, duration, voice);
+		var note = new this.vf.StaveNote(note_data);
+		note.setLedgerLineStyle({strokeStyle: "black"});
+		var clef_index = Math.floor(voice / 2);
+		if(voice % 2 == 1 && value == prev_value[0]){
+			//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
+			measure.notes[voice].push(new this.vf.GhostNote(note_data));
+			measure.ghost_voices[clef_index].push(note);
+			needs_ghost_voices[clef_index] = true;
+		}
+		else{
+			if(!(octave in accidentals_in_key[clef_index])){
+				accidentals_in_key[clef_index][octave] = this.get_accidentals_in_key_copy();
+			}
+			if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
+				accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
+				if(name.substring(1) == ""){
+					note = note.addAccidental(0, new this.vf.Accidental("n"));
+				}
+				else{
+					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
+				}
+			}
+			if(duration.substring(duration.length - 1) == "d"){
+				note = note.addDotToAll();
+			}
+			if(voice == 0 && fermata_index != null && index == fermata_index){
+				note = note.addArticulation(0, new this.vf.Articulation("a@a").setPosition(3));
+			}
+			measure.notes[voice].push(note);
+			if(voice % 2 == 0){
+				prev_value[0] = value;
+			}
+			else{
+				measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
+			}
+		}
 	}
 }
