@@ -454,7 +454,7 @@ class Score {
 							beam_notes.push(measure.notes[voice][j]);
 						}
 						else{
-							beam_notes.push(measure.ghost_notes[Math.floor(voice / 2)][j]);
+							beam_notes.push(measure.ghost_voices[Math.floor(voice / 2)][j]);
 						}
 					}
 					measure.beams.push(new this.vf.Beam(beam_notes));
