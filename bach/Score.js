@@ -229,9 +229,6 @@ class Score {
 			}
 			staves[i].setContext(this.context).draw();
 		}
-		for(var i = 0; i < measure.beams.length; i++){
-			measure.beams[i].setContext(this.context).draw();
-		}
 		var voices = {};
 		var all_voices = [];
 		for(var i = 0; i < 4; i++){
@@ -264,6 +261,9 @@ class Score {
 		staves[1].setNoteStartX(indent);
 		for(var i = 0; i < all_voices.length; i++){
 			all_voices[i].setContext(this.context).draw();
+		}
+		for(var i = 0; i < measure.beams.length; i++){
+			measure.beams[i].setContext(this.context).draw();
 		}
 	}
 	render_line(measures, staves, is_last, initial_indent){
