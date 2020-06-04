@@ -98,7 +98,7 @@ class HarmonyFunctions {
 			return false;
 		}
 		var voice1 = this.voice_order[order_index];
-		var voice1_has_two_values = harmony[index].has_two_values(voice1);
+		var voice1_has_two_values = harmony[index].has_eighths(voice1) || harmony[index].has_sixteenths(voice1);
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
 			var interval1 = Math.abs(harmony[index].get_value(voice1, 0) -
@@ -108,7 +108,7 @@ class HarmonyFunctions {
 			if(this.check_parallel_intervals(interval1, interval2)){
 				return true;
 			}
-			var voice2_has_two_values = harmony[index].has_two_values(voice2)
+			var voice2_has_two_values = harmony[index].has_eighths(voice2) || harmony[index].has_sixteenths(voice2);
 			if(voice1_has_two_values || voice2_has_two_values){
 				var interval3 = Math.abs(harmony[index].get_value(voice1, 1) -
 							 harmony[index].get_value(voice2, 1)) % 12;
