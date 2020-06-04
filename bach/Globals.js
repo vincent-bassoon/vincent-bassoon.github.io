@@ -209,13 +209,11 @@ class HarmonyUnit {
 		return false;
 	}
 	has_eighths(voice){
-		return this.note_values[0][voice] != this.note_values[2][voice] ||
-			this.note_values[0][voice] != this.note_values[1][voice] ||
-			this.note_values[1][voice] != this.note_values[2][voice];
+		return this.note_values[0][voice] != this.note_values[1][voice];
 	}
 	has_sixteenths(voice){
-		return this.note_values[0][voice] != this.note_values[1][voice] ||
-			this.note_values[2][voice] != this.note_values[1][voice];
+		return this.note_values[0][voice] != this.note_values[2][voice] ||
+			this.note_values[1][voice] != this.note_values[2][voice];
 	}
 	get_value(voice, index){
 		return this.note_values[index][voice];
