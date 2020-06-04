@@ -229,6 +229,9 @@ class Score {
 			}
 			staves[i].setContext(this.context).draw();
 		}
+		for(var i = 0; i < measure.beams.length; i++){
+			measure.beams[i].setContext(this.context).draw();
+		}
 		var voices = {};
 		var all_voices = [];
 		for(var i = 0; i < 4; i++){
@@ -387,9 +390,11 @@ class Score {
 		var prev_value = [null];
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
+			var beam_start_index = {};
 			var voice_to_max = {0: 1, 1: 1, 2: 1, 3: 1};
 			var max = 1;
 			for(var voice = 0; voice < 4; voice++){
+				beam_start_index[voice] = measure.notes[voice].length;
 				if(this.harmony[index].has_sixteenths(3 - voice)){
 					voice_to_max[voice] = 3;
 					if(max < 3){
@@ -440,6 +445,13 @@ class Score {
 					min_duration = 8;
 				}
 				this.player.schedule_notes(start_list, release_list, min_duration);
+			}
+			for(var voice = 0; voice < 4; voice++){
+				if(voice_to_max[voice] > 1){
+					var beam_notes = measure.notes[voice].slice(beam_start_index[voice],
+										    beam_start_index[voice] + voice_to_max[voice]);
+					measure.beams.push(new this.vf.Beam(beam_notes));
+				}
 			}
 		}
 		for(var i = 0; i < 2; i++){
