@@ -448,8 +448,15 @@ class Score {
 			}
 			for(var voice = 0; voice < 4; voice++){
 				if(voice_to_max[voice] > 1){
-					var beam_notes = measure.notes[voice].slice(beam_start_index[voice],
-										    beam_start_index[voice] + voice_to_max[voice]);
+					var beam_notes = [];
+					for(var j = beam_start_index[voice]; j < beam_start_index[voice] + voice_to_max[voice]; j++){
+						if(measure.notes[voice][j] instanceof this.vf.StaveNote){
+							beam_notes.push(measure.notes[voice][j]);
+						}
+						else{
+							beam_notes.push(measure.ghost_notes[Math.floor(voice / 2)][j]);
+						}
+					}
 					measure.beams.push(new this.vf.Beam(beam_notes));
 				}
 			}
