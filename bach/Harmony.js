@@ -353,10 +353,10 @@ class HarmonyFunctions {
 		var this_leap = this.calc_leap(change);
 		var next_leap = harmony[index + 1].get_leap(voice);
 		
-		if(Math.abs(change) < 6 && !harmony[index].is_end_of_phrase()){
+		/*if(Math.abs(change) < 6 && !harmony[index].is_end_of_phrase()){
 			this.add_nct_options(options, key, chords[index + 1].get_key(), voice,
 					     value, name, next_value, this_leap, next_leap);
-		}
+		}*/
 		
 		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
 			//leading tone check
