@@ -269,7 +269,7 @@ class HarmonyFunctions {
 		}
 		return score;
 	}
-	add_nct_options(options, key, voice, value, name, next_value, this_leap, next_leap){
+	add_nct_options(options, key, next_key, voice, value, name, next_value, this_leap, next_leap){
 		var parity = 1;
 		if(this_leap < 0){
 			parity = -1;
@@ -277,7 +277,7 @@ class HarmonyFunctions {
 		var queue = [];
 		var notes = this.note_functions.get_notes_in_key(key);
 		var start_num = this.note_functions.value_to_num(value, key) - 1;
-		if(this.note_functions.value_to_num(next_value) == undefined){
+		if(this.note_functions.value_to_num(next_value, next_key) == undefined){
 			console.log("next pitch not in key");
 			return;
 		}
@@ -354,7 +354,8 @@ class HarmonyFunctions {
 		var next_leap = harmony[index + 1].get_leap(voice);
 		
 		if(Math.abs(change) < 6 && !harmony[index].is_end_of_phrase()){
-			this.add_nct_options(options, key, voice, value, name, next_value, this_leap, next_leap);
+			this.add_nct_options(options, key, chords[index + 1].get_key(), voice,
+					     value, name, next_value, this_leap, next_leap);
 		}
 		
 		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
