@@ -269,7 +269,7 @@ class HarmonyFunctions {
 		}
 		return score;
 	}
-	add_nct_options(options, key, next_key, voice, value, name, next_value, this_leap, next_leap){
+	add_nct_options(options, harmony, index, key, next_key, voice, value, name, next_value, this_leap, next_leap){
 		var parity = 1;
 		if(this_leap < 0){
 			parity = -1;
@@ -327,8 +327,22 @@ class HarmonyFunctions {
 				for(var j = 0; j < values.length; j++){
 					avg += values[j];
 				}
-				if(!this.is_in_pref_range(avg / values.length, voice)){
+				avg = avg / values.length;
+				if(!this.is_in_pref_range(avg, voice)){
 					score += 10;
+				}
+				if(voice == 3 && !harmony[index].is_end_of_phrase()){
+					var target_avg = harmony[index].get_target_avg(voice);
+					var avg = harmony[index + 1].get_next_avg(voice, value);
+					var diff = Math.abs(target_avg - avg);
+					if(diff > 2){
+						if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
+							score += diff * 5;
+						}
+					}
+					if(Math.abs(value - target_avg) > 5){
+						score += 20;
+					}
 				}
 				if(score < this.max_single_score){
 					options.push({"values": values, "names": names, "num_notes": num_changes.length,
@@ -354,7 +368,7 @@ class HarmonyFunctions {
 		var next_leap = harmony[index + 1].get_leap(voice);
 		
 		if(Math.abs(change) < 6 && !harmony[index].is_end_of_phrase()){
-			this.add_nct_options(options, key, chords[index + 1].get_key(), voice,
+			this.add_nct_options(options, harmony, index, key, chords[index + 1].get_key(), voice,
 					     value, name, next_value, this_leap, next_leap);
 		}
 		
@@ -377,7 +391,7 @@ class HarmonyFunctions {
 			score += 10;
 		}
 		
-		/*if(voice == 3 && !harmony[index].is_end_of_phrase()){
+		if(voice == 3 && !harmony[index].is_end_of_phrase()){
 			var target_avg = harmony[index].get_target_avg(voice);
 			var avg = harmony[index + 1].get_next_avg(voice, value);
 			var diff = Math.abs(target_avg - avg);
@@ -389,7 +403,7 @@ class HarmonyFunctions {
 			if(Math.abs(value - target_avg) > 5){
 				score += 20;
 			}
-		}*/
+		}
 		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
