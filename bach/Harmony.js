@@ -188,6 +188,9 @@ class HarmonyFunctions {
 		}
 	}
 	get_pitch_closest_to(pitch, static_value){
+		if(pitch > static_value){
+			return pitch;
+		}
 		while(Math.abs(static_value - pitch) > 6){
 			pitch += 12;
 		}
@@ -236,11 +239,11 @@ class HarmonyFunctions {
 		harmony[index].reset_notes(voice);
 		return false;
 	}
-	calc_score(harmony, index, voice, value, this_leap, next_leap){
+	calc_leap_score(this_leap, next_leap){
 		var score = 0;
 		if(Math.abs(this_leap * next_leap) >= 6){
 			//no two consecutive leaps if one of them is a fourth
-			return null;
+			return this.max_single_score + 1;
 		}
 		if(Math.abs(this_leap * next_leap) == 4){
 			// consecutive leaps of a third
@@ -264,11 +267,116 @@ class HarmonyFunctions {
 				score += 10;
 			}
 		}
+		return score;
+	}
+	add_nct_options(options, key, voice, value, name, next_value, this_leap, next_leap){
+		var parity = 1;
+		if(this_leap < 0){
+			parity = -1;
+		}
+		var queue = [];
+		var notes = this.note_functions.get_notes_in_key(key);
+		var start_num = this.note_functions.value_to_num(value) - 1;
+		if(this.note_functions.value_to_num(next_value) == undefined){
+			console.log("next pitch not in key");
+			return;
+		}
+		switch(Math.abs(this_leap)){
+			case 0:
+				queue.push({"changes": [-1, 0], "leap": 0});
+				queue.push({"changes": [1, 0], "leap": 0});
+				break;
+			case 1:
+				queue.push({"changes": [parity, parity * 2, parity], "leap": parity * -1});
+				break;
+			case 2:
+				queue.push({"changes": [parity, parity * 2], "leap": parity});
+				break;
+			case 3:
+				queue.push({"changes": [parity, parity * 2, parity * 3], "leap": parity});
+		}
+		while(queue.length > 0){
+			var temp = queue.pop();
+			var num_changes = temp.changes;
+			var leap = temp.leap;
+			var names = [name];
+			var values = [value];
+			var valid = true;
+			var prev_num = start_num;
+			for(var i = 0; i < num_changes.length; i++){
+				var num = (start_num + num_changes[i] + 7) % 7
+				names.push(notes[num]);
+				var pitch = this.note_functions.get_pitch_from_num(num + 1, key);
+				values.push(this.get_pitch_closest_to(pitch, values[values.length - 1]));
+				var change = values[values.length - 1] - values[values.length - 2];
+				if(this.note_functions.is_aug_or_dim(change, names[names.length - 1], names[names.length - 2])){
+					valid = false;
+					i = num_changes.length;
+				}
+				if(prev_num + 1 == 7 && num + 1 != 1){
+					valid = false;
+					i = num_changes.length;
+				}
+				prev_num = num;
+			}
+			names.pop();
+			values.pop();
+			if(valid){
+				var score = this.calc_leap_score(leap, next_leap);
+				var avg = 0;
+				for(var j = 0; j < values.length; j++){
+					avg += values[j];
+				}
+				if(!this.is_in_pref_range(avg / values.length, voice)){
+					score += 10;
+				}
+				if(score < this.max_single_score){
+					options.push({"values": values, "names": names, "num_notes": num_changes.length,
+						      "score": score, "leap": leap});
+				}
+			}
+		}
+	}
+	add_option(options, harmony, chords, index, voice, value){
+		if(!this.is_in_absolute_range(value, voice)){
+			return;
+		}
+		var key = chords[index].get_key();
+		var name = this.note_functions.value_to_name(value, key);
+		var next_value = harmony[index + 1].get_value(voice, 0);
+		var next_name = harmony[index + 1].get_name(voice, 0);
+		var change = next_value - value;
+		var this_leap = this.calc_leap(change);
+		var next_leap = harmony[index + 1].get_leap(voice);
+		
+		if(Math.abs(change) < 6 && !harmony[index].is_end_of_phrase()){
+			this.add_nct_options(options, key, voice, value, name, next_value, this_leap, next_leap);
+		}
+		
+		if(index + 1 == harmony.length){
+			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
+			return;
+		}
+		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
+			//leading tone check
+			return;
+		}
+		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
+			//leaps greater than a fourth not allowed except for fifths and octaves in bass
+			return;
+		}
+		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
+			// this check ignores augmented/diminished unison
+			return;
+		}
+		
+		var score = this.calc_leap_score(this_leap, next_leap);
+		
 		if(!this.is_in_pref_range(value, voice)){
 			score += 10;
 		}
 		
-		if(voice == 3 && !harmony[index].is_end_of_phrase()){
+		/*if(voice == 3 && !harmony[index].is_end_of_phrase()){
 			var target_avg = harmony[index].get_target_avg(voice);
 			var avg = harmony[index + 1].get_next_avg(voice, value);
 			var diff = Math.abs(target_avg - avg);
@@ -280,41 +388,9 @@ class HarmonyFunctions {
 			if(Math.abs(value - target_avg) > 5){
 				score += 20;
 			}
-		}
-		return score;
-	}
-	add_option(options, harmony, chords, index, voice, value){
-		if(!this.is_in_absolute_range(value, voice)){
-			return;
-		}
-		var key = chords[index].get_key();
-		var name = this.note_functions.value_to_name(value, key);
-		if(index + 1 == harmony.length){
-			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
-			return;
-		}
-		var next_value = harmony[index + 1].get_value(voice, 0);
-		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
-			//leading tone check
-			return;
-		}
-		var next_name = harmony[index + 1].get_name(voice, 0);
-		var change = next_value - value;
-		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
-			//leaps greater than a fourth not allowed except for fifths and octaves in bass
-			return;
-		}
-		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
-			// this check ignores augmented/diminished unison
-			return;
-		}
+		}*/
 		
-		var this_leap = this.calc_leap(change);
-		var next_leap = harmony[index + 1].get_leap(voice);
-		
-		var score = this.calc_score(harmony, index, voice, value, this_leap, next_leap);
-		
-		if(score != null && score < this.max_single_score){
+		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
 					options.splice(i, 0, {"values": [value], "names": [name], "num_notes": 1,
