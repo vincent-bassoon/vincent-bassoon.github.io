@@ -26,6 +26,7 @@ class Player {
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
+		console.log(schedule);
 		var sampler = this.sampler;
 		schedule[schedule.length - 1].duration = 12;
 		
