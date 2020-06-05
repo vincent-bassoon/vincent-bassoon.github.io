@@ -323,24 +323,24 @@ class HarmonyFunctions {
 			values.pop();
 			if(valid){
 				var score = this.calc_leap_score(voice, leap, next_leap);
-				var avg = 0;
+				var avg_value = 0;
 				for(var j = 0; j < values.length; j++){
-					avg += values[j];
+					avg_value += values[j];
 				}
-				avg = avg / values.length;
-				if(!this.is_in_pref_range(avg, voice)){
+				avg_value = avg_value / values.length;
+				if(!this.is_in_pref_range(avg_value, voice)){
 					score += 10;
 				}
 				if(voice == 3 && !harmony[index].is_end_of_phrase()){
 					var target_avg = harmony[index].get_target_avg(voice);
-					var avg = harmony[index + 1].get_next_avg(voice, value);
+					var avg = harmony[index + 1].get_next_avg(voice, avg_value);
 					var diff = Math.abs(target_avg - avg);
 					if(diff > 2){
-						if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
+						if((avg_value > avg && avg > target_avg) || (avg_value < avg && avg < target_avg)){
 							score += diff * 5;
 						}
 					}
-					if(Math.abs(value - target_avg) > 5){
+					if(Math.abs(avg_value - target_avg) > 5){
 						score += 20;
 					}
 				}
