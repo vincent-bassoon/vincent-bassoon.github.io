@@ -215,21 +215,17 @@ class HarmonyFunctions {
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
-				harmony[index].set_note(voice, option.value, option.name, option.leap);
+				harmony[index].set_notes(voice, option.values, option.names, option.num_notes, option.leap);
 				this.scores[index][voice] = option.score;
-				if(this.has_errors(harmony, index, order_index)){
-					harmony[index].set_note(voice, null, null, null);
-				}
-				else if(this.fill_harmony(harmony, chords, voicing, pitch_options, index,
-							  order_index + 1, score + option.score)){
+				if(!this.has_errors(harmony, index, order_index) &&
+				   this.fill_harmony(harmony, chords, voicing, pitch_options,
+						     index, order_index + 1, score + option.score)){
 					return true;
-				}
-				else{
-					harmony[index].set_note(voice, null, null, null);
 				}
 			}
 			voicing.push(degree);
 		}
+		harmony[index].reset_notes(voice);
 		return false;
 	}
 	add_option(options, harmony, chords, index, voice, value){
@@ -239,7 +235,7 @@ class HarmonyFunctions {
 		var key = chords[index].get_key();
 		var name = this.note_functions.value_to_name(value, key);
 		if(index + 1 == harmony.length){
-			options.unshift({"value": value, "name": name, "score": 0, "leap": 0});
+			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
 			return;
 		}
 		var next_value = harmony[index + 1].get_value(voice, 0);
@@ -308,11 +304,12 @@ class HarmonyFunctions {
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
-					options.splice(i, 0, {"value": value, "name": name, "score": score, "leap": this_leap});
+					options.splice(i, 0, {"values": [value], "names": [name], "num_notes": 1,
+							      "score": score, "leap": this_leap});
 					return;
 				}
 			}
-			options.push({"value": value, "name": name, "score": score, "leap": this_leap});
+			options.push({"values": [value], "names": [name], "num_notes": 1, "score": score, "leap": this_leap});
 		}
 	}
 	generate_single_harmony(chords, harmony){
