@@ -415,7 +415,7 @@ class Score {
 						if(min_duration == null || min_duration > duration){
 							min_duration = duration;
 						}
-						this.generate_single_beat(measure, index, fermata_index, voice,
+						this.generate_single_beat(measure, index, fermata_index, voice, sub_index,
 									  this.duration_strings[duration], names,
 									  prev_value, accidentals_in_key, needs_ghost_voices);
 					}
@@ -460,11 +460,11 @@ class Score {
 		}
 		return measure;
 	}
-	generate_single_beat(measure, index, fermata_index, voice, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
-		var value = this.harmony[index].get_value(3 - voice, 1);
+	generate_single_beat(measure, index, fermata_index, voice, sub_index, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
+		var value = this.harmony[index].get_value(3 - voice, sub_index);
 		var simple_name = this.note_functions.value_to_simple_name_octave(value);
 		names[voice] = simple_name;
-		var name = this.harmony[index].get_name(3 - voice, 1).toLowerCase();
+		var name = this.harmony[index].get_name(3 - voice, sub_index).toLowerCase();
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
 			octave += 1;
