@@ -43,7 +43,12 @@ class Player {
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
 					console.log("releasing ", unit.release.join(", "));
-					sampler.triggerRelease(unit.release, time);
+					try{
+						sampler.triggerRelease(unit.release, time);
+					}
+					catch(err){
+						console.log(err);
+					}
 					if(rit){
 						transport.bpm.linearRampTo(50, "0:" + rit_length + ":0");
 					}
