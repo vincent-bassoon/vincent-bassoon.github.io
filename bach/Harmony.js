@@ -343,6 +343,10 @@ class HarmonyFunctions {
 		}
 		var key = chords[index].get_key();
 		var name = this.note_functions.value_to_name(value, key);
+		if(index + 1 == harmony.length){
+			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
+			return;
+		}
 		var next_value = harmony[index + 1].get_value(voice, 0);
 		var next_name = harmony[index + 1].get_name(voice, 0);
 		var change = next_value - value;
@@ -353,10 +357,6 @@ class HarmonyFunctions {
 			this.add_nct_options(options, key, voice, value, name, next_value, this_leap, next_leap);
 		}
 		
-		if(index + 1 == harmony.length){
-			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
-			return;
-		}
 		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
 			//leading tone check
 			return;
