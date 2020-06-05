@@ -276,7 +276,7 @@ class HarmonyFunctions {
 		}
 		var queue = [];
 		var notes = this.note_functions.get_notes_in_key(key);
-		var start_num = this.note_functions.value_to_num(value) - 1;
+		var start_num = this.note_functions.value_to_num(value, key) - 1;
 		if(this.note_functions.value_to_num(next_value) == undefined){
 			console.log("next pitch not in key");
 			return;
