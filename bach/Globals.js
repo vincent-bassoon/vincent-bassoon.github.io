@@ -208,24 +208,30 @@ class HarmonyUnit {
 		}
 		return false;
 	}
-	has_eighths(voice){
-		return this.note_values[0][voice] != this.note_values[1][voice];
-	}
-	has_sixteenths(voice){
-		return this.note_values[0][voice] != this.note_values[2][voice] ||
-			this.note_values[1][voice] != this.note_values[2][voice];
+	get_num_notes(voice){
+		if(this.note_values[1][voice] != this.note_values[2][voice]){
+			return 3;
+		}
+		else if(this.note_values[0][voice] != this.note_values[1][voice]){
+			return 2;
+		}
+		else{
+			return 1;
+		}
 	}
 	get_value(voice, index){
 		return this.note_values[index][voice];
 	}
-	set_note(voice, value, name, leap){
-		this.note_values[0][voice] = value;
-		this.note_values[1][voice] = value;
-		this.note_values[2][voice] = value;
+	set_notes(voice, values, names, num_notes, leap){
+		for(var i = 0; i < num_notes; i++){
+			this.note_values[i][voice] = values[i];
+			this.note_names[i][voice] = names[i];
+		}
+		for(var i = num_notes; i < 3; i++){
+			this.note_values[i][voice] = values[num_notes - 1];
+			this.note_names[i][voice] = names[num_notes - 1];
+		}
 		this.leap[voice] = leap;
-		this.note_names[0][voice] = name;
-		this.note_names[1][voice] = name;
-		this.note_names[2][voice] = name;
 	}
 	get_name(voice, index){
 		return this.note_names[index][voice];
