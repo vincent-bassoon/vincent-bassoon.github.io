@@ -236,38 +236,11 @@ class HarmonyFunctions {
 		harmony[index].reset_notes(voice);
 		return false;
 	}
-	add_option(options, harmony, chords, index, voice, value){
-		if(!this.is_in_absolute_range(value, voice)){
-			return;
-		}
-		var key = chords[index].get_key();
-		var name = this.note_functions.value_to_name(value, key);
-		if(index + 1 == harmony.length){
-			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
-			return;
-		}
-		var next_value = harmony[index + 1].get_value(voice, 0);
-		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
-			//leading tone check
-			return;
-		}
-		var next_name = harmony[index + 1].get_name(voice, 0);
+	calc_score(harmony, index, voice, value, this_leap, next_leap){
 		var score = 0;
-		var change = next_value - value;
-		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
-			//leaps greater than a fourth not allowed except for fifths and octaves in bass
-			return;
-		}
-		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
-			// this check ignores augmented/diminished unison
-			return;
-		}
-		
-		var this_leap = this.calc_leap(change);
-		var next_leap = harmony[index + 1].get_leap(voice);
 		if(Math.abs(this_leap * next_leap) >= 6){
 			//no two consecutive leaps if one of them is a fourth
-			return;
+			return null;
 		}
 		if(Math.abs(this_leap * next_leap) == 4){
 			// consecutive leaps of a third
@@ -308,8 +281,40 @@ class HarmonyFunctions {
 				score += 20;
 			}
 		}
+		return score;
+	}
+	add_option(options, harmony, chords, index, voice, value){
+		if(!this.is_in_absolute_range(value, voice)){
+			return;
+		}
+		var key = chords[index].get_key();
+		var name = this.note_functions.value_to_name(value, key);
+		if(index + 1 == harmony.length){
+			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
+			return;
+		}
+		var next_value = harmony[index + 1].get_value(voice, 0);
+		if(this.note_functions.value_to_num(value, key) == 7 && next_value % 12 != key.get_pitch()){
+			//leading tone check
+			return;
+		}
+		var next_name = harmony[index + 1].get_name(voice, 0);
+		var change = next_value - value;
+		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
+			//leaps greater than a fourth not allowed except for fifths and octaves in bass
+			return;
+		}
+		if(this.note_functions.is_aug_or_dim(change, next_name, name)){
+			// this check ignores augmented/diminished unison
+			return;
+		}
 		
-		if(score < this.max_single_score){
+		var this_leap = this.calc_leap(change);
+		var next_leap = harmony[index + 1].get_leap(voice);
+		
+		var score = this.calc_score(harmony, index, voice, value, this_leap, next_leap);
+		
+		if(score != null && score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
 					options.splice(i, 0, {"values": [value], "names": [name], "num_notes": 1,
