@@ -44,7 +44,7 @@ class Player {
 				transport.schedule(function(time){
 					for(var key in sampler._activeSources){
 						for(var i = 0; i < sampler._activeSources[key].length; i++){
-							console.log(key + ": " + sampler._activeSources[key][i]);
+							console.log(key + ": " + sampler._activeSources[key][i]._sourceStopped);
 						}
 					}
 					console.log("releasing ", unit.release.join(", "));
