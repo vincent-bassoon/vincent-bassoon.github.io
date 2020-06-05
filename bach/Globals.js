@@ -326,6 +326,18 @@ class NoteFunctions {
 		}
 		return accidentals;
 	}
+	get_pitch_from_num(num, key){
+		return (key.get_pitch() + this.num_to_pitch[key.get_modality()][num]) % 12;
+	}
+	get_notes_in_key(key){
+		var start_value = key.get_pitch();
+		var notes = [];
+		var pitches = this.num_to_pitch[key.get_modality()];
+		for(var i = 1; i < 8; i++){
+			notes.push(this.value_to_name(pitches[i] + start_value, key));
+		}
+		return notes;
+	}
 	get_accidental(base_pitch, target_pitch){
 		var accidentals = "";
 		if(base_pitch == target_pitch){
@@ -362,13 +374,6 @@ class NoteFunctions {
 		value = value % 12;
 		var adjusted_value = (value - key.get_pitch() + 12) % 12;
 		return this.pitch_to_num[adjusted_value];
-	}
-	num_to_pitch_for_cad(roman_num, chord){
-		var key = chord.get_key();
-		var key_pitch = key.get_pitch();
-		var root_pitch = this.num_to_pitch[key.get_modality()][chord.get_roman_num()];
-		var degree_pitch = this.chord_mapping[chord.get_modality()][chord.get_degree(roman_num)];
-		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
 	get_bass_pitch(chord){
 		var inversion = chord.get_inversion();
