@@ -233,6 +233,13 @@ class HarmonyUnit {
 		}
 		this.leap[voice] = leap;
 	}
+	reset_notes(voice){
+		for(var i = 0; i < 3; i++){
+			this.note_values[i][voice] = null;
+			this.note_names[i][voice] = null;
+		}
+		this.leap[voice] = null;
+	}
 	get_name(voice, index){
 		return this.note_names[index][voice];
 	}
