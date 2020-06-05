@@ -21,7 +21,7 @@ class Player {
 		var transport = Tone.Transport;
 		transport.cancel();
 		transport.timeSignature = 4;
-		transport.bpm.value = 80;
+		transport.bpm.value = 60;
 		var beat_num = 1;
 		var rit_time_string;
 		var rit_length = 3;
@@ -42,15 +42,15 @@ class Player {
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
-					if(unit.release.length != 0){
-						sampler.triggerRelease(unit.release, time);
-					}
+					console.log("releasing ", unit.release.join(", "));
+					sampler.triggerRelease(unit.release, time);
 					if(rit){
-						transport.bpm.linearRampTo(60, "0:" + rit_length + ":0");
+						transport.bpm.linearRampTo(50, "0:" + rit_length + ":0");
 					}
 					if(last){
 						sampler.release = 2;
 					}
+					console.log("attacking ", unit.start.join(", "));
 					sampler.triggerAttack(unit.start, time);
 				}, time_string);
 			})(schedule[i], this.get_time_string(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
@@ -68,7 +68,7 @@ class Player {
 			}
 			else{
 				play.innerText = "STOP";
-				transport.bpm.value = 80;
+				transport.bpm.value = 60;
 				sampler.release = 0.1;
 				transport.start("+.3", "0:0:0");
 			}
