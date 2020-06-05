@@ -98,25 +98,33 @@ class HarmonyFunctions {
 			return false;
 		}
 		var voice1 = this.voice_order[order_index];
-		var voice1_has_two_values = harmony[index].has_eighths(voice1) || harmony[index].has_sixteenths(voice1);
+		var voice1_num_notes = harmony[index].get_num_notes(voice1);
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
 			var interval1 = Math.abs(harmony[index].get_value(voice1, 0) -
 					harmony[index].get_value(voice2, 0)) % 12;
-			var interval2 = Math.abs(harmony[index + 1].get_value(voice1, 0) -
+			var interval4 = Math.abs(harmony[index + 1].get_value(voice1, 0) -
 						 harmony[index + 1].get_value(voice2, 0)) % 12;
-			if(this.check_parallel_intervals(interval1, interval2)){
+			if(this.check_parallel_intervals(interval1, interval4)){
 				return true;
 			}
-			var voice2_has_two_values = harmony[index].has_eighths(voice2) || harmony[index].has_sixteenths(voice2);
-			if(voice1_has_two_values || voice2_has_two_values){
-				var interval3 = Math.abs(harmony[index].get_value(voice1, 1) -
+			var voice2_num_notes = harmony[index].get_num_notes(voice2);
+			if(voice1_num_notes > 1 || voice2_num_notes > 1){
+				var interval2 = Math.abs(harmony[index].get_value(voice1, 1) -
 							 harmony[index].get_value(voice2, 1)) % 12;
-				if(this.check_parallel_intervals(interval3, interval2)){
+				if(this.check_parallel_intervals(interval2, interval4)){
 					return true;
 				}
-				if(voice1_has_two_values && voice2_has_two_values){
-					if(this.check_parallel_intervals(interval1, interval3)){
+				if(this.check_parallel_intervals(interval1, interval2)){
+					return true;
+				}
+				if(voice1_num_notes == 3 || voice2_num_notes == 3){
+					var interval3 = Math.abs(harmony[index].get_value(voice1, 2) -
+								 harmony[index].get_value(voice2, 2)) % 12;
+					if(this.check_parallel_intervals(interval3, interval4)){
+						return true;
+					}
+					if(this.check_parallel_intervals(interval2, interval3)){
 						return true;
 					}
 				}
