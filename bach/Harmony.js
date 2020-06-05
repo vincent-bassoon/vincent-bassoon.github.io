@@ -239,7 +239,7 @@ class HarmonyFunctions {
 		harmony[index].reset_notes(voice);
 		return false;
 	}
-	calc_leap_score(this_leap, next_leap){
+	calc_leap_score(voice, this_leap, next_leap){
 		var score = 0;
 		if(Math.abs(this_leap * next_leap) >= 6){
 			//no two consecutive leaps if one of them is a fourth
@@ -322,7 +322,7 @@ class HarmonyFunctions {
 			names.pop();
 			values.pop();
 			if(valid){
-				var score = this.calc_leap_score(leap, next_leap);
+				var score = this.calc_leap_score(voice, leap, next_leap);
 				var avg = 0;
 				for(var j = 0; j < values.length; j++){
 					avg += values[j];
@@ -371,7 +371,7 @@ class HarmonyFunctions {
 			return;
 		}
 		
-		var score = this.calc_leap_score(this_leap, next_leap);
+		var score = this.calc_leap_score(voice, this_leap, next_leap);
 		
 		if(!this.is_in_pref_range(value, voice)){
 			score += 10;
