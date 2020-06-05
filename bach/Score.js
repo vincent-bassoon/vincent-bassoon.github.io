@@ -42,9 +42,9 @@ class Player {
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
+					console.log(JSON.parse(JSON.stringify(sampler._activeSources)));
 					console.log("releasing ", unit.release.join(", "));
 					sampler.triggerRelease(unit.release, time);
-					console.log(JSON.parse(JSON.stringify(sampler._activeSources)));
 					if(rit){
 						transport.bpm.linearRampTo(50, "0:" + rit_length + ":0");
 					}
