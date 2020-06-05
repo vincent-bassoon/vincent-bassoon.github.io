@@ -32,7 +32,10 @@ class Player {
 		
 		var play = document.getElementById("play_button");
 		
+		var held_notes;
+		
 		transport.schedule(function(time){
+			held_notes = {};
 			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 				transport.stop();
 				sampler.releaseAll();
@@ -50,11 +53,12 @@ class Player {
 						}
 					}
 					console.log("releasing ", unit.release.join(", "));
-					try{
-						sampler.triggerRelease(unit.release, time);
-					}
-					catch(err){
-						console.log(err);
+					sampler.triggerRelease(unit.release, time);
+					for(var j = 0; j < unit.release.length; j++){
+						if(!held_notes[unit.release[j]]){
+							console.log("release failure");
+						}
+						held_notes[unit.release[j]] = false;
 					}
 					if(rit){
 						transport.bpm.linearRampTo(50, "0:" + rit_length + ":0");
@@ -64,6 +68,19 @@ class Player {
 					}
 					console.log("attacking ", unit.start.join(", "));
 					sampler.triggerAttack(unit.start, time);
+					for(var j = 0; j < unit.start.length; j++){
+						if(held_notes[unit.start[j]]){
+							console.log("attack failure");
+						}
+						held_notes[unit.start[j]] = true;
+					}
+					var held_string = "";
+					for(var key in held_notes){
+						if(held_notes[key]){
+							held_string += key + " ";
+						}
+					}
+					console.log(held_string);
 				}, time_string);
 			})(schedule[i], this.get_time_string(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
 			beat_num += schedule[i].duration;
