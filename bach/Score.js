@@ -43,7 +43,7 @@ class Player {
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
 					for(var key in sampler._activeSources){
-						for(var i = 0; i < sampler._activeSources[key][i].length; i++){
+						for(var i = 0; i < sampler._activeSources[key].length; i++){
 							if(sampler._activeSources[key][i]._sourceStopped){
 								console.log("STOPPED");
 							}
