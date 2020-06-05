@@ -435,7 +435,14 @@ class Score {
 						}
 						if(!start_list.includes(names[voice])){
 							start_list.push(names[voice]);
-							this.prev_names[voice] = names[voice];
+						}
+						this.prev_names[voice] = names[voice];
+					}
+					else{
+						for(var k = release_list.length; k >= 0; k--){
+							if(release_list[k] == this.prev_names[voice]){
+								release_list.splice(k, 1);
+							}
 						}
 					}
 				}
