@@ -391,21 +391,13 @@ class Score {
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
 			var beam_start_index = {};
-			var voice_to_max = {0: 1, 1: 1, 2: 1, 3: 1};
+			var voice_to_max = {};
 			var max = 1;
 			for(var voice = 0; voice < 4; voice++){
 				beam_start_index[voice] = measure.notes[voice].length;
-				if(this.harmony[index].has_sixteenths(3 - voice)){
-					voice_to_max[voice] = 3;
-					if(max < 3){
-						max = 3;
-					}
-				}
-				else if(this.harmony[index].has_eighths(3 - voice)){
-					voice_to_max[voice] = 2;
-					if(max < 2){
-						max = 2;
-					}
+				voice_to_max[voice] = this.harmony[index].get_num_notes(3 - voice);
+				if(max < voice_to_max[voice]){
+					max = voice_to_max[voice];
 				}
 			}
 			for(var sub_index = 0; sub_index < max; sub_index++){
