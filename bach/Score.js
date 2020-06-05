@@ -42,11 +42,6 @@ class Player {
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
-					for(var key in sampler._activeSources){
-						for(var i = 0; i < sampler._activeSources[key].length; i++){
-							console.log(key + ": " + sampler._activeSources[key][i]._sourceStopped);
-						}
-					}
 					console.log("releasing ", unit.release.join(", "));
 					sampler.triggerRelease(unit.release, time);
 					if(rit){
