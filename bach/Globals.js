@@ -165,7 +165,7 @@ class HarmonyUnit {
 	}
 	update_avgs(next_harmony){
 		for(var voice = 0; voice < 4; voice++){
-			var value = (this.get_value(voice, 0) + this.get_value(voice, 1)) / 2;
+			var value = (this.get_value(voice, 0) + this.get_value(voice, 1) + this.get_value(voice, 2)) / 3;
 			this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
 			this.avgs[voice] = next_harmony.get_next_avg(voice, value);
 		}
