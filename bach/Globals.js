@@ -45,7 +45,7 @@ function choose(probs){
 	return choice;
 }
 
-function choose_int(probs){
+function chooseInt(probs){
 	var num = Math.random();
 	var choice = null;
 	var sum = 0;
@@ -64,7 +64,7 @@ function choose_int(probs){
 	return parseInt(choice);
 }
 
-function choose_int_from_freqs(freqs, choices){
+function chooseIntFromFreqs(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
@@ -81,7 +81,7 @@ function choose_int_from_freqs(freqs, choices){
 	return null;
 }
 
-function choose_int_from_freqs_remove(freqs, choices){
+function chooseIntFromFreqsRemove(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
@@ -103,8 +103,6 @@ class Key {
 		this.pitch = pitch;
 		this.modality = modality;
 	}
-	get_pitch(){return this.pitch;}
-	get_modality(){return this.modality;}
 }
 
 class PhraseData {
@@ -117,38 +115,16 @@ class PhraseData {
 		this.cadence_length = cadence_length;
 		this.previous_cadence_chord = previous_cadence_chord;
 	}
-	get_key(){return this.key;}
-	get_phrase_length(){return this.phrase_length;}
-	get_fermata_duration(){return this.fermata_duration;}
-	get_cadence(){return this.cadence;}
-	get_cadence_length(){return this.cadence_length;}
-	get_previous_cadence_chord(){return this.previous_cadence_chord;}
 }
 
 class Chord {
-	constructor(roman_num, key, chord_modality, inversion){
-		this.root = roman_num;
+	constructor(roman_num, key, quality, inversion){
+		this.roman_num = roman_num;
 		this.third = ((roman_num + 2 - 1) % 7) + 1;
 		this.fifth = ((roman_num + 4 - 1) % 7) + 1;
 		this.key = key;
-		this.chord_modality = chord_modality;
+		this.quality = quality;
 		this.inversion = inversion;
-	}
-	get_roman_num(){return this.root;}
-	get_key(){return this.key;}
-	get_modality(){return this.chord_modality;}
-	get_inversion(){return this.inversion;}
-	get_degree(roman_num){
-		switch(roman_num){
-			case this.root:
-				return 0;
-			case this.third:
-				return 1;
-			case this.fifth:
-				return 2;
-			default:
-				return null;
-		}
 	}
 }
 
@@ -163,26 +139,26 @@ class HarmonyUnit {
 		this.avg_nums = [0, 0, 0, 0];
 		this.target_avgs = target_avgs;
 	}
-	update_avgs(next_harmony){
+	updateAvgs(next_harmony){
 		for(var voice = 0; voice < 4; voice++){
-			var value = (this.get_value(voice, 0) + this.get_value(voice, 1) + this.get_value(voice, 2)) / 3;
+			var value = (this.getValue(voice, 0) + this.getValue(voice, 1) + this.getValue(voice, 2)) / 3;
 			this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
-			this.avgs[voice] = next_harmony.get_next_avg(voice, value);
+			this.avgs[voice] = next_harmony.getNextAvg(voice, value);
 		}
 	}
-	get_next_avg(voice, value){
+	getNextAvg(voice, value){
 		return (this.avgs[voice] * this.avg_nums[voice] + value) / (this.avg_nums[voice] + 1);
 	}
-	get_avg_num(voice){
+	getAvgNum(voice){
 		return this.avg_nums[voice];
 	}
-	get_target_avg(voice){
+	getTargetAvg(voice){
 		return this.target_avgs[voice];
 	}
-	is_end_of_phrase(){
+	isEndOfPhrase(){
 		return this.target_avgs[3] == null;
 	}
-	add_to_history(){
+	addToHistory(){
 		var copy = [[], [], []];
 		for(var i = 0; i < 4; i++){
 			copy[0][i] = this.note_values[0][i];
@@ -191,7 +167,7 @@ class HarmonyUnit {
 		}
 		this.history.push(copy);
 	}
-	equals_history(){
+	equalsHistory(){
 		var equals;
 		for(var i = 0; i < this.history.length; i++){
 			equals = true;
@@ -208,7 +184,7 @@ class HarmonyUnit {
 		}
 		return false;
 	}
-	get_num_notes(voice){
+	getNumNotes(voice){
 		if(this.note_values[1][voice] != this.note_values[2][voice]){
 			return 3;
 		}
@@ -219,10 +195,10 @@ class HarmonyUnit {
 			return 1;
 		}
 	}
-	get_value(voice, index){
+	getValue(voice, index){
 		return this.note_values[index][voice];
 	}
-	set_notes(voice, values, names, num_notes, leap){
+	setNotes(voice, values, names, num_notes, leap){
 		for(var i = 0; i < num_notes; i++){
 			this.note_values[i][voice] = values[i];
 			this.note_names[i][voice] = names[i];
@@ -233,17 +209,17 @@ class HarmonyUnit {
 		}
 		this.leap[voice] = leap;
 	}
-	reset_notes(voice){
+	resetNotes(voice){
 		for(var i = 0; i < 3; i++){
 			this.note_values[i][voice] = null;
 			this.note_names[i][voice] = null;
 		}
 		this.leap[voice] = null;
 	}
-	get_name(voice, index){
+	getName(voice, index){
 		return this.note_names[index][voice];
 	}
-	get_leap(voice){
+	getLeap(voice){
 		return this.leap[voice];
 	}
 }
@@ -305,15 +281,15 @@ class NoteFunctions {
 		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
 				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
 	}
-	name_to_value(name, octave){
+	nameToValue(name, octave){
 		return this.name_to_val[name] + 12 * octave;
 	}
-	get_accidentals_in_key(key){
+	getAccidentalsInKey(key){
 		//Note: this function returns an object using lower case letters as keys
-		var start_value = key.get_pitch();
+		var start_value = key.pitch;
 		var accidentals = {};
 		var pitches;
-		if(key.get_modality() == "major"){
+		if(key.modality == "major"){
 			pitches = [0, 2, 4, 5, 7, 9, 11];
 		}
 		else{
@@ -321,24 +297,24 @@ class NoteFunctions {
 		}
 		for(var i = 0; i < pitches.length; i++){
 			var value = (start_value + pitches[i]) % 12;
-			var name = this.value_to_name(value, key);
+			var name = this.valueToName(value, key);
 			accidentals[name.substring(0, 1).toLowerCase()] = name.substring(1);
 		}
 		return accidentals;
 	}
-	get_pitch_from_num(num, key){
-		return (key.get_pitch() + this.num_to_pitch[key.get_modality()][num]) % 12;
+	numToPitch(num, key){
+		return (key.pitch + this.num_to_pitch[key.modality][num]) % 12;
 	}
-	get_notes_in_key(key){
-		var start_value = key.get_pitch();
+	getNotesInKey(key){
+		var start_value = key.pitch;
 		var notes = [];
-		var pitches = this.num_to_pitch[key.get_modality()];
+		var pitches = this.num_to_pitch[key.modality];
 		for(var i = 1; i < 8; i++){
-			notes.push(this.value_to_name(pitches[i] + start_value, key));
+			notes.push(this.valueToName(pitches[i] + start_value, key));
 		}
 		return notes;
 	}
-	get_accidental(base_pitch, target_pitch){
+	getAccidental(base_pitch, target_pitch){
 		var accidentals = "";
 		if(base_pitch == target_pitch){
 			return accidentals;
@@ -357,44 +333,43 @@ class NoteFunctions {
 		}
 		return accidentals;
 	}
-	value_to_simple_name_octave(value){
-		var octave = Math.floor(value / 12);
-		return this.simple_val_to_name[value % 12] + octave;
+	valueToSimpleName(value){
+		return this.simple_val_to_name[value % 12];
 	}
-	value_to_name(value, key){
+	valueToName(value, key){
 		value = value % 12;
-		var adjusted_value = (value - key.get_pitch() + 12) % 12;
-		var key_letter = this.val_to_key_name[key.get_modality()][key.get_pitch()];
+		var adjusted_value = (value - key.pitch + 12) % 12;
+		var key_letter = this.val_to_key_name[key.modality][key.pitch];
 		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
 		return name + this.get_accidental(this.name_to_val[name], value);
 	}
-	value_to_num(value, key){
+	valueToNum(value, key){
 		value = value % 12;
-		var adjusted_value = (value - key.get_pitch() + 12) % 12;
+		var adjusted_value = (value - key.pitch + 12) % 12;
 		return this.pitch_to_num[adjusted_value];
 	}
-	get_bass_pitch(chord){
-		var inversion = chord.get_inversion();
+	getBassPitch(chord){
+		var inversion = chord.inversion;
 		if(inversion == null){
 			return null;
 		}
 		else{
-			return this.get_pitch(chord, inversion);
+			return this.getPitch(chord, inversion);
 		}
 	}
-	get_pitch(chord, degree){
-		var key = chord.get_key();
-		var key_pitch = key.get_pitch();
-		var root_pitch = this.num_to_pitch[key.get_modality()][chord.get_roman_num()];
-		var degree_pitch = this.chord_mapping[chord.get_modality()][degree];
+	getPitch(chord, degree){
+		var key = chord.key;
+		var key_pitch = key.pitch;
+		var root_pitch = this.num_to_pitch[key.modality][chord.roman_num];
+		var degree_pitch = this.chord_mapping[chord.quality][degree];
 		return (key_pitch + root_pitch + degree_pitch) % 12;
 	}
-	chords_equal(chord1, chord2){
-		return chord1.get_modality() == chord2.get_modality() && this.get_pitch(chord1, 0) == this.get_pitch(chord2, 0);
+	chordsEqual(chord1, chord2){
+		return chord1.quality == chord2.quality && this.getPitch(chord1, 0) == this.getPitch(chord2, 0);
 	}
-	is_aug_or_dim(change, name1, name2){
+	isAugOrDim(change, name1, name2){
 		if(Math.abs(change) == 1){
 			return false;
 		}
