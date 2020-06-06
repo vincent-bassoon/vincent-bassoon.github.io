@@ -97,6 +97,7 @@ function configure_sampler(){
 	var staff = document.getElementById("staff");
 	var sampler = new Tone.Sampler(sources, function(){
 		generate_new_chorale(sampler);
+		Tone.start();
 		start.classList.remove("running");
 		start.innerText = "NEW CHORALE";
 		function run(){
@@ -122,7 +123,7 @@ function configure_sampler(){
 			}, 1);
 		}
 		start.onclick = run;
-	}, "samples/").toMaster();
+	}, "samples/").toDestination();
 }
 
 window.onload = configure_sampler;
