@@ -68,7 +68,7 @@ function generateNewChorale(sampler){
 	var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
 	
-	var chorale_plan = generate_chorale_plan(new Key(pitch, modality), cadence_num, pickup, harmony_functions);
+	var chorale_plan = generateChoralePlan(new Key(pitch, modality), cadence_num, pickup, harmony_functions);
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
