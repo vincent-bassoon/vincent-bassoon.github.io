@@ -1,4 +1,4 @@
-function generate_chorale_plan(key, cadence_num, pickup){
+function generateChoralePlan(key, cadence_num, pickup){
 	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
 	var phrase_lengths = {};
@@ -8,7 +8,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	var beats_sum = 0;
 	for(var i = 0; i < cadence_num; i++){
 		// 75% 7-8 note segment length, 25% 9-10 note length
-		phrase_lengths[i] = pickup + choose_int({7: 0.75, 9: 0.25});
+		phrase_lengths[i] = pickup + chooseInt({7: 0.75, 9: 0.25});
 		beats_sum += num_beats[phrase_lengths[i]];
 	}
 	
@@ -19,7 +19,7 @@ function generate_chorale_plan(key, cadence_num, pickup){
 		
 		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
 		if(i == cadence_num - 1){
-			if(key.get_modality() == "minor"){
+			if(key.modality == "minor"){
 				cadence = choose({"pac": 0.3, "pacm": 0.7});
 			}
 			else{
@@ -47,19 +47,19 @@ function generate_chorale_plan(key, cadence_num, pickup){
 	return chorale_plan;
 }
 
-function generate_new_chorale(sampler){
+function generateNewChorale(sampler){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
 	var modality = choose({"major": 0.5, "minor": 0.5});
 	// 80% four-cadence length, 20% five-cadence
-	var cadence_num = choose_int({4: 0.8, 5: 0.2});
+	var cadence_num = chooseInt({4: 0.8, 5: 0.2});
 	// 66.7% with pickup, 33.3% without
-	var pickup = choose_int({1: 0.667, 0: 0.333});
+	var pickup = chooseInt({1: 0.667, 0: 0.333});
 	
 	// key
-	var num_accidentals = choose_int({0: 0.22, 1: 0.23, 2: 0.23, 3: 0.22, 4: 0.07, 5: 0.02, 6: 0.01});
-	var sharp_or_flat = choose_int({0: 0.5, 2: 0.5}) - 1;
+	var num_accidentals = chooseInt({0: 0.22, 1: 0.23, 2: 0.23, 3: 0.22, 4: 0.07, 5: 0.02, 6: 0.01});
+	var sharp_or_flat = chooseInt({0: 0.5, 2: 0.5}) - 1;
 	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
 	if(modality == "minor"){
 		pitch = (pitch + 9) % 12;
@@ -72,16 +72,16 @@ function generate_new_chorale(sampler){
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		chords.push(...chord_functions.generate_segment_chords(chorale_plan[i]));
+		chords.push(...chord_functions.generateSegmentChords(chorale_plan[i]));
 	}
 	var counter = 0;
-	if(harmony_functions.generate_harmony(chords, chorale_plan, sampler) && counter < 10){
-		generate_new_chorale(sampler);
+	if(harmony_functions.generateHarmony(chords, chorale_plan, sampler) && counter < 10){
+		generateNewChorale(sampler);
 		counter++;
 	}
 }
 
-function configure_sampler(){
+function configureSampler(){
 	var sources = {};
 	var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
 	var file_end = "v5.mp3";
@@ -96,7 +96,7 @@ function configure_sampler(){
 	var play = document.getElementById("play_button");
 	var staff = document.getElementById("staff");
 	var sampler = new Tone.Sampler(sources, function(){
-		generate_new_chorale(sampler);
+		generateNewChorale(sampler);
 		start.classList.remove("running");
 		start.innerText = "NEW CHORALE";
 		function run(){
@@ -115,7 +115,7 @@ function configure_sampler(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
-				generate_new_chorale(sampler);
+				generateNewChorale(sampler);
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
@@ -125,4 +125,4 @@ function configure_sampler(){
 	}, "samples/").toDestination();
 }
 
-window.onload = configure_sampler;
+window.onload = configureSampler;
