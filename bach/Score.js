@@ -3,13 +3,13 @@ class Player {
 		this.schedule = [];
 		this.sampler = sampler;
 	}
-	schedule_notes(attack_list, release_list, duration){
+	scheduleNotes(attack_list, release_list, duration){
 		this.schedule.push({"attack": attack_list, "release": release_list, "duration": duration});
 	}
-	get_time_string(beat_num){
+	getTimeString(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
 	}
-	generate_audio(){
+	generateAudio(){
 		var sources = {};
 		var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
 		var file_end = "v5.mp3";
@@ -40,7 +40,7 @@ class Player {
 				transport.stop();
 				sampler.releaseAll();
 			}
-		}, this.get_time_string(0));
+		}, this.getTimeString(0));
 		
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
@@ -66,12 +66,12 @@ class Player {
 						held_notes[unit.attack[j]] = true;
 					}
 				}, time_string);
-			})(schedule[i], this.get_time_string(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
+			})(schedule[i], this.getTimeString(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
 			beat_num += schedule[i].duration;
 		}
 		transport.schedule(function(time){
-			sampler.triggerRelease(schedule[schedule.length - 1].attack, time);
-		}, this.get_time_string(beat_num));
+			sampler.releaseAll(time);
+		}, this.getTimeString(beat_num));
 		
 		function play_start(){
 			play.innerText = "STOP";
@@ -101,7 +101,7 @@ class Player {
 			}
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
-		}, this.get_time_string(beat_num));
+		}, this.getTimeString(beat_num));
 		play.classList.remove("running");
 		play.innerText = "PLAY";
 		play.onclick = play_stop;
@@ -155,13 +155,13 @@ class LineData {
 		}
 		return sum / list.length;
 	}
-	get_renderer_width(){
+	getRendererWidth(){
 		return this.stave_width + (this.x_margin * 2);
 	}
-	get_renderer_height(){
+	getRendererHeight(){
 		return this.line_height * (this.line_num + 0.3);
 	}
-	get_note_indent(){
+	getNoteIndent(){
 		if(this.line_num == 0){
 			return this.initial_note_indent;
 		}
@@ -169,13 +169,13 @@ class LineData {
 			return this.note_indent;
 		}
 	}
-	generate_line(measures, beats, is_last){
+	generateLine(measures, beats, is_last){
 		var measure_beat_size;
 		if(beats <= this.score.measures_per_line * 4 - 3){
 			measure_beat_size = this.avg(this.beat_size_list);
 		}
 		else{
-			measure_beat_size = (this.stave_width - this.get_note_indent()) / beats;
+			measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
 			this.beat_size_list.push(measure_beat_size);
 		}
 		for(var i = 0; i < measures.length; i++){
@@ -192,22 +192,22 @@ class LineData {
 				staves[i] = staves[i].addTimeSignature("4/4");
 			}
 		}
-		this.score.render_line(measures, staves, is_last, this.get_note_indent());
+		this.score.renderLine(measures, staves, is_last, this.getNoteIndent());
 		this.line_num++;
 	}
 }
 
 class Score {
 	constructor(harmony, chords, chorale_plan, note_functions, sampler){
-		var key_temp = chords[chords.length - 1].get_key();
+		var key_temp = chords[chords.length - 1].key;
 		
-		this.accidentals_in_key = note_functions.get_accidentals_in_key(key_temp);
+		this.accidentals_in_key = note_functions.getAccidentalsInKey(key_temp);
 		
-		if(key_temp.get_modality() == "minor"){
-			this.key_name = note_functions.value_to_name(key_temp.get_pitch() + 3, key_temp);
+		if(key_temp.modality == "minor"){
+			this.key_name = note_functions.valueToName(key_temp.pitch + 3, key_temp);
 		}
 		else{
-			this.key_name = note_functions.value_to_name(key_temp.get_pitch(), key_temp);
+			this.key_name = note_functions.valueToName(key_temp.pitch, key_temp);
 		}
 		
 		this.harmony = harmony;
@@ -229,7 +229,7 @@ class Score {
 		
 		this.player = new Player(sampler);
 	}
-	get_accidentals_in_key_copy(){
+	getAccidentalsInKeyCopy(){
 		var copy = {};
 		for(var key in this.accidentals_in_key){
 			copy[key] = this.accidentals_in_key[key];
@@ -237,7 +237,7 @@ class Score {
 		return copy;
 	}
 	
-	render_measure(measure, staves, is_last, initial_indent){
+	renderMeasure(measure, staves, is_last, initial_indent){
 		for(var i = 0; i < 2; i++){
 			staves[i].setBegBarType(this.vf.Barline.type.NONE);
 			if(is_last){
@@ -288,16 +288,16 @@ class Score {
 			measure.beams[i].setContext(this.context).draw();
 		}
 	}
-	render_line(measures, staves, is_last, initial_indent){
+	renderLine(measures, staves, is_last, initial_indent){
 		var brace = new this.vf.StaveConnector(staves[0], staves[1]).setType(3);
 		brace.setContext(this.context).draw();
 		var line_left = new this.vf.StaveConnector(staves[0], staves[1]).setType(1);
 		line_left.setContext(this.context).draw();
 		if(measures.length == 1){
-			this.render_measure(measures[0], staves, is_last, initial_indent);
+			this.renderMeasure(measures[0], staves, is_last, initial_indent);
 		}
 		else{
-			this.render_measure(measures[0], staves, false, initial_indent);
+			this.renderMeasure(measures[0], staves, false, initial_indent);
 		}
 		for(var i = 1; i < measures.length; i++){
 			for(var j = 0; j < 2; j++){
@@ -306,10 +306,10 @@ class Score {
 				staves[j] = new this.vf.Stave(x, y, measures[i].width);
 			}
 			if(i == measures.length - 1){
-				this.render_measure(measures[i], staves, is_last, null);
+				this.renderMeasure(measures[i], staves, is_last, null);
 			}
 			else{
-				this.render_measure(measures[i], staves, false, null);
+				this.renderMeasure(measures[i], staves, false, null);
 			}
 		}
 	}
@@ -317,13 +317,13 @@ class Score {
 	render_harmony(){
 		var line_data = new LineData(this);
 		
-		var pickup = (this.chorale_plan[0].get_phrase_length() % 2 == 0);
+		var pickup = (this.chorale_plan[0].phrase_length % 2 == 0);
 		var measures = [];
 		var index_start = 0;
 		
-		var phrase_done_indices = [this.chorale_plan[0].get_phrase_length()];
+		var phrase_done_indices = [this.chorale_plan[0].phrase_length];
 		for(var i = 1; i < this.chorale_plan.length; i++){
-			phrase_done_indices.push(this.chorale_plan[i].get_phrase_length() + phrase_done_indices[i - 1]);
+			phrase_done_indices.push(this.chorale_plan[i].phrase_length + phrase_done_indices[i - 1]);
 		}
 		
 		var num_beats = 0;
@@ -333,12 +333,12 @@ class Score {
 		while(index < this.chords.length){
 			if(needs_pickup){
 				needs_pickup = false;
-				measures.push(this.generate_single_measure(index, [1], 1, null));
+				measures.push(this.generateSingleMeasure(index, [1], 1, null));
 				index++;
 				num_beats++;
 			}
 			else if(index + 4 <= phrase_done_indices[phrase_index]){
-				measures.push(this.generate_single_measure(index, [1, 1, 1, 1], 4, null));
+				measures.push(this.generateSingleMeasure(index, [1, 1, 1, 1], 4, null));
 				index += 4;
 				num_beats += 4;
 			}
@@ -351,7 +351,7 @@ class Score {
 					num_beats_change++;
 					index_change++;
 				}
-				var fermata_duration = this.chorale_plan[phrase_index].get_fermata_duration();
+				var fermata_duration = this.chorale_plan[phrase_index].fermata_duration;
 				durations.push(fermata_duration);
 				var fermata_index = index + index_change;
 				index_change++;
@@ -370,11 +370,11 @@ class Score {
 						index_change++;
 					}
 				}
-				measures.push(this.generate_single_measure(index, durations, num_beats_change, fermata_index));
+				measures.push(this.generateSingleMeasure(index, durations, num_beats_change, fermata_index));
 				index += index_change;
 			}
 			if(num_beats >= 4 * this.measures_per_line - 1){
-				line_data.generate_line(measures, num_beats, index >= this.chords.length);
+				line_data.generateLine(measures, num_beats, index >= this.chords.length);
 				measures = [];
 				num_beats = 0;
 			}
@@ -383,13 +383,13 @@ class Score {
 			}
 		}
 		if(num_beats > 0){
-			line_data.generate_line(measures, num_beats, true);
+			line_data.generateLine(measures, num_beats, true);
 		}
-		this.renderer.resize(line_data.get_renderer_width(), line_data.get_renderer_height());
-		this.player.generate_audio();
+		this.renderer.resize(line_data.getRendererWidth(), line_data.getRendererHeight());
+		this.player.generateAudio();
 	}
 	
-	create_note_data(value, name, octave, duration, voice){
+	createNoteData(value, name, octave, duration, voice){
 		var stem_dir;
 		if(voice % 2 == 0){
 			stem_dir = 1;
@@ -404,7 +404,7 @@ class Score {
 		return note_data;
 	}
 		
-	generate_single_measure(start_index, durations, total_duration, fermata_index){
+	generateSingleMeasure(start_index, durations, total_duration, fermata_index){
 		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
 			       "width": null, "ghost_voices": [[], []]};
 		var accidentals_in_key = {0: {}, 1: {}};
@@ -417,7 +417,7 @@ class Score {
 			var max = 1;
 			for(var voice = 0; voice < 4; voice++){
 				beam_start_index[voice] = measure.notes[voice].length;
-				voice_to_max[voice] = this.harmony[index].get_num_notes(3 - voice);
+				voice_to_max[voice] = this.harmony[index].getNumNotes(3 - voice);
 				if(max < voice_to_max[voice]){
 					max = voice_to_max[voice];
 				}
@@ -437,9 +437,9 @@ class Score {
 						if(min_duration == null || min_duration > duration){
 							min_duration = duration;
 						}
-						this.generate_single_beat(measure, index, fermata_index, voice, sub_index,
-									  this.duration_strings[duration], names,
-									  prev_value, accidentals_in_key, needs_ghost_voices);
+						this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
+									this.duration_strings[duration], names,
+									prev_value, accidentals_in_key, needs_ghost_voices);
 					}
 				}
 				var attack_list = [];
@@ -465,7 +465,7 @@ class Score {
 				if(fermata_index != null && index == fermata_index && min_duration < 8){
 					min_duration = 8;
 				}
-				this.player.schedule_notes(attack_list, release_list, min_duration);
+				this.player.scheduleNotes(attack_list, release_list, min_duration);
 			}
 			for(var voice = 0; voice < 4; voice++){
 				if(voice_to_max[voice] > 1){
@@ -489,11 +489,11 @@ class Score {
 		}
 		return measure;
 	}
-	generate_single_beat(measure, index, fermata_index, voice, sub_index, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
-		var value = this.harmony[index].get_value(3 - voice, sub_index);
-		var simple_name = this.note_functions.value_to_simple_name_octave(value);
+	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
+		var value = this.harmony[index].getValue(3 - voice, sub_index);
+		var simple_name = this.note_functions.valueToSimpleName(value) + Math.floor(value / 12);
 		names[voice] = simple_name;
-		var name = this.harmony[index].get_name(3 - voice, sub_index).toLowerCase();
+		var name = this.harmony[index].getName(3 - voice, sub_index).toLowerCase();
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
 			octave += 1;
@@ -501,7 +501,7 @@ class Score {
 		else if(name.substring(0, 2) == "b#"){
 			octave -= 1;
 		}
-		var note_data = this.create_note_data(value, name, octave, duration, voice);
+		var note_data = this.createNoteData(value, name, octave, duration, voice);
 		var note = new this.vf.StaveNote(note_data);
 		note.setLedgerLineStyle({strokeStyle: "black"});
 		var clef_index = Math.floor(voice / 2);
@@ -513,7 +513,7 @@ class Score {
 		}
 		else{
 			if(!(octave in accidentals_in_key[clef_index])){
-				accidentals_in_key[clef_index][octave] = this.get_accidentals_in_key_copy();
+				accidentals_in_key[clef_index][octave] = this.getAccidentalsInKeyCopy();
 			}
 			if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
 				accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
