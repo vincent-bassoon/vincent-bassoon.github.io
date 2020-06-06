@@ -90,7 +90,7 @@ function configure_sampler(){
 			sources[name + i] = names_to_files[name] + i + file_end;
 		}
 	}
-	Tone.context.lookAhead = 0.3;
+	Tone.getContext().latencyHint = 0.3;
 	var transport = Tone.Transport;
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
