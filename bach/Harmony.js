@@ -430,7 +430,7 @@ class HarmonyFunctions {
 				}
 				else{
 					max_degree = 1;
-					if(chords[index].modality == "dim"){
+					if(chords[index].quality == "dim"){
 						min_degree = 1;
 					}
 				}
