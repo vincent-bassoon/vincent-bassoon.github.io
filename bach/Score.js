@@ -24,7 +24,7 @@ class Player {
 		transport.bpm.value = 60;
 		var beat_num = 1;
 		var rit_time_string;
-		var rit_length = 3;
+		var rit_length = 12;
 		var schedule = this.schedule;
 		console.log(schedule);
 		var sampler = this.sampler;
@@ -53,7 +53,7 @@ class Player {
 						held_notes[unit.release[j]] = false;
 					}
 					if(rit){
-						transport.bpm.linearRampTo(50, "0:" + rit_length + ":0");
+						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
 					if(last){
 						sampler.release = 2;
@@ -70,7 +70,7 @@ class Player {
 			beat_num += schedule[i].duration;
 		}
 		transport.schedule(function(time){
-			sampler.triggerRelease(schedule[schedule.length - 1].release, time);
+			sampler.triggerRelease(schedule[schedule.length - 1].attack, time);
 		}, this.get_time_string(beat_num));
 		
 		function play_start(){
