@@ -3,8 +3,8 @@ class Player {
 		this.schedule = [];
 		this.sampler = sampler;
 	}
-	schedule_notes(start_list, release_list, duration){
-		this.schedule.push({"start": start_list, "release": release_list, "duration": duration});
+	schedule_notes(attack_list, release_list, duration){
+		this.schedule.push({"attack": attack_list, "release": release_list, "duration": duration});
 	}
 	get_time_string(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
@@ -45,18 +45,10 @@ class Player {
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
-					for(var key in sampler._activeSources){
-						for(var i = 0; i < sampler._activeSources[key].length; i++){
-							if(sampler._activeSources[key][i]._sourceStopped){
-								console.log("STOPPED");
-							}
-						}
-					}
-					console.log("releasing ", unit.release.join(", "));
 					sampler.triggerRelease(unit.release, time);
 					for(var j = 0; j < unit.release.length; j++){
 						if(!held_notes[unit.release[j]]){
-							console.log("release failure");
+							console.log("release failure: ", unit.release[j]);
 						}
 						held_notes[unit.release[j]] = false;
 					}
@@ -66,21 +58,13 @@ class Player {
 					if(last){
 						sampler.release = 2;
 					}
-					console.log("attacking ", unit.start.join(", "));
-					sampler.triggerAttack(unit.start, time);
-					for(var j = 0; j < unit.start.length; j++){
-						if(held_notes[unit.start[j]]){
-							console.log("attack failure");
+					sampler.triggerAttack(unit.attack, time);
+					for(var j = 0; j < unit.attack.length; j++){
+						if(held_notes[unit.attack[j]]){
+							console.log("attack failure: ", unit.attack[j]);
 						}
-						held_notes[unit.start[j]] = true;
+						held_notes[unit.attack[j]] = true;
 					}
-					var held_string = "";
-					for(var key in held_notes){
-						if(held_notes[key]){
-							held_string += key + " ";
-						}
-					}
-					console.log(held_string);
 				}, time_string);
 			})(schedule[i], this.get_time_string(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
 			beat_num += schedule[i].duration;
@@ -450,15 +434,15 @@ class Score {
 									  prev_value, accidentals_in_key, needs_ghost_voices);
 					}
 				}
-				var start_list = [];
+				var attack_list = [];
 				var release_list = [];
 				for(var voice = 0; voice < 4; voice++){
 					if(names[voice] != null){
 						if(this.prev_names[voice] != null && !release_list.includes(this.prev_names[voice])){
 							release_list.push(this.prev_names[voice]);
 						}
-						if(!start_list.includes(names[voice])){
-							start_list.push(names[voice]);
+						if(!attack_list.includes(names[voice])){
+							attack_list.push(names[voice]);
 						}
 						this.prev_names[voice] = names[voice];
 					}
@@ -473,7 +457,7 @@ class Score {
 				if(fermata_index != null && index == fermata_index && min_duration < 8){
 					min_duration = 8;
 				}
-				this.player.schedule_notes(start_list, release_list, min_duration);
+				this.player.schedule_notes(attack_list, release_list, min_duration);
 			}
 			for(var voice = 0; voice < 4; voice++){
 				if(voice_to_max[voice] > 1){
