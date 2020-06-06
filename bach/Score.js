@@ -73,17 +73,25 @@ class Player {
 			sampler.triggerRelease(schedule[schedule.length - 1].release, time);
 		}, this.get_time_string(beat_num));
 		
+		function play_start(){
+			play.innerText = "STOP";
+			transport.bpm.value = 60;
+			sampler.release = 0.1;
+			transport.start("+.3", "0:0:0");
+		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
 				transport.stop();
 				sampler.releaseAll();
 				play.innerText = "PLAY";
 			}
+			else if(Tone.getContext().state == "suspended"){
+				Tone.start().then(function(result){
+					play_start();
+				});
+			}
 			else{
-				play.innerText = "STOP";
-				transport.bpm.value = 60;
-				sampler.release = 0.1;
-				transport.start("+.3", "0:0:0");
+				play_start();
 			}
 		}
 		beat_num += 6;
