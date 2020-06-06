@@ -5,12 +5,12 @@ class ChordFunctions {
 		this.chord_to_class = {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5};
 		this.class_to_chord = {0: 1, 2: 2, 3: 4, 4: 6, 5: 3};
 		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
-		this.modalities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
+		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
 		// 3-6-4/2-5-1
 	}
 	generateChord(roman_num, key, inversion){
-		return new Chord(roman_num, key, this.modalities[key.modality][roman_num], inversion);
+		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
 	}
 	getChordRomanNum(chord_class){
 		if(chord_class == 1){
