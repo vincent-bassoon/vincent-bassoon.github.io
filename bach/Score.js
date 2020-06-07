@@ -186,7 +186,7 @@ class LineData {
 		for(var i = 0; i < 2; i++){
 			var x = this.x_margin;
 			var y = this.y_margin + this.stave_y_indents[i] + this.line_height * this.line_num;
-			var length = measures[0].width + this.get_note_indent(this.line_num) - 25;
+			var length = measures[0].width + this.getNoteIndent() - 25;
 			staves[i] = new this.score.vf.Stave(x, y, length).addClef(this.clefs[i]).addKeySignature(this.score.key_name);
 			if(this.line_num == 0){
 				staves[i] = staves[i].addTimeSignature("4/4");
