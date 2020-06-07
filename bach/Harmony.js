@@ -344,7 +344,7 @@ class HarmonyFunctions {
 		if(!this.inAbsoluteRange(value, voice)){
 			return;
 		}
-		var key = chords[index].get_key();
+		var key = chords[index].key;
 		var name = this.note_functions.valueToName(value, key);
 		if(index + 1 == harmony.length){
 			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
