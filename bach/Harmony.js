@@ -61,8 +61,8 @@ class HarmonyFunctions {
 			if(this.check_adjacent[order_index][i]){
 				for(var start_or_end = 0; start_or_end < 2; start_or_end++){
 					var parity = this.adjacent_direction[i];
-					var voice1 = parity * harmony[index].get_value(voice, start_or_end);
-					var voice2 = parity * harmony[index].get_value(voice + parity, start_or_end);
+					var voice1 = parity * harmony[index].getValue(voice, start_or_end);
+					var voice2 = parity * harmony[index].getValue(voice + parity, start_or_end);
 					if(voice1 > voice2){
 						return true;
 					}
