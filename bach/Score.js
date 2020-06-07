@@ -314,7 +314,7 @@ class Score {
 		}
 	}
 	
-	render_harmony(){
+	renderHarmony(){
 		var line_data = new LineData(this);
 		
 		var pickup = (this.chorale_plan[0].phrase_length % 2 == 0);
