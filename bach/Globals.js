@@ -343,7 +343,7 @@ class NoteFunctions {
 		var key_letter_index = this.letter_index[key_letter[0]];
 		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
 		var name = this.letters[val_letter_index];
-		return name + this.get_accidental(this.name_to_val[name], value);
+		return name + this.getAccidental(this.name_to_val[name], value);
 	}
 	valueToNum(value, key){
 		value = value % 12;
