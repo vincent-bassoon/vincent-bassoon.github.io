@@ -491,8 +491,8 @@ class HarmonyFunctions {
 			console.log("fifth doubling at index ", index);
 			return;
 		}
-		if(index + 1 > harmony.length - 1){
-			console.log("COMPLETE FAILURE");
+		if(index + 1 > harmony.length - 1 || this.retrace_attempts <= 0){
+			console.log("COMPLETE FAILURE, AFTER ATTEMPTS: ", this.retrace_attempts);
 			this.global_index = -1;
 			this.repeat = true;
 			return;
@@ -502,6 +502,7 @@ class HarmonyFunctions {
 			harmony[index + 1].addToHistory();
 			console.log("    added to history");
 			this.global_index += 1;
+			this.retrace_attempts -= 1;
 			return;
 		}
 	}
@@ -543,6 +544,7 @@ class HarmonyFunctions {
 		var harmony = this.createEmptyHarmony(chorale_plan, chords.length);
 		
 		this.global_index = chords.length - 1;
+		this.retrace_attempts = 3 * (chords.length - 1);
 		while(this.global_index >= 0){
 			this.generateSingleHarmony(chords, harmony);
 		}
