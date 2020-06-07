@@ -130,10 +130,13 @@ class Chord {
 
 class HarmonyUnit {
 	constructor(target_avgs){
-		this.note_values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
-		this.note_names = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
-		this.history = [];
+		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
+		this.names = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
+		this.nums = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
 		this.leap = [null, null, null, null];
+		
+		this.chord = null;
+		this.history = [];
 		
 		this.avgs = [0, 0, 0, 0];
 		this.avg_nums = [0, 0, 0, 0];
@@ -161,9 +164,9 @@ class HarmonyUnit {
 	addToHistory(){
 		var copy = [[], [], []];
 		for(var i = 0; i < 4; i++){
-			copy[0][i] = this.note_values[0][i];
-			copy[1][i] = this.note_values[1][i];
-			copy[2][i] = this.note_values[2][i];
+			copy[0][i] = this.values[0][i];
+			copy[1][i] = this.values[1][i];
+			copy[2][i] = this.values[2][i];
 		}
 		this.history.push(copy);
 	}
@@ -173,7 +176,7 @@ class HarmonyUnit {
 			equals = true;
 			for(var j = 0; j < 3; j++){
 				for(var k = 0; k < 4; k++){
-					if(this.history[i][j][k] != this.note_values[j][k]){
+					if(this.history[i][j][k] != this.values[j][k]){
 						equals = false;
 					}
 				}
@@ -185,10 +188,10 @@ class HarmonyUnit {
 		return false;
 	}
 	getNumNotes(voice){
-		if(this.note_values[1][voice] != this.note_values[2][voice]){
+		if(this.values[1][voice] != this.values[2][voice]){
 			return 3;
 		}
-		else if(this.note_values[0][voice] != this.note_values[1][voice]){
+		else if(this.values[0][voice] != this.values[1][voice]){
 			return 2;
 		}
 		else{
@@ -196,28 +199,28 @@ class HarmonyUnit {
 		}
 	}
 	getValue(voice, index){
-		return this.note_values[index][voice];
+		return this.values[index][voice];
 	}
 	setNotes(voice, values, names, num_notes, leap){
 		for(var i = 0; i < num_notes; i++){
-			this.note_values[i][voice] = values[i];
-			this.note_names[i][voice] = names[i];
+			this.values[i][voice] = values[i];
+			this.names[i][voice] = names[i];
 		}
 		for(var i = num_notes; i < 3; i++){
-			this.note_values[i][voice] = values[num_notes - 1];
-			this.note_names[i][voice] = names[num_notes - 1];
+			this.values[i][voice] = values[num_notes - 1];
+			this.names[i][voice] = names[num_notes - 1];
 		}
 		this.leap[voice] = leap;
 	}
 	resetNotes(voice){
 		for(var i = 0; i < 3; i++){
-			this.note_values[i][voice] = null;
-			this.note_names[i][voice] = null;
+			this.values[i][voice] = null;
+			this.names[i][voice] = null;
 		}
 		this.leap[voice] = null;
 	}
 	getName(voice, index){
-		return this.note_names[index][voice];
+		return this.names[index][voice];
 	}
 	getLeap(voice){
 		return this.leap[voice];
@@ -349,15 +352,6 @@ class NoteFunctions {
 		value = value % 12;
 		var adjusted_value = (value - key.pitch + 12) % 12;
 		return this.pitch_to_num[adjusted_value];
-	}
-	getBassPitch(chord){
-		var inversion = chord.inversion;
-		if(inversion == null){
-			return null;
-		}
-		else{
-			return this.getPitch(chord, inversion);
-		}
 	}
 	getPitch(chord, degree){
 		var key = chord.key;
