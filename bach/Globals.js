@@ -98,13 +98,6 @@ function chooseIntFromFreqsRemove(freqs, choices){
 	return null;
 }
 
-class Key {
-	constructor(pitch, modality){
-		this.pitch = pitch;
-		this.modality = modality;
-	}
-}
-
 class PhraseData {
 	// note: previous_cadence_chord means be careful updating a single PhraseData object without updating them all
 	constructor(key, phrase_length, fermata_duration, cadence, cadence_length, previous_cadence_chord){
@@ -117,11 +110,103 @@ class PhraseData {
 	}
 }
 
+class Key {
+	constructor(pitch, modality, pitch_to_num, pitch_to_name){
+		this.pitch = pitch;
+		this.modality = modality;
+		this.pitch_to_num = pitch_to_num;
+		this.pitch_to_name = pitch_to_name;
+	}
+}
+
+class KeyFunctions {
+	constructor(){
+		this.letter_to_pitch = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
+		this.letters = ["C", "D", "E", "F", "G", "A", "B"];
+		
+		this.pitch_to_letter_index = {"major": {}, "minor": {}};
+		var pitch = {"major": 0, "minor": 9};
+		var letter_index = {"major": 0, "minor": 5};
+		for(var modality in this.pitch_to_key_letter){
+			for(var i = 0; i < 12; i++){
+				this.pitch_to_letter_index[modality][pitch[modality]] = letter_index[modality];
+				if(i == 5){
+					letter_index[modality] = (letter_index[modality] + 5) % 7;
+				}
+				else{
+					letter_index[modality] = (letter_index[modality] + 4) % 7;
+				}
+				pitch[modality] = (pitch[modality] + 7) % 12;
+			}
+		}
+		
+		this.num_to_pitch = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
+				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
+		
+		
+		this.interval_mapping = {0: 0, 1: 1.5, 2: 3.5, 3: 5, 4: 7, 5: 8.5, 6: 10.5};
+		
+		this.chord_mapping = {"major": {0: 0, 1: 4, 2: 7}, "aug": {0: 0, 1: 4, 2: 8},
+				      "minor": {0: 0, 1: 3, 2: 7}, "dim": {0: 0, 1: 3, 2: 6}};
+		
+		
+		var pitch_to_num = {0: 1, 2: 2, 3: 3, 4: 3, 5: 4, 7: 5, 8: 6, 9: 6, 10: 7, 11: 7};
+		var pitches = {"major": [0, 2, 4, 5, 7, 9, 11], "minor": [0, 2, 3, 5, 7, 8, 10, 11]};
+		this.notes = {"major": [], "minor": []};
+		for(var modality in this.notes){
+			for(var i = 0; i < pitches[modality].length; i++){
+				var pitch = pitches[modality][i];
+				this.notes[modality].push({"pitch": pitch, "num": pitch_to_num[pitch]});
+			}
+		}
+	}
+	createKey(key_pitch, key_modality){
+		var notes = this.notes[key_modality];
+		var pitch_to_name = {};
+		var pitch_to_num = {};
+		var letter_index = this.pitch_to_letter_index[key_modality][key_pitch];
+		for(var i = 0; i < notes.length; i++){
+			var pitch = (notes[i].pitch + key_pitch) % 12;
+			var num = notes[i].num;
+			var name = this.letters[(num - 1 + letter_index) % 7];
+			switch(this.letter_to_pitch[name] - pitch){
+				case 2:
+					name += "bb";
+					break;
+				case 1:
+					name += "b";
+					break;
+				case -1:
+					name += "#";
+					break;
+				case -2:
+					name += "##";
+					break;
+			}
+			
+		}
+	}
+	valueToName(value, key){
+		value = value % 12;
+		var adjusted_value = (value - key.pitch + 12) % 12;
+		var key_letter = this.val_to_key_name[key.modality][key.pitch];
+		var key_letter_index = this.letter_index[key_letter[0]];
+		var val_letter_index = (key_letter_index + (this.pitch_to_num[adjusted_value] - 1)) % 7;
+		var name = this.letters[val_letter_index];
+		return name + this.getAccidental(this.name_to_val[name], value);
+	}
+	valueToNum(value, key){
+		value = value % 12;
+		var adjusted_value = (value - key.pitch + 12) % 12;
+		return this.pitch_to_num[adjusted_value];
+	}
+}
+
 class Chord {
-	constructor(roman_num, key, quality, inversion){
+	constructor(roman_num, key, quality, inversion, note_functions){
 		this.roman_num = roman_num;
-		this.third = ((roman_num + 2 - 1) % 7) + 1;
-		this.fifth = ((roman_num + 4 - 1) % 7) + 1;
+		//this.third = ((roman_num + 2 - 1) % 7) + 1;
+		//this.fifth = ((roman_num + 4 - 1) % 7) + 1;
 		this.key = key;
 		this.quality = quality;
 		this.inversion = inversion;
