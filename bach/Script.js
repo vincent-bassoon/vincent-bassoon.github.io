@@ -33,7 +33,7 @@ function generateChoralePlan(key, cadence_num, pickup){
 		
 		var cadence_length = lengths[cadence];
 		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && choose_int({0: 0.8, 1: 0.2}) == 0){
+		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
 			cadence_length++;
 		}
 		var fermata_duration = fermata_lengths[phrase_lengths[i]];
