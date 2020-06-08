@@ -182,7 +182,7 @@ class KeyGenerator {
 		for(var i = 0; i < pitches.length; i++){
 			var pitch = (pitches[i] + key_pitch) % 12;
 			var num = this.pitch_to_num[pitches[i]];
-			var name = this.letters[(num - 1 + key_letter_index) % 7];
+			var name = this.letters[(num - 1 + letter_index) % 7];
 			switch(this.letter_to_pitch[name] - pitch){
 				case 2:
 					name += "bb";
