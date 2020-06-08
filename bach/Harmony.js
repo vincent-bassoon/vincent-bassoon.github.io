@@ -116,7 +116,7 @@ class HarmonyFunctions {
 		if(this.parallels(harmony, index, order_index)){
 			return true;
 		}
-		if(order_index == 3 && harmony[index].equalsHistory()){
+		if(order_index == 3 && harmony[index].score.equalsHistory()){
 			return true;
 		}
 		return false;
