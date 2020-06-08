@@ -198,22 +198,14 @@ class LineData {
 }
 
 class Score {
-	constructor(harmony, chords, chorale_plan, note_functions, sampler){
-		var key_temp = chords[chords.length - 1].key;
+	constructor(harmony, note_functions, phrase_lengths, sampler){
+		var key = harmony[harmony.length - 2].chord.key;
+		this.key_name = key.valueToName(key.pitch);
 		
-		this.accidentals_in_key = note_functions.getAccidentalsInKey(key_temp);
-		
-		if(key_temp.modality == "minor"){
-			this.key_name = note_functions.valueToName(key_temp.pitch + 3, key_temp);
-		}
-		else{
-			this.key_name = note_functions.valueToName(key_temp.pitch, key_temp);
-		}
-		
+		this.nf = note_functions;
 		this.harmony = harmony;
-		this.chords = chords;
-		this.chorale_plan = chorale_plan;
-		this.note_functions = note_functions;
+		this.phrase_lengths = phrase_lengths;
+		this.pickup = phrase_lengths[0] % 2 == 0;
 		this.vf = Vex.Flow;
 		this.formatter = new this.vf.Formatter();
 		
@@ -228,13 +220,6 @@ class Score {
 		this.prev_names = [null, null, null, null];
 		
 		this.player = new Player(sampler);
-	}
-	getAccidentalsInKeyCopy(){
-		var copy = {};
-		for(var key in this.accidentals_in_key){
-			copy[key] = this.accidentals_in_key[key];
-		}
-		return copy;
 	}
 	
 	renderMeasure(measure, staves, is_last, initial_indent){
@@ -317,7 +302,6 @@ class Score {
 	renderHarmony(){
 		var line_data = new LineData(this);
 		
-		var pickup = (this.chorale_plan[0].phrase_length % 2 == 0);
 		var measures = [];
 		var index_start = 0;
 		
@@ -326,10 +310,12 @@ class Score {
 			phrase_done_indices.push(this.chorale_plan[i].phrase_length + phrase_done_indices[i - 1]);
 		}
 		
+		var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
+		
 		var num_beats = 0;
 		var index = 0;
 		var phrase_index = 0;
-		var needs_pickup = pickup;
+		var needs_pickup = this.pickup;
 		while(index < this.chords.length){
 			if(needs_pickup){
 				needs_pickup = false;
@@ -351,7 +337,10 @@ class Score {
 					num_beats_change++;
 					index_change++;
 				}
-				var fermata_duration = this.chorale_plan[phrase_index].fermata_duration;
+				var fermata_duration = fermata_lengths[this.phrase_lengths[phrase_index]];
+				if(phrase_index == this.phrase_lengths.length - 1 && num_beats % 4 != 0){
+					fermata_duration += (4 - (num_beats % 4));
+				}
 				durations.push(fermata_duration);
 				var fermata_index = index + index_change;
 				index_change++;
@@ -359,7 +348,7 @@ class Score {
 				num_beats += num_beats_change;
 				if(phrase_index != phrase_done_indices.length - 1){
 					var max = 4;
-					if(pickup && num_beats >= 4 * this.measures_per_line - 2){
+					if(this.pickup && num_beats >= 4 * this.measures_per_line - 2){
 						max = 3;
 						needs_pickup = true;
 					}
@@ -374,7 +363,7 @@ class Score {
 				index += index_change;
 			}
 			if(num_beats >= 4 * this.measures_per_line - 1){
-				line_data.generateLine(measures, num_beats, index >= this.chords.length);
+				line_data.generateLine(measures, num_beats, index >= this.harmony.length);
 				measures = [];
 				num_beats = 0;
 			}
@@ -417,7 +406,7 @@ class Score {
 			var max = 1;
 			for(var voice = 0; voice < 4; voice++){
 				beam_start_index[voice] = measure.notes[voice].length;
-				voice_to_max[voice] = this.harmony[index].getNumNotes(3 - voice);
+				voice_to_max[voice] = this.harmony[index].getNumNotes(voice);
 				if(max < voice_to_max[voice]){
 					max = voice_to_max[voice];
 				}
@@ -490,10 +479,10 @@ class Score {
 		return measure;
 	}
 	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
-		var value = this.harmony[index].getValue(3 - voice, sub_index);
-		var simple_name = this.note_functions.valueToSimpleName(value) + Math.floor(value / 12);
+		var value = this.harmony[index].getValue(voice, sub_index);
+		var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
 		names[voice] = simple_name;
-		var name = this.harmony[index].getName(3 - voice, sub_index).toLowerCase();
+		var name = this.harmony[index].chord.key.valueToName(value).toLowerCase();
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
 			octave += 1;
@@ -513,7 +502,7 @@ class Score {
 		}
 		else{
 			if(!(octave in accidentals_in_key[clef_index])){
-				accidentals_in_key[clef_index][octave] = this.getAccidentalsInKeyCopy();
+				accidentals_in_key[clef_index][octave] = this.harmony[index].chord.key.getAccidentals();
 			}
 			if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
 				accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
