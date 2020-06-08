@@ -335,7 +335,7 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		console.log(options);
+		console.log("options: ", options);
 		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			return;
@@ -403,7 +403,6 @@ class HarmonyFunctions {
 		while(this.global_index >= 0){
 			this.generateSingleHarmony(harmony);
 		}
-		console.log(this.scores);
 		if(this.repeat){
 			return true;
 		}
