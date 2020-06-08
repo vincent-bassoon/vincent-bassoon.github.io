@@ -265,10 +265,12 @@ class HarmonyFunctions {
 			}
 			options.push({"values": [value], "score": score, "motion": motion});
 		}
+		else{
+			console.log("score too big at: ", score);
+		}
 	}
 	generateSingleHarmony(harmony){
 		var index = this.global_index;
-		console.log("attempt at index: ", index);
 		if(index == -1){
 			return;
 		}
