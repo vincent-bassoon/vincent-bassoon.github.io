@@ -48,10 +48,10 @@ class HarmonyFunctions {
 				for(var sub_index = 0; sub_index < max; sub_index++){
 					var voice1 = parity * harmony[index].getValue(voice, sub_index);
 					var voice2 = parity * harmony[index].getValue(voice - parity, sub_index);
-					if(voice1 < voice2){
+					if(voice1 > voice2){
 						return true;
 					}
-					if(voice1 + this.adjacent_max_dist[order_index][i] > voice2){
+					if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
 						return true;
 					}
 				}
