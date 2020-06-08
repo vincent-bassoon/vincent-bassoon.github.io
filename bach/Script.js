@@ -69,7 +69,7 @@ function generateNewChorale(sampler){
 	var key_generator = new KeyGenerator();
 	var chord_functions = new ChordFunctions(key_generator);
 	
-	var chorale_plan = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup, harmony_functions);
+	var chorale_plan = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup);
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
