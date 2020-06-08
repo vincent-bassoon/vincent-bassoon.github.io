@@ -230,7 +230,7 @@ class Chord {
 		var chord_mapping = {"major": {1: 4, 2: 7}, "aug": {1: 4, 2: 8},
 				     "minor": {1: 3, 2: 7}, "dim": {1: 3, 2: 6}};
 		for(var i = 1; i < 3; i++){
-			pitches[i] = (this.pitches[0] + chord_mapping[quality][i]) % 12
+			this.pitches[i] = (this.pitches[0] + chord_mapping[quality][i]) % 12
 		}
 	}
 	equals(chord){
