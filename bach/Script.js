@@ -67,15 +67,20 @@ function generateNewChorale(sampler){
 	
 	var harmony_functions = new HarmonyFunctions();
 	var chord_functions = new ChordFunctions();
+	var key_generator = new KeyGenerator();
 	
-	var chorale_plan = generateChoralePlan(new Key(pitch, modality), cadence_num, pickup, harmony_functions);
+	var chorale_plan = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup, harmony_functions);
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		chords.push(...chord_functions.generateSegmentChords(chorale_plan[i]));
+		chords.push(...chord_functions.generateSegmentChords(key_generator, chorale_plan[i]));
 	}
 	var counter = 0;
-	if(harmony_functions.generateHarmony(chords, chorale_plan, sampler) && counter < 10){
+	var phrase_lengths = [];
+	for(var i = 0; i < chorale_plan.length; i++){
+		phrase_lengths.push(chorale_plan[i].phrase_lengths);
+	}
+	if(harmony_functions.generateHarmony(chords, phrase_lengths, sampler) && counter < 10){
 		generateNewChorale(sampler);
 		counter++;
 	}
