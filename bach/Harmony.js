@@ -341,6 +341,7 @@ class HarmonyFunctions {
 		console.log("options: ", options);
 		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
+			console.log("root doubling at index ", index);
 			return;
 		}
 		if(this.fillHarmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
