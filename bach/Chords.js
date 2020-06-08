@@ -1,5 +1,6 @@
 class ChordFunctions {
-	constructor(){
+	constructor(key_generator){
+		this.key_generator = key_generator;
 		// 0 is I, 1 is V or vii, 2 ii, 3 IV, 4 vi, 5 iii
 		//{2: 0.65, 4: 0.35}
 		this.chord_to_class = {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5};
@@ -75,7 +76,8 @@ class ChordFunctions {
 		var cadence_chords = [];
 		for(var i = 0; i < this.cadences[cad].length; i++){
 			if(cad == "pacm" && i == 0){
-				cadence_chords.unshift(new Chord(this.cadences[cad][i], key, "major", 0));
+				cadence_chords.unshift(this.generateChord(this.cadences[cad][i],
+									  this.key_generator.getKey(key.pitch, "major"), 0));
 			}
 			else{
 				cadence_chords.unshift(this.generateChord(this.cadences[cad][i], key, 0));
