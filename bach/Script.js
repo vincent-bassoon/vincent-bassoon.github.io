@@ -66,14 +66,14 @@ function generateNewChorale(sampler){
 	}
 	
 	var harmony_functions = new HarmonyFunctions();
-	var chord_functions = new ChordFunctions();
 	var key_generator = new KeyGenerator();
+	var chord_functions = new ChordFunctions(key_generator);
 	
 	var chorale_plan = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup, harmony_functions);
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		chords.push(...chord_functions.generateSegmentChords(key_generator, chorale_plan[i]));
+		chords.push(...chord_functions.generateSegmentChords(chorale_plan[i]));
 	}
 	var counter = 0;
 	var phrase_lengths = [];
