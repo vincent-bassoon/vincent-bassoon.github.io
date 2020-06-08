@@ -124,6 +124,7 @@ class HarmonyFunctions {
 	
 	fillHarmony(harmony, voicing, pitch_options, index, order_index, score_sum){
 		if(score_sum > this.max_total_score){
+			console.log("score error: ", score_sum);
 			return false;
 		}
 		if(order_index == 4){
@@ -142,6 +143,7 @@ class HarmonyFunctions {
 						}
 					}
 					if(same){
+						console.log("same error");
 						return false;
 					}
 				}
@@ -162,6 +164,7 @@ class HarmonyFunctions {
 			}
 			voicing.push(degree);
 		}
+		console.log("out of options error");
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
