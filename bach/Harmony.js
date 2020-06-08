@@ -403,7 +403,7 @@ class HarmonyFunctions {
 		if(this.repeat){
 			return true;
 		}
-		new Score(harmony, phrase_lengths[0] % 2 == 0, sampler).renderHarmony();
+		new Score(harmony, phrase_lengths, sampler).renderHarmony();
 		console.log(harmony);
 		return false;
 	}
