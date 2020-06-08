@@ -306,7 +306,7 @@ class ScoreUnit {
 class HarmonyUnit {
 	constructor(chord, target_avgs, end_of_phrase){
 		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
-		this.leap = [null, null, null, null];
+		this.motion = [null, null, null, null];
 		
 		this.chord = chord;
 		
@@ -328,21 +328,129 @@ class HarmonyUnit {
 	getValue(voice, index){
 		return this.values[index][voice];
 	}
-	setNotes(voice, values, num_notes, leap){
+	setNotes(voice, values, num_notes, motion){
 		for(var i = 0; i < num_notes; i++){
 			this.values[i][voice] = values[i];
 		}
 		for(var i = num_notes; i < 3; i++){
 			this.values[i][voice] = values[num_notes - 1];
 		}
-		this.leap[voice] = leap;
+		this.motion[voice] = motion;
 	}
-	getLeap(voice){
-		return this.leap[voice];
+	getMotion(voice){
+		return this.motion[voice];
 	}
 }
 
-
+class MotionFunctions {
+	constructor(max_score){
+		this.type = {"CONSTANT": 0, "STEP": 1, "THIRD": 2, "LEAP": 3,
+			     "MORDANT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
+			     "SUSPENSION": 8};
+		
+		this.max_score = max_score;
+	}
+	getNumChanges(motion){
+		var direction = direction(motion);
+		if(motion == this.type.TURN || motion == this.type.PASSING_16){
+			return [0, direction, direction * 2];
+			
+		}
+		if(motion == this.type.MORDANT || motion == this.type.PASSING_8){
+			return [0, direction];
+		}
+	}
+	direction(motion){
+		if(motion == this.type.CONSTANT){
+			return 0;
+		}
+		if(motion == this.type.SUSPENSION || motion < 0){
+			return -1;
+		}
+		else{
+			return 1;
+		}
+	}
+	getSimpleMotion(change){
+		if(change == 0){
+			return this.type.CONSTANT;
+		}
+		var parity = 1;
+		if(change < 0){
+			parity = -1;
+		}
+		if(Math.abs(change) <= 2){
+			return this.type.STEP * parity;
+		}
+		else if(Math.abs(change) <= 4){
+			return this.type.THIRD * parity;
+		}
+		else{
+			return this.type.LEAP * parity;
+		}
+	}
+	getMotionOptions(simple_motion){
+		var direction = this.direction(simple_motion);
+		switch(Math.abs(simple_motion)){
+			case this.type.CONSTANT:
+				return [this.type.MORDANT, this.type.MORDANT * -1];
+				break;
+			case this.type.STEP:
+				return [this.type.TURN * direction];
+				break;
+			case this.type.THIRD:
+				return [this.type.PASSING_8 * direction];
+				break;
+			case this.type.LEAP:
+				return [this.type.PASSING_16 * direction];
+		}
+	}
+	getMotionScore(voice, motion, next_motion){
+		var score = 0;
+		var direction = this.direction(motion);
+		var next_direction = this.direction(next_motion);
+		motion = Math.abs(motion);
+		next_motion = Math.abs(motion);
+		
+		//add restrictions for mordents?
+		
+		//no two consecutive leaps if one of them is a fourth
+		if(motion == this.type.LEAP && next_motion == this.type.LEAP){
+			return this.max_score + 1;
+		}
+		if(motion == this.type.LEAP && next_motion == this.type.THIRD){
+			return this.max_score + 1;
+		}
+		if(motion == this.type.THIRD && next_motion == this.type.LEAP){
+			return this.max_score + 1;
+		}
+		if(motion == this.type.THIRD && next_motion == this.type.THIRD){
+			// consecutive leaps of a third
+			score += 15;
+			if(direction == -1 * next_direction){
+				//leap down then up, or up then down
+				score += 20;
+			}
+			return score;
+		}
+		if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
+			//consecutive stagnation
+			score += 10;
+			if(voice == 0){
+				score += 10;
+			}
+			return score;
+		}
+		if(motion == this.type.LEAP && next_direction != direction * -1){
+			// big leap must be followed by step in opposite direction
+			score += 20;
+			if(voice == 0){
+				score += 20;
+			}
+		}
+		return score;
+	}
+}
 
 class NoteFunctions {
 	constructor(){
