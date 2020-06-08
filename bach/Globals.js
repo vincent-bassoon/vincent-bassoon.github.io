@@ -150,11 +150,12 @@ class KeyGenerator {
 	constructor(){
 		this.letters = ["C", "D", "E", "F", "G", "A", "B"];
 		
+		this.key_pitch_to_letter_index = {"major": {}, "minor": {}};
 		var pitch = {"major": 0, "minor": 9};
 		var letter_index = {"major": 0, "minor": 5};
 		for(var modality in this.pitch_to_key_letter){
 			for(var i = 0; i < 12; i++){
-				this.pitch_to_letter_index[modality][pitch[modality]] = letter_index[modality];
+				this.key_pitch_to_letter_index[modality][pitch[modality]] = letter_index[modality];
 				if(i == 5){
 					letter_index[modality] = (letter_index[modality] + 5) % 7;
 				}
