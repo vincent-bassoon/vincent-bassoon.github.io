@@ -404,7 +404,7 @@ class HarmonyFunctions {
 			this.generateSingleHarmony(harmony);
 		}
 		if(this.repeat){
-			return true;
+			return false;//true;
 		}
 		new Score(harmony, this.nf, phrase_lengths, sampler).renderHarmony();
 		console.log(harmony);
