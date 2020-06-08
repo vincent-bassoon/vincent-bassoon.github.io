@@ -248,7 +248,10 @@ class HarmonyFunctions {
 			return;
 		}
 		
-		var score = this.mf.getMotionScore(voice, motion, next_motion);
+		var score = 0;
+		if(index + 2 != harmony.length){
+			score = this.mf.getMotionScore(voice, motion, next_motion);
+		}
 		console.log("  initial: ", score);
 		
 		if(!this.nf.inPrefRange(value, voice)){
