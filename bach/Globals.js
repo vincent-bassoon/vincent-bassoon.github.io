@@ -202,8 +202,8 @@ class KeyGenerator {
 			pitch_to_num[pitch] = num;
 		}
 		var num_to_pitch = {};
-		for(var num in this.num_to_pitch){
-			num_to_pitch[num] = (this.num_to_pitch[num] + key_pitch) % 12;
+		for(var num in this.num_to_pitch[key_modality]){
+			num_to_pitch[num] = (this.num_to_pitch[key_modality][num] + key_pitch) % 12;
 		}
 		return new Key(key_pitch, key_modality, pitch_to_num, pitch_to_name, num_to_pitch);
 	}
