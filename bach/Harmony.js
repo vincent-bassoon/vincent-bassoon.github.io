@@ -332,6 +332,7 @@ class HarmonyFunctions {
 				}
 			}
 		}
+		console.log(options);
 		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			return;
