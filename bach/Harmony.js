@@ -44,10 +44,10 @@ class HarmonyFunctions {
 		for(var i = 0; i < 2; i++){
 			if(this.check_adjacent[order_index][i]){
 				var parity = this.adjacent_direction[i];
-				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice + parity))
+				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice - parity))
 				for(var sub_index = 0; sub_index < max; sub_index++){
 					var voice1 = parity * harmony[index].getValue(voice, sub_index);
-					var voice2 = parity * harmony[index].getValue(voice + parity, sub_index);
+					var voice2 = parity * harmony[index].getValue(voice - parity, sub_index);
 					if(voice1 < voice2){
 						return true;
 					}
