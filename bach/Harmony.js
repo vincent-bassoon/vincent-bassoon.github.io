@@ -5,10 +5,10 @@ class HarmonyFunctions {
 		for(var i = 0; i < 4; i++){
 			this.check_adjacent[i] = [false, false];
 			for(var j = 0; j < i; j++){
-				if(this.voice_order[j] == this.voice_order[i] - 1){
+				if(this.voice_order[j] == this.voice_order[i] + 1){
 					this.check_adjacent[i][0] = true;
 				}
-				else if(this.voice_order[j] == this.voice_order[i] + 1){
+				else if(this.voice_order[j] == this.voice_order[i] - 1){
 					this.check_adjacent[i][1] = true;
 				}
 			}
@@ -19,7 +19,7 @@ class HarmonyFunctions {
 		for(var i = 0; i < 4; i++){
 			this.adjacent_max_dist[i] = [null, null];
 			if(this.check_adjacent[i][0]){
-				this.adjacent_max_dist[i][0] = max_dist_above_voice[this.voice_order[i] - 1];
+				this.adjacent_max_dist[i][0] = max_dist_above_voice[this.voice_order[i] + 1];
 			}
 			if(this.check_adjacent[i][1]){
 				this.adjacent_max_dist[i][1] = max_dist_above_voice[this.voice_order[i]];
