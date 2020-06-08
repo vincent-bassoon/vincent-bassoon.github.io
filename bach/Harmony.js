@@ -1,24 +1,7 @@
 class HarmonyFunctions {
 	constructor(){
 		this.note_functions = new NoteFunctions();
-		var nf = this.note_functions;
-		this.preferred_ranges = {0: {"min": nf.nameToValue("F", 2), "max": nf.nameToValue("E", 3)},
-					 1: {"min": nf.nameToValue("F", 3), "max": nf.nameToValue("E", 4)},
-					 2: {"min": nf.nameToValue("A", 3), "max": nf.nameToValue("Ab", 4)},
-					 3: {"min": nf.nameToValue("E", 4), "max": nf.nameToValue("Eb", 5)}},
-	
-		this.absolute_ranges = {0: {"min": nf.nameToValue("C", 2), "max": nf.nameToValue("C", 4)},
-					1: {"min": nf.nameToValue("C", 3), "max": nf.nameToValue("G", 4)},
-					2: {"min": nf.nameToValue("G", 3), "max": nf.nameToValue("D", 5)},
-					3: {"min": nf.nameToValue("C", 4), "max": nf.nameToValue("G", 5)}};
 		
-		this.pitch_options = {};
-		for(var voice = 0; voice < 4; voice++){
-			this.pitch_options[voice] = {};
-			for(var degree = 0; degree < 4; degree++){
-				this.pitch_options[voice][degree] = [];
-			}
-		}
 		this.voice_order = [3, 0, 2, 1];
 		this.check_adjacent = [];
 		for(var i = 0; i < 4; i++){
@@ -138,26 +121,6 @@ class HarmonyFunctions {
 	}
 	
 	
-	resetPitchOptions(){
-		for(var voice = 0; voice < 4; voice++){
-			for(var degree = 0; degree < 4; degree++){
-				this.pitch_options[voice][degree] = [];
-			}
-		}
-	}
-	inAbsoluteRange(value, voice_index){
-		return value >= this.absolute_ranges[voice_index].min && value <= this.absolute_ranges[voice_index].max;
-	}
-	inPrefRange(value, voice_index){
-		return value >= this.preferred_ranges[voice_index].min && value <= this.preferred_ranges[voice_index].max;
-	}
-	getValueInPrefRange(pitch, voice_index){
-		var min = this.preferred_ranges[voice_index].min;
-		while(pitch < min){
-			pitch += 12;
-		}
-		return pitch;
-	}
 	calcLeap(change){
 		if(change == 0){
 			return 0;
@@ -175,15 +138,6 @@ class HarmonyFunctions {
 		else{
 			return parity * 3;
 		}
-	}
-	getValueClosestTo(pitch, static_value){
-		if(pitch > static_value){
-			return pitch;
-		}
-		while(Math.abs(static_value - pitch) > 6){
-			pitch += 12;
-		}
-		return pitch;
 	}
 	fillHarmony(harmony, chords, voicing, pitch_options, index, order_index, score){
 		if(order_index == 4){
@@ -340,87 +294,75 @@ class HarmonyFunctions {
 			}
 		}
 	}
-	addOption(options, harmony, chords, index, voice, value){
-		if(!this.inAbsoluteRange(value, voice)){
+	addOption(options, harmony, index, voice, value){
+		if(!this.note_functions.inAbsoluteRange(value, voice)){
 			return;
 		}
-		var key = chords[index].key;
-		var name = this.note_functions.valueToName(value, key);
+		var key = harmony[index].chord.key;
 		if(index + 1 == harmony.length){
-			options.unshift({"values": [value], "names": [name], "num_notes": 1, "score": 0, "leap": 0});
+			options.unshift({"values": [value], "num_notes": 1, "score": 0, "leap": 0});
 			return;
 		}
+		var next_key = harmony[index + 1].chord.key;
 		var next_value = harmony[index + 1].getValue(voice, 0);
-		var next_name = harmony[index + 1].getName(voice, 0);
 		var change = next_value - value;
 		var this_leap = this.calcLeap(change);
 		var next_leap = harmony[index + 1].getLeap(voice);
 		
-		if(Math.abs(change) < 6 && !harmony[index].isEndOfPhrase()){
-			this.addNctOptions(options, harmony, index, key, chords[index + 1].key, voice,
-					   value, name, next_value, this_leap, next_leap);
+		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
+			this.addNctOptions(options, harmony, index, key, next_key, voice,
+					   value, next_value, this_leap, next_leap);
 		}
 		
-		if(this.note_functions.valueToNum(value, key) == 7 && next_value % 12 != key.pitch){
+		if(key.valueToNum(value) == 7 && next_value % 12 != key.pitch){
 			//leading tone check
 			return;
 		}
-		if(Math.abs(change) > 5 && !(voice == 0 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
+		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
 			//leaps greater than a fourth not allowed except for fifths and octaves in bass
 			return;
 		}
-		if(this.note_functions.isAugOrDim(change, next_name, name)){
+		if(this.note_functions.isAugOrDim(change, next_key.valueToName(next_value), key.valueToName(value))){
 			// this check ignores augmented/diminished unison
 			return;
 		}
 		
 		var score = this.calcLeapScore(voice, this_leap, next_leap);
 		
-		if(!this.inPrefRange(value, voice)){
+		if(!this.note_functions.inPrefRange(value, voice)){
 			score += 10;
 		}
 		
-		if(voice == 3 && !harmony[index].isEndOfPhrase()){
-			var target_avg = harmony[index].getTargetAvg(voice);
-			var avg = harmony[index + 1].getNextAvg(voice, value);
-			var diff = Math.abs(target_avg - avg);
-			if(diff > 2){
-				if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
-					score += diff * 5;
-				}
-			}
-			if(Math.abs(value - target_avg) > 5){
-				score += 20;
-			}
-		}
+		score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
 		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
 				if(score < options[i].score){
-					options.splice(i, 0, {"values": [value], "names": [name], "num_notes": 1,
-							      "score": score, "leap": this_leap});
+					options.splice(i, 0, {"values": [value], "num_notes": 1, "score": score, "leap": this_leap});
 					return;
 				}
 			}
-			options.push({"values": [value], "names": [name], "num_notes": 1, "score": score, "leap": this_leap});
+			options.push({"values": [value], "num_notes": 1, "score": score, "leap": this_leap});
 		}
 	}
-	generateSingleHarmony(chords, harmony){
+	generateSingleHarmony(harmony){
 		var index = this.global_index;
 		if(index == -1){
 			return;
 		}
-		this.resetPitchOptions();
-		var options = this.pitch_options;
-		
-		var pitches = [];
-		for(var degree = 0; degree < 3; degree++){
-			pitches[degree] = this.note_functions.getPitch(chords[index], degree);
+		var chord = harmony[index].chord
+		var options = [];
+		for(var voice = 0; voice < 4; voice++){
+			options[voice] = [];
+			for(var degree = 0; degree < 4; degree++){
+				options[voice][degree] = [];
+			}
 		}
-		var has_next_value = (index != chords.length - 1);
+		
+		var has_next_value = (index != harmony.length - 1);
 		for(var voice = 0; voice < 4; voice++){
 			var no_options = true;
-			var inversion = chords[index].inversion;
+			var inversion = chord.inversion;
 			var min_degree = 0;
 			var max_degree = 2;
 			if(voice == 0){
@@ -430,29 +372,27 @@ class HarmonyFunctions {
 				}
 				else{
 					max_degree = 1;
-					if(chords[index].quality == "dim"){
+					if(chord.quality == "dim"){
 						min_degree = 1;
 					}
 				}
 			}
 			for(var degree = min_degree; degree <= max_degree; degree++){
 				if(!has_next_value){
-					var value = this.getValueInPrefRange(pitches[degree], voice);
-					this.addOption(options[voice][degree], harmony, chords, index, voice, value);
+					var value = this.note_functions.getValueInPrefRange(chord.pitches[degree], voice);
+					this.addOption(options[voice][degree], harmony, index, voice, value);
 				}
 				else{
-					//could also add the octave and the fifth
-					var value = this.getValueClosestTo(pitches[degree], harmony[index + 1].getValue(voice, 0));
-					this.addOption(options[voice][degree], harmony, chords, index, voice, value);
-					if(voice == 0){
+					var value = this.note_functions.getValueClosestTo(chord.pitches[degree],
+											 harmony[index + 1].getValue(voice, 0));
+					this.addOption(options[voice][degree], harmony, index, voice, value);
+					if(voice == 3){
 						var change = value - harmony[index + 1].getValue(voice, 0);
 						if(change == 0 || change == 5){
-							this.addOption(options[voice][degree], harmony,
-								       chords, index, voice, value - 12);
+							this.addOption(options[voice][degree], harmony, index, voice, value - 12);
 						}
 						if(change == 0 || change == -5){
-							this.addOption(options[voice][degree], harmony,
-								       chords, index, voice, value + 12);
+							this.addOption(options[voice][degree], harmony, index, voice, value + 12);
 						}
 						
 					}
@@ -470,23 +410,23 @@ class HarmonyFunctions {
 				}
 				else{
 					console.log("going back to index ", (index + 1));
-					harmony[index + 1].addToHistory();
+					harmony[index + 1].score.addToHistory();
 					console.log("    added to history");
 					this.global_index += 1;
 					return;
 				}
 			}
 		}
-		if(this.fillHarmony(harmony, chords, [0, 2, 1, 0], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			return;
 		}
-		if(this.fillHarmony(harmony, chords, [1, 0, 2, 1], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("third doubling at index ", index);
 			return;
 		}
-		if(this.fillHarmony(harmony, chords, [0, 2, 1, 2], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("fifth doubling at index ", index);
 			return;
@@ -499,60 +439,56 @@ class HarmonyFunctions {
 		}
 		else{
 			console.log("going back to index ", (index + 1));
-			harmony[index + 1].addToHistory();
+			harmony[index + 1].score.addToHistory();
 			console.log("    added to history");
 			this.global_index += 1;
 			this.retrace_attempts -= 1;
 			return;
 		}
 	}
-	createEmptyHarmony(chorale_plan, length){
+	createEmptyHarmony(phrase_lengths, chords){
 		var harmony = [];
-		this.scores = [];
 		
 		var target_avgs = [];
 		var phrase_ends = [];
 		var index = 0;
-		for(var i = 0; i < chorale_plan.length; i++){
+		for(var i = 0; i < phrase_lengths.length; i++){
 			var value;
-			if(i == 0 || i == chorale_plan.length - 1){
-				value = this.note_functions.nameToValue("Ab", 4) + chooseInt({0: 0.36, 1: 0.34, 2: 0.3});
+			if(i == 0 || i == phrase_lengths.length - 1){
+				value = (8 + 48) + chooseInt({0: 0.36, 1: 0.34, 2: 0.3});
 			}
 			else{
 				value = target_avgs[i - 1] + chooseInt({1: 0.6, 2: 0.4});
 			}
-			index += chorale_plan[i].phrase_length;
+			index += phrase_lengths[i];
 			phrase_ends.push(index - 1);
 			target_avgs.push(value);
 		}
-		for(var i = 0; i < length; i++){
-			this.scores.push([null, null, null, null]);
+		for(var i = 0; i < chords.length; i++){
 			if(phrase_ends[0] == i){
 				phrase_ends.shift();
 				target_avgs.shift();
-				harmony.push(new HarmonyUnit([null, null, null, null]));
+				harmony.push(new HarmonyUnit(chords[i], [null, null, null, null], true));
 			}
 			else{
-				harmony.push(new HarmonyUnit([null, null, null, target_avgs[0]]));
+				harmony.push(new HarmonyUnit(chords[i], [null, null, null, target_avgs[0]], false));
 			}
 		}
 		return harmony;
 	}
-	generateHarmony(chords, chorale_plan, sampler){
-		var nf = this.note_functions;
-		
-		var harmony = this.createEmptyHarmony(chorale_plan, chords.length);
+	generateHarmony(chords, phrase_lengths, sampler){		
+		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
 		this.global_index = chords.length - 1;
 		this.retrace_attempts = 3 * (chords.length - 1);
 		while(this.global_index >= 0){
-			this.generateSingleHarmony(chords, harmony);
+			this.generateSingleHarmony(harmony);
 		}
 		console.log(this.scores);
 		if(this.repeat){
 			return true;
 		}
-		new Score(harmony, chords, chorale_plan, nf, sampler).renderHarmony();
+		new Score(harmony, sampler).renderHarmony();
 		console.log(harmony);
 		return false;
 	}
