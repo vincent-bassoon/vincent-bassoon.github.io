@@ -217,7 +217,7 @@ class HarmonyFunctions {
 		}
 		var key = harmony[index].chord.key;
 		if(index + 1 == harmony.length){
-			options.unshift({"values": [value], "score": 0, "motion": this.mf.CONSTANT});
+			options.unshift({"values": [value], "score": 0, "motion": this.mf.type.CONSTANT});
 			return;
 		}
 		var next_key = harmony[index + 1].chord.key;
