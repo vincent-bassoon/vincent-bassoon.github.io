@@ -149,7 +149,7 @@ class Key {
 class KeyGenerator {
 	constructor(){
 		this.letters = ["C", "D", "E", "F", "G", "A", "B"];
-		
+		this.letter_to_pitch = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
 		this.key_pitch_to_letter_index = {"major": {}, "minor": {}};
 		var pitch = {"major": 0, "minor": 9};
 		var letter_index = {"major": 0, "minor": 5};
@@ -164,7 +164,8 @@ class KeyGenerator {
 				}
 				pitch[modality] = (pitch[modality] + 7) % 12;
 			}
-		}		
+		}
+		
 		
 		this.pitch_to_num = {0: 1, 2: 2, 3: 3, 4: 3, 5: 4, 7: 5, 8: 6, 9: 6, 10: 7, 11: 7};
 		this.num_to_pitch = {"major": {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11},
