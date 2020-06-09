@@ -126,6 +126,7 @@ class HarmonyFunctions {
 	}
 	
 	fillHarmony(harmony, voicing, pitch_options, index, order_index, score_sum){
+		console.log("fill harmony at order " + order_index + " and index " + index);
 		if(score_sum > this.max_total_score){
 			console.log("score error: ", score_sum);
 			return false;
@@ -171,6 +172,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
+		console.log("add nct options at index " + index);
 		var queue = this.mf.getMotionOptions(simple_motion);
 		var start_num = key.valueToNum(value);
 		/*if(key.valueToNum(next_value) == undefined){
@@ -215,6 +217,7 @@ class HarmonyFunctions {
 		}
 	}
 	addOption(options, harmony, index, voice, value){
+		console.log("add option at index " + index);
 		if(!this.nf.inAbsoluteRange(value, voice)){
 			return;
 		}
@@ -277,6 +280,7 @@ class HarmonyFunctions {
 	}
 	generateSingleHarmony(harmony){
 		var index = this.global_index;
+		console.log("generate single harmony at index " + index);
 		if(index == -1){
 			return;
 		}
