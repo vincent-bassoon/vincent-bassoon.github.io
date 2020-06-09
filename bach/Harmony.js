@@ -110,14 +110,14 @@ class HarmonyFunctions {
 		if(order_index == 0){
 			return false;
 		}
-		/*if(this.distBetweenVoices(harmony, index, order_index)){
+		if(this.distBetweenVoices(harmony, index, order_index)){
 			console.log("dist error");
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallel error");
 			return true;
-		}*/
+		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
 			console.log("history error");
 			return true;
@@ -136,7 +136,7 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
-		/*else if(order_index == 2){
+		else if(order_index == 2){
 			for(var i = 2; i <= 3; i++){
 				if(index + i < harmony.length && harmony[index].chord.equals(harmony[index + i].chord)){
 					var same = true;
@@ -151,7 +151,7 @@ class HarmonyFunctions {
 					}
 				}
 			}
-		}*/
+		}
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < voicing.length; i++){
 			var degree = voicing.shift();
@@ -228,7 +228,7 @@ class HarmonyFunctions {
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
 		
-		/*if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
+		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
 			return;
 		}
@@ -246,7 +246,7 @@ class HarmonyFunctions {
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
 			//leaps greater than a fourth not allowed except for fifths and octaves in bass
 			return;
-		}*/
+		}
 		
 		var score = 0;
 		if(index + 2 != harmony.length){
