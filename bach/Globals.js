@@ -457,14 +457,17 @@ class MotionFunctions {
 
 class NoteFunctions {
 	constructor(){
-		this.value_to_simple_name = {0: "C", 2: "D", 4: "E", 5: "F", 7: "G", 9: "A", 11: "B"};
-		this.letter_index = {};
 		var letters = ["C", "D", "E", "F", "G", "A", "B"];
+		var letter_to_value = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11};
+		
+		this.letter_index = {};
+		this.value_to_simple_name = {};
 		for(var i = 0; i < letters.length; i++){
 			this.letter_index[letters[i]] = i;
+			this.value_to_simple_name[letters[i]] = letter_to_value[letters[i]];
 		}
-		for(var key in this.value_to_simple_name){
-			var value = (key + 11) % 12;
+		for(var i = 0; i < letters.length; i++){
+			var value = (letter_to_value[letters[i]] + 11) % 12;
 			if(!(value in this.value_to_simple_name)){
 				this.value_to_simple_name[value] = this.value_to_simple_name[key] + "b"
 			}
