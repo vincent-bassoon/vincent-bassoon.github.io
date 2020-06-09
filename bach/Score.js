@@ -339,7 +339,7 @@ class Score {
 				}
 				var fermata_duration = fermata_lengths[this.phrase_lengths[phrase_index]];
 				if(phrase_index == this.phrase_lengths.length - 1 && num_beats % 4 != 0){
-					fermata_duration += (4 - (num_beats % 4));
+					fermata_duration += (4 - ((fermata_duration + num_beats) % 4));
 				}
 				durations.push(fermata_duration);
 				var fermata_index = index + index_change;
