@@ -258,15 +258,12 @@ class HarmonyFunctions {
 		if(index + 2 != harmony.length){
 			//score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
-		console.log("  initial: ", score);
 		
 		if(!this.nf.inPrefRange(value, voice)){
 			score += 10;
 		}
-		console.log("  range check: ", score);
 		
 		//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
-		console.log("  avg check: ", score);
 		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
