@@ -133,7 +133,7 @@ class HarmonyFunctions {
 		}
 		if(order_index == 4){
 			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
-				harmony[index].score.updateAvgs(harmony[index + 1].score);
+				//harmony[index].score.updateAvgs(harmony[index + 1].score);
 			}
 			return true;
 		}
@@ -182,6 +182,7 @@ class HarmonyFunctions {
 			return;
 		}*/
 		while(queue.length > 0){
+			console.log("nct queue length: ", queue.length);
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
 			var values = [next_value];
@@ -209,12 +210,13 @@ class HarmonyFunctions {
 				if(!this.inPrefRange(avg_value, voice)){
 					score += 10;
 				}
-				score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, avg_value);
+				//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, avg_value);
 				if(score < this.max_single_score){
 					console.log("Nct option added");
 					options.push({"values": values, "score": score, "motion": motion});
 				}
 			}
+			console.log("nct queue finished: ", queue.length);
 		}
 		console.log("nct options finished");
 	}
@@ -264,7 +266,7 @@ class HarmonyFunctions {
 		}
 		console.log("  range check: ", score);
 		
-		score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
+		//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
 		console.log("  avg check: ", score);
 		
 		if(score < this.max_single_score){
