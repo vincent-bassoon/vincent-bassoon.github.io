@@ -184,6 +184,7 @@ class HarmonyFunctions {
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
+			console.log("num_changes: ", num_changes);
 			var values = [next_value];
 			var names = [next_key.valueToName(next_value)];
 			var valid = true;
