@@ -252,8 +252,8 @@ class ScoreUnit {
 	updateAvgs(next_harmony){
 		for(var voice = 0; voice < 4; voice++){
 			var value = (this.harmony.getValue(voice, 0) + this.harmony.getValue(voice, 1) + this.harmony.getValue(voice, 2)) / 3;
-			this.avg_nums[voice] = next_harmony.avg_nums[voice] + 1;
-			this.avgs[voice] = next_harmony.getNextAvg(voice, value);
+			this.avg_nums[voice] = next_harmony.score.avg_nums[voice] + 1;
+			this.avgs[voice] = next_harmony.score.getNextAvg(voice, value);
 		}
 	}
 	getAvgScore(next_score, voice, value){
