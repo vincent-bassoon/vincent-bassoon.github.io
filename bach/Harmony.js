@@ -107,18 +107,17 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
-		return false;
 		if(order_index == 0){
 			return false;
 		}
-		if(this.distBetweenVoices(harmony, index, order_index)){
+		/*if(this.distBetweenVoices(harmony, index, order_index)){
 			console.log("dist error");
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallel error");
 			return true;
-		}
+		}*/
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
 			console.log("history error");
 			return true;
