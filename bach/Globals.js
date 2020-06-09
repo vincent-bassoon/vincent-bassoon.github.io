@@ -354,6 +354,7 @@ class MotionFunctions {
 	}
 	getNumChanges(motion){
 		var direction = this.direction(motion);
+		motion = Math.abs(motion);
 		if(motion == this.type.TURN || motion == this.type.PASSING_16){
 			return [0, direction, direction * 2];
 			
