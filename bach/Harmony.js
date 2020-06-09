@@ -133,7 +133,7 @@ class HarmonyFunctions {
 		}
 		if(order_index == 4){
 			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
-				harmony[index].score.updateAvgs(harmony[index + 1]);
+				harmony[index].score.updateAvgs(harmony[index + 1].score);
 			}
 			return true;
 		}
