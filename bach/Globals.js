@@ -249,11 +249,11 @@ class ScoreUnit {
 		this.harmony = harmony;
 		this.history = [];
 	}
-	updateAvgs(next_harmony){
+	updateAvgs(next_score){
 		for(var voice = 0; voice < 4; voice++){
 			var value = (this.harmony.getValue(voice, 0) + this.harmony.getValue(voice, 1) + this.harmony.getValue(voice, 2)) / 3;
-			this.avg_nums[voice] = next_harmony.score.avg_nums[voice] + 1;
-			this.avgs[voice] = next_harmony.score.getNextAvg(voice, value);
+			this.avg_nums[voice] = next_score.avg_nums[voice] + 1;
+			this.avgs[voice] = next_score.getNextAvg(voice, value);
 		}
 	}
 	getAvgScore(next_score, voice, value){
