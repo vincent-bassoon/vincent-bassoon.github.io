@@ -487,7 +487,7 @@ class NoteFunctions {
 					3: {"min": 0 + 24, "max": 0 + 48}};
 	}
 	valueToSimpleName(value){
-		return this.simple_val_to_name[value % 12];
+		return this.value_to_simple_name[value % 12];
 	}
 	isAugOrDim(change, name1, name2){
 		if(Math.abs(change) == 1){
