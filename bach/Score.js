@@ -316,7 +316,7 @@ class Score {
 		var index = 0;
 		var phrase_index = 0;
 		var needs_pickup = this.pickup;
-		while(index < this.chords.length){
+		while(index < this.harmony.length){
 			if(needs_pickup){
 				needs_pickup = false;
 				measures.push(this.generateSingleMeasure(index, [1], 1, null));
