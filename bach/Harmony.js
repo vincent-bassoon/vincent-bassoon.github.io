@@ -234,7 +234,7 @@ class HarmonyFunctions {
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
 		
-		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
+		/*if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
 			return;
 		}
@@ -252,7 +252,7 @@ class HarmonyFunctions {
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
 			//leaps greater than a fourth not allowed except for fifths and octaves in bass
 			return;
-		}
+		}*/
 		
 		var score = 0;
 		if(index + 2 != harmony.length){
