@@ -200,7 +200,12 @@ class LineData {
 class Score {
 	constructor(harmony, note_functions, phrase_lengths, sampler){
 		var key = harmony[harmony.length - 2].chord.key;
-		this.key_name = key.valueToName(key.pitch);
+		if(key.modality == "minor"){
+			this.key_name = key.valueToName((key.pitch + 9) % 12);
+		}
+		else{
+			this.key_name = key.valueToName(key.pitch);
+		}
 		
 		this.nf = note_functions;
 		this.harmony = harmony;
