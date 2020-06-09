@@ -305,9 +305,9 @@ class Score {
 		var measures = [];
 		var index_start = 0;
 		
-		var phrase_done_indices = [this.chorale_plan[0].phrase_length];
-		for(var i = 1; i < this.chorale_plan.length; i++){
-			phrase_done_indices.push(this.chorale_plan[i].phrase_length + phrase_done_indices[i - 1]);
+		var phrase_done_indices = [this.phrase_lengths[0]];
+		for(var i = 1; i < this.phrase_lengths.length; i++){
+			phrase_done_indices.push(this.phrase_lengths[i] + phrase_done_indices[i - 1]);
 		}
 		
 		var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
