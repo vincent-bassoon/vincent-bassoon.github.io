@@ -469,7 +469,7 @@ class NoteFunctions {
 		for(var i = 0; i < letters.length; i++){
 			var value = (letter_to_value[letters[i]] + 11) % 12;
 			if(!(value in this.value_to_simple_name)){
-				this.value_to_simple_name[value] = this.value_to_simple_name[key] + "b"
+				this.value_to_simple_name[value] = letters[i] + "b"
 			}
 		}
 		
