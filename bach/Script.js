@@ -78,7 +78,7 @@ function generateNewChorale(sampler){
 	var counter = 0;
 	var phrase_lengths = [];
 	for(var i = 0; i < chorale_plan.length; i++){
-		phrase_lengths.push(chorale_plan[i].phrase_lengths);
+		phrase_lengths.push(chorale_plan[i].phrase_length);
 	}
 	if(harmony_functions.generateHarmony(chord_functions.generateSegmentChords(chorale_plan[0]), phrase_lengths[0], sampler) && counter < 10){
 		generateNewChorale(sampler);
