@@ -201,7 +201,7 @@ class Score {
 	constructor(harmony, note_functions, phrase_lengths, sampler){
 		var key = harmony[harmony.length - 2].chord.key;
 		if(key.modality == "minor"){
-			this.key_name = key.valueToName((key.pitch + 9) % 12);
+			this.key_name = key.valueToName((key.pitch + 3) % 12);
 		}
 		else{
 			this.key_name = key.valueToName(key.pitch);
