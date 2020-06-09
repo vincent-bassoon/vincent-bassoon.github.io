@@ -229,6 +229,7 @@ class HarmonyFunctions {
 					console.log("Nct option added");
 					options.push({"values": values, "score": score, "motion": motion});
 				}
+				console.log("finished again");
 			}
 			console.log("nct queue finished: ", queue.length);
 		}
@@ -262,6 +263,7 @@ class HarmonyFunctions {
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
 			this.addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+			console.log("finished nct");
 		}
 		
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
