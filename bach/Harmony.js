@@ -182,39 +182,25 @@ class HarmonyFunctions {
 			return;
 		}*/
 		while(queue.length > 0){
-			console.log("nct queue length: ", queue.length);
 			var motion = queue.pop();
-			console.log("motion: ", motion);
 			var num_changes = this.mf.getNumChanges(motion);
-			console.log("num_changes: ", num_changes);
 			var values = [next_value];
 			var names = [next_key.valueToName(next_value)];
 			var valid = true;
-			console.log("start_value: ", values[0]);
-			console.log("start_name: ", names[0]);
 			for(var i = num_changes.length - 1; i >= 0; i--){
-				console.log("index: ", i);
 				var num = ((start_num + num_changes[i] + 7 - 1) % 7) + 1;
-				console.log("  num: ", num);
 				var pitch = key.numToPitch(num);
-				console.log("  pitch: ", pitch);
 				values.unshift(this.nf.getValueClosestTo(pitch, values[0]));
-				console.log("  new value: ", values[0]);
 				names.unshift(key.valueToName(pitch));
-				console.log("  new name: ", names[0]);
 				if(this.nf.isAugOrDim(values[1] - values[0], names[0], names[1])){
-					console.log("  aug or dim");
 					valid = false;
 					i = -1;
 				}
-				console.log("finished at index ", i);
 				//as it stands, unresolved leading tones are allowed within nct seq
 			}
 			values.pop();
-			console.log("valid: ", valid);
 			if(valid){
 				var score = this.mf.getMotionScore(voice, motion, next_motion);
-				console.log("score: ", score);
 				var sum = 0;
 				for(var j = 0; j < values.length; j++){
 					sum += values[j];
@@ -223,15 +209,11 @@ class HarmonyFunctions {
 				if(!this.nf.inPrefRange(avg_value, voice)){
 					score += 10;
 				}
-				console.log("score: ", score);
 				//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, avg_value);
 				if(score < this.max_single_score){
-					console.log("Nct option added");
 					options.push({"values": values, "score": score, "motion": motion});
 				}
-				console.log("finished again");
 			}
-			console.log("nct queue finished: ", queue.length);
 		}
 		console.log("nct options finished");
 	}
@@ -262,8 +244,8 @@ class HarmonyFunctions {
 		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
-			this.addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
-			console.log("finished nct");
+			//this.addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+			//console.log("finished nct");
 		}
 		
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
