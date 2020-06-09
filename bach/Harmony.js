@@ -107,6 +107,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
+		return false;
 		if(order_index == 0){
 			return false;
 		}
@@ -255,7 +256,7 @@ class HarmonyFunctions {
 		
 		var score = 0;
 		if(index + 2 != harmony.length){
-			score = this.mf.getMotionScore(voice, motion, next_motion);
+			//score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
 		console.log("  initial: ", score);
 		
