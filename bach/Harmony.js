@@ -184,7 +184,6 @@ class HarmonyFunctions {
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
-			console.log("num_changes: ", num_changes);
 			var values = [next_value];
 			var names = [next_key.valueToName(next_value)];
 			var valid = true;
@@ -212,10 +211,12 @@ class HarmonyFunctions {
 				}
 				score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, avg_value);
 				if(score < this.max_single_score){
+					console.log("Nct option added");
 					options.push({"values": values, "score": score, "motion": motion});
 				}
 			}
 		}
+		console.log("nct options finished");
 	}
 	addOption(options, harmony, index, voice, value){
 		console.log("add option at index " + index);
@@ -274,6 +275,7 @@ class HarmonyFunctions {
 				}
 			}
 			options.push({"values": [value], "score": score, "motion": motion});
+			console.log("option added");
 		}
 		else{
 			console.log("score too big at: ", score);
@@ -344,6 +346,7 @@ class HarmonyFunctions {
 					return;
 				}
 				else{
+					console.log("no options");
 					console.log("going back to index ", (index + 1));
 					harmony[index + 1].score.addToHistory();
 					console.log("    added to history");
@@ -382,6 +385,7 @@ class HarmonyFunctions {
 			this.retrace_attempts -= 1;
 			return;
 		}
+		console.log("single harmony finished");
 	}
 	createEmptyHarmony(phrase_lengths, chords){
 		var harmony = [];
