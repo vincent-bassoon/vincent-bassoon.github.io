@@ -348,6 +348,7 @@ class HarmonyFunctions {
 			}
 		}
 		this.logState(harmony, index, options);
+		console.log(options);
 		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("root doubling at index ", index);
@@ -400,7 +401,7 @@ class HarmonyFunctions {
 				strings[voice] = " " + strings[voice];
 			}
 		}
-		for(var i = index; i < harmony.length; i++){
+		for(var i = index + 1; i < harmony.length; i++){
 			for(var voice = 0; voice < 4; voice++){
 				var value = harmony[i].getValue(voice, 0);
 				if(harmony[i].getNumNotes(voice) != 1){
@@ -413,7 +414,7 @@ class HarmonyFunctions {
 				strings[voice] += note;
 			}
 		}
-		console.log("state at index ", index);
+		console.log("state before index ", index);
 		for(var voice = 0; voice < 4; voice++){
 			console.log(strings[voice]);
 		}
