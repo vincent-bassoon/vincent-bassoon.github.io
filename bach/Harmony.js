@@ -386,12 +386,17 @@ class HarmonyFunctions {
 		for(var voice = 0; voice < 4; voice++){
 			strings[voice] = "  ";
 			for(var i = 0; i < 4; i++){
-				var value = options[voice][i].values[0];
-				var note = key.valueToName(value) + Math.floor(value / 12) + " ";
-				while(note.length < 5){
-					note = note + " ";
+				for(var j = 0; j < options[voice][i].length; j++){
+					var value = options[voice][i][j].values[0];
+					if(options[voice][i][j].values.length != 1){
+						console.log("value length error");
+					}
+					var note = key.valueToName(value) + Math.floor(value / 12) + " ";
+					while(note.length < 5){
+						note = note + " ";
+					}
+					strings[voice] += note;
 				}
-				strings[voice] += note;
 			}
 			strings[voice] += " | ";
 			max = Math.max(strings[voice].length, max);
