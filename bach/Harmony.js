@@ -347,7 +347,7 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		console.log("options: ", options);
+		this.logState(harmony, index, options);
 		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("root doubling at index ", index);
@@ -376,6 +376,46 @@ class HarmonyFunctions {
 			this.global_index += 1;
 			this.retrace_attempts -= 1;
 			return;
+		}
+	}
+	logState(harmony, index, options){
+		var strings = [];
+		var key = harmony[index].chord.key;
+		var max = 0;
+		for(var voice = 0; voice < 4; voice++){
+			strings[voice] = "  ";
+			for(var i = 0; i < 4; i++){
+				var value = options[voice][i].values[0];
+				var note = key.valueToName(value) + Math.floor(value / 12) + " ";
+				while(note.length < 5){
+					note = note + " ";
+				}
+				strings[voice] += note;
+			}
+			strings[voice] += " | ";
+			max = Math.max(strings[voice].length, max);
+		}
+		for(var voice = 0; voice < 4; voice++){
+			while(strings[voice].length < max){
+				strings[voice] = " " + strings[voice];
+			}
+		}
+		for(var i = index; i < harmony.length; i++){
+			for(var voice = 0; voice < 4; voice++){
+				var value = harmony[i].getValue(voice, 0);
+				if(harmony[i].getNumNotes(voice) != 1){
+					console.log("num notes at index " + i + ": " + harmony[i].getNumNotes(voice));
+				}
+				var note = harmony[i].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
+				while(note.length < 5){
+					note = note + " ";
+				}
+				strings[voice] += note;
+			}
+		}
+		console.log("state at index ", index);
+		for(var voice = 0; voice < 4; voice++){
+			console.log(strings[voice]);
 		}
 	}
 	createEmptyHarmony(phrase_lengths, chords){
