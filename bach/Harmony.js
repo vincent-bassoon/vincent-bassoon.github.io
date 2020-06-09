@@ -137,7 +137,7 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
-		else if(order_index == 2){
+		/*else if(order_index == 2){
 			for(var i = 2; i <= 3; i++){
 				if(index + i < harmony.length && harmony[index].chord.equals(harmony[index + i].chord)){
 					var same = true;
@@ -152,7 +152,7 @@ class HarmonyFunctions {
 					}
 				}
 			}
-		}
+		}*/
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < voicing.length; i++){
 			var degree = voicing.shift();
