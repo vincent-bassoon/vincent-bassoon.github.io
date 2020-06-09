@@ -491,6 +491,7 @@ class Score {
 			octave -= 1;
 		}
 		var note_data = this.createNoteData(value, name, octave, duration, voice);
+		console.log(note_data);
 		var note = new this.vf.StaveNote(note_data);
 		note.setLedgerLineStyle({strokeStyle: "black"});
 		var clef_index = Math.floor(voice / 2);
