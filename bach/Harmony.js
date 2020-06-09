@@ -220,7 +220,7 @@ class HarmonyFunctions {
 					sum += values[j];
 				}
 				var avg_value = sum / values.length;
-				if(!this.inPrefRange(avg_value, voice)){
+				if(!this.nf.inPrefRange(avg_value, voice)){
 					score += 10;
 				}
 				console.log("score: ", score);
