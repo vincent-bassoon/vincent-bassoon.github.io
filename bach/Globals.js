@@ -505,7 +505,7 @@ class NoteFunctions {
 		var letter_index1 = this.letter_index[name1.substring(0, 1)];
 		var letter_index2 = this.letter_index[name2.substring(0, 1)];
 		var letter_index_diff;
-		if(change > 0){
+		if(change < 0){
 			letter_index_diff = (letter_index1 - letter_index2 + 7) % 7;
 		}
 		else{
