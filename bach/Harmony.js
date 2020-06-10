@@ -293,7 +293,7 @@ class HarmonyFunctions {
 			var inversion = chord.inversion;
 			var min_degree = 0;
 			var max_degree = 2;
-			if(voice == 0){
+			if(voice == 3){
 				if(inversion != null){
 					max_degree = inversion;
 					min_degree = inversion;
