@@ -170,14 +170,14 @@ class LineData {
 		}
 	}
 	generateLine(measures, beats, is_last){
-		var measure_beat_size;
-		if(beats <= this.score.measures_per_line * 4 - 3){
+		var measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
+		/*if(beats <= this.score.measures_per_line * 4 - 3){
 			measure_beat_size = this.avg(this.beat_size_list);
 		}
 		else{
 			measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
 			this.beat_size_list.push(measure_beat_size);
-		}
+		}*/
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
 			measures[i].width = measure_beat_size * duration;
