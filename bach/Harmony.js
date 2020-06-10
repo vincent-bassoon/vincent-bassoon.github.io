@@ -213,7 +213,11 @@ class HarmonyFunctions {
 			}
 			values.pop();
 			if(valid){
-				var score = this.mf.getMotionScore(voice, motion, next_motion);
+				var score = 0;
+				if(index + 1 < harmony.length - 1){
+					// harmony at index (length - 1) has no valid motion b/c no notes after
+					score = this.mf.getMotionScore(voice, motion, next_motion);
+				}
 				var sum = 0;
 				for(var j = 0; j < values.length; j++){
 					sum += values[j];
@@ -264,7 +268,8 @@ class HarmonyFunctions {
 		}
 		
 		var score = 0;
-		if(index + 2 != harmony.length){
+		if(index + 1 < harmony.length - 1){
+			// harmony at index (length - 1) has no valid motion b/c no notes after
 			score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
 		
