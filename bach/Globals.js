@@ -392,14 +392,18 @@ class MotionFunctions {
 			return this.type.LEAP * parity;
 		}
 	}
-	getMotionOptions(simple_motion){
+	getMotionOptions(voice, simple_motion){
 		var direction = this.direction(simple_motion);
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
-				return [this.type.MORDANT, this.type.MORDANT * -1];
+				if(voice != 3){
+					return [this.type.MORDANT, this.type.MORDANT * -1];
+				}
 				break;
 			case this.type.STEP:
-				return [this.type.TURN * direction];
+				if(voice != 3){
+					return [this.type.TURN * direction];
+				}
 				break;
 			case this.type.THIRD:
 				return [this.type.PASSING_8 * direction];
