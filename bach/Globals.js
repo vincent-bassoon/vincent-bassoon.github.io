@@ -419,12 +419,15 @@ class MotionFunctions {
 		
 		//no two consecutive leaps if one of them is a fourth
 		if(motion == this.type.LEAP && next_motion == this.type.LEAP){
+			console.log("leap leap");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.LEAP && next_motion == this.type.THIRD){
+			console.log("leap third");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.THIRD && next_motion == this.type.LEAP){
+			console.log("third leap");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.THIRD && next_motion == this.type.THIRD){
@@ -434,6 +437,7 @@ class MotionFunctions {
 				//leap down then up, or up then down
 				score += 20;
 			}
+			console.log("third third");
 			return score;
 		}
 		if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
@@ -442,6 +446,7 @@ class MotionFunctions {
 			if(voice == 0){
 				score += 10;
 			}
+			console.log("constant constant");
 			return score;
 		}
 		if(motion == this.type.LEAP && next_direction != direction * -1){
@@ -450,6 +455,7 @@ class MotionFunctions {
 			if(voice == 0){
 				score += 20;
 			}
+			console.log("leap (not opposite step)");
 		}
 		return score;
 	}
