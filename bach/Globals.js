@@ -464,7 +464,7 @@ class NoteFunctions {
 		this.value_to_simple_name = {};
 		for(var i = 0; i < letters.length; i++){
 			this.letter_index[letters[i]] = i;
-			this.value_to_simple_name[letters[i]] = letter_to_value[letters[i]];
+			this.value_to_simple_name[letter_to_value[letters[i]]] = letters[i];
 		}
 		for(var i = 0; i < letters.length; i++){
 			var value = (letter_to_value[letters[i]] + 11) % 12;
