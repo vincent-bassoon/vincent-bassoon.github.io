@@ -132,7 +132,7 @@ class HarmonyFunctions {
 		}
 		if(order_index == 4){
 			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
-				//harmony[index].score.updateAvgs(harmony[index + 1].score);
+				harmony[index].score.updateAvgs(harmony[index + 1].score);
 			}
 			return true;
 		}
@@ -215,8 +215,6 @@ class HarmonyFunctions {
 	}
 	addOption(options, harmony, index, voice, value){
 		if(!this.nf.inAbsoluteRange(value, voice)){
-			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
-			console.log("  Note " + note + " with value " + value + " removed from voice " + voice + ": range error");
 			return;
 		}
 		var key = harmony[index].chord.key;
@@ -232,13 +230,10 @@ class HarmonyFunctions {
 		
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
-			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
-			console.log("  Note " + note + " with value " + value + " removed from voice " + voice + ": leading tone error");
 			return;
 		}
 		if(this.nf.isAugOrDim(change, next_key.valueToName(next_value), key.valueToName(value))){
 			// this check ignores augmented/diminished unison
-			console.log("  Note " + note + " with value " + value + " removed from voice " + voice + ": aug/dim error");
 			return;
 		}
 		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
@@ -250,14 +245,11 @@ class HarmonyFunctions {
 		
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
 			//leaps greater than a fourth not allowed except for fifths and octaves in bass
-			console.log("  Note " + note + " with value " + value + " removed from voice " + voice + ": leap error");
 			return;
 		}
 		
 		var score = 0;
 		if(index + 2 != harmony.length){
-			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
-			console.log("Note " + note + " with value " + value + " at voice " + voice + " being considered");
 			score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
 		
@@ -265,7 +257,7 @@ class HarmonyFunctions {
 			score += 10;
 		}
 		
-		//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
+		score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
 		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
@@ -275,10 +267,6 @@ class HarmonyFunctions {
 				}
 			}
 			options.push({"values": [value], "score": score, "motion": motion});
-		}
-		else{
-			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
-			console.log("  Note " + note + " with value " + value + " removed from voice " + voice + ": score of " + score);
 		}
 	}
 	generateSingleHarmony(harmony){
