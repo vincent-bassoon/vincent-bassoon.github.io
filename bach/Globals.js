@@ -428,9 +428,11 @@ class MotionFunctions {
 		
 		//restrictions for mordents
 		if(motion == this.type.MORDENT && next_direction != direction * -1){
+			console.log("mordant not followed correctly");
 			return this.max_score + 1;
 		}
 		if(next_motion == this.type.MORDENT && next_direction != direction){
+			console.log("mordant not preceded correctly");
 			return this.max_score + 1;
 		}
 		//no two consecutive leaps if one of them is a fourth
