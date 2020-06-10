@@ -445,7 +445,7 @@ class HarmonyFunctions {
 				harmony.push(new HarmonyUnit(chords[i], [null, null, null, null], true));
 			}
 			else{
-				harmony.push(new HarmonyUnit(chords[i], [null, null, null, target_avgs[0]], false));
+				harmony.push(new HarmonyUnit(chords[i], [target_avgs[0], null, null, null], false));
 			}
 		}
 		return harmony;
