@@ -106,6 +106,18 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
+	hasNctError(harmony, index, order_index){
+		var has_nct = (harmony[index].getNumNotes(this.voice_order[order_index]) > 1)
+		if(index == harmony.length - 1 || order_index == 0 || !has_nct){
+			return false;
+		}
+		for(var i = 0; i < order_index; i++){
+			if(harmony[index].getNumNotes(this.voice_order[i]) > 1){
+				return true;
+			}
+		}
+		return false;
+	}
 	hasErrors(harmony, index, order_index){
 		if(order_index == 0){
 			return false;
@@ -116,6 +128,10 @@ class HarmonyFunctions {
 		}
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallel error");
+			return true;
+		}
+		if(this.hasNctError(harmony, index, order_index)){
+			console.log("nct dissonance error");
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
