@@ -170,7 +170,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
-		var queue = this.mf.getMotionOptions(simple_motion);
+		var queue = this.mf.getMotionOptions(voice, simple_motion);
 		var start_num = key.valueToNum(value);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
