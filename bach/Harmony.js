@@ -216,6 +216,7 @@ class HarmonyFunctions {
 				var score = 0;
 				if(index + 1 < harmony.length - 1){
 					// harmony at index (length - 1) has no valid motion b/c no notes after
+					console.log("trying " + motion + " followed by " + next_motion + " at index " + index + ", voice " + voice);
 					score = this.mf.getMotionScore(voice, motion, next_motion);
 				}
 				var sum = 0;
