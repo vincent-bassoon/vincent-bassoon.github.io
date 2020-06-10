@@ -401,7 +401,7 @@ class HarmonyFunctions {
 					}
 					var note = key.valueToName(value) + Math.floor(value / 12) + " ";
 					while(note.length < 5){
-						note = note + " ";
+						note = note + "/" + options[voice][i][j].score + " ";
 					}
 					strings[voice] += note;
 				}
