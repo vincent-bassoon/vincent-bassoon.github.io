@@ -420,8 +420,10 @@ class MotionFunctions {
 		motion = Math.abs(motion);
 		next_motion = Math.abs(next_motion);
 		
-		//add restrictions for mordents?
-		
+		//restrictions for mordents
+		if((motion == this.type.MORDENT || next_motion == this.type.MORDENT) && next_direction != direction * -1){
+			return this.max_score + 1;
+		}
 		//no two consecutive leaps if one of them is a fourth
 		if(motion == this.type.LEAP && next_motion == this.type.LEAP){
 			console.log("leap leap");
