@@ -232,7 +232,7 @@ class HarmonyFunctions {
 			//leading tone check
 			return;
 		}
-		if(this.nf.isAugOrDim(change, next_key.valueToName(next_value), key.valueToName(value))){
+		if(this.nf.isAugOrDim(change, key.valueToName(value), next_key.valueToName(next_value))){
 			// this check ignores augmented/diminished unison
 			return;
 		}
