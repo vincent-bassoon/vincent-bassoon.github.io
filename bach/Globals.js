@@ -413,7 +413,7 @@ class MotionFunctions {
 		var direction = this.direction(motion);
 		var next_direction = this.direction(next_motion);
 		motion = Math.abs(motion);
-		next_motion = Math.abs(motion);
+		next_motion = Math.abs(next_motion);
 		
 		//add restrictions for mordents?
 		
