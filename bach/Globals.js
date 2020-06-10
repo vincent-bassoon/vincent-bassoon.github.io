@@ -411,6 +411,7 @@ class MotionFunctions {
 			case this.type.LEAP:
 				return [this.type.PASSING_16 * direction];
 		}
+		return [];
 	}
 	getMotionScore(voice, motion, next_motion){
 		var score = 0;
