@@ -257,7 +257,7 @@ class HarmonyFunctions {
 		var score = 0;
 		if(index + 2 != harmony.length){
 			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
-			console.log("Note " + note + " with value " + value + " being considered");
+			console.log("Note " + note + " with value " + value + " at voice " + voice + " being considered");
 			score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
 		
