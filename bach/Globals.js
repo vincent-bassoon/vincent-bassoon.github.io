@@ -353,7 +353,7 @@ class HarmonyUnit {
 class MotionFunctions {
 	constructor(max_score){
 		this.type = {"CONSTANT": 0, "STEP": 1, "THIRD": 2, "LEAP": 3,
-			     "MORDANT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
+			     "MORDENT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
 			     "SUSPENSION": 8};
 		
 		this.max_score = max_score;
@@ -365,7 +365,7 @@ class MotionFunctions {
 			return [0, direction, direction * 2];
 			
 		}
-		if(motion == this.type.MORDANT || motion == this.type.PASSING_8){
+		if(motion == this.type.MORDENT || motion == this.type.PASSING_8){
 			return [0, direction];
 		}
 	}
@@ -403,7 +403,7 @@ class MotionFunctions {
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
 				if(voice != 3){
-					return [this.type.MORDANT, this.type.MORDANT * -1];
+					return [this.type.MORDENT, this.type.MORDENT * -1];
 				}
 				break;
 			case this.type.STEP:
