@@ -256,7 +256,7 @@ class HarmonyFunctions {
 		
 		var score = 0;
 		if(index + 2 != harmony.length){
-			//score = this.mf.getMotionScore(voice, motion, next_motion);
+			score = this.mf.getMotionScore(voice, motion, next_motion);
 		}
 		
 		if(!this.nf.inPrefRange(value, voice)){
@@ -275,7 +275,8 @@ class HarmonyFunctions {
 			options.push({"values": [value], "score": score, "motion": motion});
 		}
 		else{
-			console.log("score too big at: ", score);
+			var note = harmony[index].chord.key.valueToName(value) + Math.floor(value / 12) + " ";
+			console.log("  Note " + note + " removed from voice " + voice + ": score of " + score);
 		}
 	}
 	generateSingleHarmony(harmony){
