@@ -175,6 +175,25 @@ class KeyGenerator {
 		this.keys = {"major": {}, "minor": {}};
 		
 	}
+	getAccidental(base_pitch, target_pitch){
+		var accidental = "";
+		if(base_pitch == target_pitch){
+			return accidental;
+		}
+		var dist1 = (base_pitch - target_pitch + 12) % 12;
+		var dist2 = (target_pitch - base_pitch + 12) % 12;
+		if(dist1 < dist2){
+			for(var i = 0; i < dist1; i++){
+				accidental += "b";
+			}
+		}
+		else{
+			for(var i = 0; i < dist2; i++){		
+				accidental += "#";
+			}
+		}
+		return accidental;
+	}
 	createKey(key_pitch, key_modality){
 		var pitches = this.pitches[key_modality];
 		var pitch_to_name = {};
@@ -184,20 +203,7 @@ class KeyGenerator {
 			var pitch = (pitches[i] + key_pitch) % 12;
 			var num = this.pitch_to_num[pitches[i]];
 			var name = this.letters[(num - 1 + letter_index) % 7];
-			switch(this.letter_to_pitch[name] - pitch){
-				case 2:
-					name += "bb";
-					break;
-				case 1:
-					name += "b";
-					break;
-				case -1:
-					name += "#";
-					break;
-				case -2:
-					name += "##";
-					break;
-			}
+			name += this.getAccidental(this.letter_to_pitch[name], pitch);
 			pitch_to_name[pitch] = name;
 			pitch_to_num[pitch] = num;
 		}
