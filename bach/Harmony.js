@@ -28,7 +28,7 @@ class HarmonyFunctions {
 		
 		this.adjacent_direction = [-1, 1];
 		this.parallel_pitches = [0, 7];
-		this.max_total_score = 10000;
+		this.max_total_score = 100;
 		this.max_single_score = 50;
 		
 		this.nf = new NoteFunctions();
