@@ -169,7 +169,7 @@ class HarmonyFunctions {
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
-				if(!(option.motion == this.mf.type.SUSPENSION && doubling == degree)){
+				if(!(option.motion == this.mf.type.SUSPENSION && degree != 0 && doubling == degree)){
 					harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
 					harmony[index].score.scores[voice] = option.score;
 					if(!this.hasErrors(harmony, index, order_index) &&
@@ -183,10 +183,11 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
+	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
-		var suspension = (index > 0 && !harmony[index - 1].end_of_phrase && harmony[index - 1].chord.pitches.includes(sus_pitch));
+		var suspension = (index > 0 && !harmony[index - 1].end_of_phrase && degree != 2 &&
+				  harmony[index - 1].chord.pitches.includes(sus_pitch));
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
@@ -233,7 +234,7 @@ class HarmonyFunctions {
 			}
 		}
 	}
-	addOption(options, harmony, index, voice, value){
+	addOption(options, degree, harmony, index, voice, value){
 		if(!this.nf.inAbsoluteRange(value, voice)){
 			return;
 		}
@@ -264,7 +265,7 @@ class HarmonyFunctions {
 		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase && next_motion != this.mf.type.SUSPENSION){
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
-			this.addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
 		}
 		
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
@@ -330,19 +331,19 @@ class HarmonyFunctions {
 			for(var degree = min_degree; degree <= max_degree; degree++){
 				if(!has_next_value){
 					var value = this.nf.getValueInPrefRange(chord.pitches[degree], voice);
-					this.addOption(options[voice][degree], harmony, index, voice, value);
+					this.addOption(options[voice][degree], degree, harmony, index, voice, value);
 				}
 				else{
 					var value = this.nf.getValueClosestTo(chord.pitches[degree],
 											 harmony[index + 1].getValue(voice, 0));
-					this.addOption(options[voice][degree], harmony, index, voice, value);
+					this.addOption(options[voice][degree], degree, harmony, index, voice, value);
 					if(voice == 3){
 						var change = value - harmony[index + 1].getValue(voice, 0);
 						if(change == 0 || change == 5){
-							this.addOption(options[voice][degree], harmony, index, voice, value - 12);
+							this.addOption(options[voice][degree], degree, harmony, index, voice, value - 12);
 						}
 						if(change == 0 || change == -5){
-							this.addOption(options[voice][degree], harmony, index, voice, value + 12);
+							this.addOption(options[voice][degree], degree, harmony, index, voice, value + 12);
 						}
 						
 					}
