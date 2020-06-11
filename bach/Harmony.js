@@ -169,8 +169,24 @@ class HarmonyFunctions {
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
-				if(!(option.motion == this.mf.type.SUSPENSION && degree != 0 && doubling == degree)){
+				var valid = true;
+				if(option.motion == this.mf.type.SUSPENSION){
+					valid = false;
+					if(degree == 0 && harmony[index].bass_degree == 0){
+						valid = true;
+					}
+					else if(degree == 1 && doubling != 1 && harmony[index].bass_degree == 0){
+						valid = true;
+					}
+					else if(degree == 2 && doubling != 2 && harmony[index].bass_degree == 1){
+						valid = true;
+					}
+				}
+				if(valid){
 					harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
+					if(voice == 3){
+						harmony[index].bass_degree = degree;
+					}
 					harmony[index].score.scores[voice] = option.score;
 					if(!this.hasErrors(harmony, index, order_index) &&
 					   this.fillHarmony(harmony, voicing, doubling, pitch_options, index,
