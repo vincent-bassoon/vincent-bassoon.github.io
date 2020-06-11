@@ -122,13 +122,13 @@ class HarmonyFunctions {
 		if(order_index == 0){
 			return false;
 		}
+		if(this.hasNctError(harmony, index, order_index)){
+			return true;
+		}
 		if(this.distBetweenVoices(harmony, index, order_index)){
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
-			return true;
-		}
-		if(this.hasNctError(harmony, index, order_index)){
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
@@ -169,12 +169,14 @@ class HarmonyFunctions {
 			var degree = voicing.shift();
 			for(var j = 0; j < pitch_options[voice][degree].length; j++){
 				var option = pitch_options[voice][degree][j];
-				harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
-				harmony[index].score.scores[voice] = option.score;
-				if(!this.hasErrors(harmony, index, order_index) &&
-				   this.fillHarmony(harmony, voicing, doubling, pitch_options, index,
-						    order_index + 1, score_sum + option.score)){
-					return true;
+				if(!(option.motion == this.mf.type.SUSPENSION && doubling == degree)){
+					harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
+					harmony[index].score.scores[voice] = option.score;
+					if(!this.hasErrors(harmony, index, order_index) &&
+					   this.fillHarmony(harmony, voicing, doubling, pitch_options, index,
+				 			    order_index + 1, score_sum + option.score)){
+						return true;
+					}
 				}
 			}
 			voicing.push(degree);
@@ -182,8 +184,10 @@ class HarmonyFunctions {
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
-		var queue = this.mf.getMotionOptions(voice, simple_motion, (index > 0 && !harmony[index - 1].end_of_phrase));
 		var start_num = key.valueToNum(value);
+		var sus_pitch = key.numToPitch((start_num % 7) + 1);
+		var suspension = (index > 0 && !harmony[index - 1].end_of_phrase && harmony[index - 1].chord.pitches.includes(sus_pitch));
+		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
 			//could also check if names are equal between keys
