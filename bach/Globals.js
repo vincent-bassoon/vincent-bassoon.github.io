@@ -361,6 +361,9 @@ class MotionFunctions {
 	getNumChanges(motion){
 		var direction = this.direction(motion);
 		motion = Math.abs(motion);
+		if(motion == this.type.SUSPENSION){
+			return [1, 0];
+		}
 		if(motion == this.type.TURN || motion == this.type.PASSING_16){
 			return [0, direction, direction * 2];
 			
@@ -398,7 +401,7 @@ class MotionFunctions {
 			return this.type.LEAP * parity;
 		}
 	}
-	getMotionOptions(voice, simple_motion){
+	getMotionOptions(voice, simple_motion, suspension){
 		var direction = this.direction(simple_motion);
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
@@ -408,7 +411,11 @@ class MotionFunctions {
 				break;
 			case this.type.STEP:
 				if(voice != 3){
-					return [this.type.TURN * direction];
+					var options = [this.type.TURN * direction];
+					if(voice != 0 && suspension){
+						options.push(this.type.SUSPENSION);
+					}
+					return options
 				}
 				break;
 			case this.type.THIRD:
