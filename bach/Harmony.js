@@ -137,7 +137,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	
-	fillHarmony(harmony, voicing, pitch_options, index, order_index, score_sum){
+	fillHarmony(harmony, voicing, doubling, pitch_options, index, order_index, score_sum){
 		if(score_sum > this.max_total_score){
 			console.log("score error: ", score_sum);
 			return false;
@@ -172,7 +172,7 @@ class HarmonyFunctions {
 				harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
 				harmony[index].score.scores[voice] = option.score;
 				if(!this.hasErrors(harmony, index, order_index) &&
-				   this.fillHarmony(harmony, voicing, pitch_options, index,
+				   this.fillHarmony(harmony, voicing, doubling, pitch_options, index,
 						    order_index + 1, score_sum + option.score)){
 					return true;
 				}
@@ -182,7 +182,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
-		var queue = this.mf.getMotionOptions(voice, simple_motion);
+		var queue = this.mf.getMotionOptions(voice, harmony, index, simple_motion);
 		var start_num = key.valueToNum(value);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
@@ -359,17 +359,17 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		if(this.fillHarmony(harmony, [0, 2, 1, 0], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [0, 2, 1, 0], 0, options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("root doubling at index ", index);
 			return;
 		}
-		if(this.fillHarmony(harmony, [1, 0, 2, 1], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [1, 0, 2, 1], 1, options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("third doubling at index ", index);
 			return;
 		}
-		if(this.fillHarmony(harmony, [0, 2, 1, 2], options, index, 0, 0)){
+		if(this.fillHarmony(harmony, [0, 2, 1, 2], 2, options, index, 0, 0)){
 			this.global_index -= 1;
 			console.log("fifth doubling at index ", index);
 			return;
