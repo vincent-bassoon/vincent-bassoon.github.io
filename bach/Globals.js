@@ -428,7 +428,10 @@ class MotionFunctions {
 		return [];
 	}
 	getMotionScore(voice, motion, next_motion){
-		var score = 0;
+		var score = 1;
+		if(motion == this.type.SUSPENSION){
+			score = 0;
+		}
 		var direction = this.direction(motion);
 		var next_direction = this.direction(next_motion);
 		motion = Math.abs(motion);
