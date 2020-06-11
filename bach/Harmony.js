@@ -182,7 +182,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
-		var queue = this.mf.getMotionOptions(voice, harmony, index, simple_motion);
+		var queue = this.mf.getMotionOptions(voice, simple_motion, (index > 0 && !harmony[index - 1].end_of_phrase));
 		var start_num = key.valueToNum(value);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
@@ -244,6 +244,11 @@ class HarmonyFunctions {
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
 		
+		if(next_motion == this.mf.type.SUSPENSION){
+			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
+				return;
+			}
+		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
 			return;
@@ -252,7 +257,7 @@ class HarmonyFunctions {
 			// this check ignores augmented/diminished unison
 			return;
 		}
-		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
+		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase && next_motion != this.mf.type.SUSPENSION){
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
 			this.addNctOptions(options, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
