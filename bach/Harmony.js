@@ -230,10 +230,7 @@ class HarmonyFunctions {
 			}
 			values.pop();
 			if(valid){
-				var score = 1;
-				if(motion == this.mf.type.SUSPENSION){
-					score = 0;
-				}
+				var score = 0;
 				if(index + 1 < harmony.length - 1){
 					// harmony at index (length - 1) has no valid motion b/c no notes after
 					score = this.mf.getMotionScore(voice, motion, next_motion);
@@ -292,7 +289,7 @@ class HarmonyFunctions {
 			return;
 		}
 		
-		var score = 1;
+		var score = 0;
 		if(index + 1 < harmony.length - 1){
 			// harmony at index (length - 1) has no valid motion b/c no notes after
 			score = this.mf.getMotionScore(voice, motion, next_motion);
