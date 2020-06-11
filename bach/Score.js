@@ -24,7 +24,7 @@ class Player {
 		transport.bpm.value = 60;
 		var beat_num = 1;
 		var rit_time_string;
-		var rit_length = 12;
+		var rit_length = 3;
 		var schedule = this.schedule;
 		console.log(schedule);
 		var sampler = this.sampler;
