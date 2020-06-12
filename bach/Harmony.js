@@ -1,30 +1,8 @@
 class HarmonyFunctions {
 	constructor(){
 		this.voice_order = [0, 3, 1, 2];
-		this.check_adjacent = [];
-		for(var i = 0; i < 4; i++){
-			this.check_adjacent[i] = [false, false];
-			for(var j = 0; j < i; j++){
-				if(this.voice_order[j] == this.voice_order[i] + 1){
-					this.check_adjacent[i][0] = true;
-				}
-				else if(this.voice_order[j] == this.voice_order[i] - 1){
-					this.check_adjacent[i][1] = true;
-				}
-			}
-		}
 		
-		this.adjacent_max_dist = [];
-		var max_dist_above_voice = {3: 12 + 7, 2: 10, 1: 12};
-		for(var i = 0; i < 4; i++){
-			this.adjacent_max_dist[i] = [null, null];
-			if(this.check_adjacent[i][0]){
-				this.adjacent_max_dist[i][0] = max_dist_above_voice[this.voice_order[i] + 1];
-			}
-			if(this.check_adjacent[i][1]){
-				this.adjacent_max_dist[i][1] = max_dist_above_voice[this.voice_order[i]];
-			}
-		}
+		this.max_dist_above = {3: 12 + 7, 2: 10, 1: 12};
 		
 		this.adjacent_direction = [-1, 1];
 		this.parallel_pitches = [0, 7];
@@ -41,18 +19,28 @@ class HarmonyFunctions {
 	
 	distBetweenVoices(harmony, index, order_index){
 		var voice = this.voice_order[order_index];
-		for(var i = 0; i < 2; i++){
-			if(this.check_adjacent[order_index][i]){
-				var parity = this.adjacent_direction[i];
-				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice - parity))
+		for(var i = 0; i < order_index; i++){
+			if(Math.abs(this.voice_order[i] - voice) == 1){
+				var voice2 = this.voice_order[i];
+				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice2))
 				for(var sub_index = 0; sub_index < max; sub_index++){
-					var voice1 = parity * harmony[index].getValue(voice, sub_index);
-					var voice2 = parity * harmony[index].getValue(voice - parity, sub_index);
-					if(voice1 > voice2){
-						return true;
+					var value = harmony[index].getValue(voice, sub_index);
+					var value2 = harmony[index].getValue(voice2, sub_index);
+					if(voice > voice2){
+						if(value > value2){
+							return true;
+						}
+						if(value + this.max_dist_above[voice] < value2){
+							return true;
+						}
 					}
-					if(voice1 + this.adjacent_max_dist[order_index][i] < voice2){
-						return true;
+					else{
+						if(value2 > value){
+							return true;
+						}
+						if(value2 + this.max_dist_above[voice2] < value){
+							return true;
+						}
 					}
 				}
 			}
@@ -148,7 +136,13 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
-		else if(order_index == 2){
+		var check_same = 0;
+		for(var i = 0; i < order_index; i++){
+			if(this.voice_order[i] == 3 || this.voice_order[i] == 0){
+				check_same++;
+			}
+		}
+		if(check_same == 2){
 			for(var i = 2; i <= 3; i++){
 				if(index + i < harmony.length && harmony[index].chord.equals(harmony[index + i].chord)){
 					var same = true;
@@ -211,6 +205,12 @@ class HarmonyFunctions {
 			console.log("next pitch not in current key");
 			return;
 		}*/
+		for(var i = 0; i < queue.length; i++){
+			if(queue[i] != this.mf.type.SUSPENSION){
+				queue.splice(i, 1);
+				i--;
+			}
+		}
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
