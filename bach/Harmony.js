@@ -31,24 +31,23 @@ class HarmonyFunctions {
 			if(Math.abs(this.voice_order[i] - voice) == 1){
 				var voice2 = this.voice_order[i];
 				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice2))
+				var sus = Math.max(voice, voice2) == 3 && (harmony[index].getMotion(voice) == this.mf.type.SUSPENSION ||
+									   harmony[index].getMotion(voice2) == this.mf.type.SUSPENSION);
 				for(var sub_index = 0; sub_index < max; sub_index++){
-					var value = harmony[index].getValue(voice, sub_index);
-					var value2 = harmony[index].getValue(voice2, sub_index);
-					if(voice > voice2){
-						if(value > value2){
-							return true;
-						}
-						if(value + this.max_dist_above[voice] < value2){
-							return true;
-						}
+					var lower_value = harmony[index].getValue(voice, sub_index);
+					var upper_value = harmony[index].getValue(voice2, sub_index);
+					var max_dist = this.max_dist_above[voice];
+					if(voice2 > voice){
+						max_dist = this.max_dist_above[voice2];
+						var temp = lower_value;
+						lower_value = upper_value;
+						upper_value = temp;
 					}
-					else{
-						if(value2 > value){
-							return true;
-						}
-						if(value2 + this.max_dist_above[voice2] < value){
-							return true;
-						}
+					if(lower_value > upper_value || (sus && lower_value == upper_value)){
+						return true;
+					}
+					if(lower_value + max_dist < upper_value){
+						return true;
 					}
 				}
 			}
@@ -114,21 +113,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
-			console.log("parallels");
-			var key = harmony[index].chord.key;
-			for(var i = 0; i <= order_index; i++){
-				var voice = this.voice_order[i];
-				var string = "";
-				for(var j = 0; j < harmony[index].getNumNotes(voice); j++){
-					var value = harmony[index].getValue(voice, j);
-					string += key.valueToName(value);
-					string += Math.floor(value / 12) + " ";
-				}
-				var value = harmony[index + 1].getValue(voice, 0);
-				string += harmony[index + 1].chord.key.valueToName(value);
-				string += Math.floor(value / 12) + " ";
-				console.log(string);
-			}
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
