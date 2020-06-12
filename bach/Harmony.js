@@ -115,6 +115,7 @@ class HarmonyFunctions {
 		}
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallels");
+			cosole.log(harmony[index].values);
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
