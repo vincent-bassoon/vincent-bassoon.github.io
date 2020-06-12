@@ -71,33 +71,22 @@ class HarmonyFunctions {
 		var voice1_num_notes = harmony[index].getNumNotes(voice1);
 		for(var i = 0; i < order_index; i++){
 			var voice2 = this.voice_order[i];
+			var interval2;
 			var interval1 = Math.abs(harmony[index].getValue(voice1, 0) -
-					harmony[index].getValue(voice2, 0)) % 12;
-			var interval4 = Math.abs(harmony[index + 1].getValue(voice1, 0) -
-						 harmony[index + 1].getValue(voice2, 0)) % 12;
-			if(this.checkParallelIntervals(interval1, interval4)){
-				return true;
-			}
-			var voice2_num_notes = harmony[index].getNumNotes(voice2);
-			if(voice1_num_notes > 1 || voice2_num_notes > 1){
-				var interval2 = Math.abs(harmony[index].getValue(voice1, 1) -
-							 harmony[index].getValue(voice2, 1)) % 12;
-				if(this.checkParallelIntervals(interval2, interval4)){
-					return true;
-				}
+						harmony[index].getValue(voice2, 0)) % 12;
+			var max = Math.max(voice1_num_notes, harmony[index].getNumNotes(voice2));
+			for(var j = 1; j < max; j++){
+				interval2 = Math.abs(harmony[index].getValue(voice1, j) -
+						     harmony[index].getValue(voice2, j)) % 12;
 				if(this.checkParallelIntervals(interval1, interval2)){
 					return true;
 				}
-				if(voice1_num_notes == 3 || voice2_num_notes == 3){
-					var interval3 = Math.abs(harmony[index].getValue(voice1, 2) -
-								 harmony[index].getValue(voice2, 2)) % 12;
-					if(this.checkParallelIntervals(interval3, interval4)){
-						return true;
-					}
-					if(this.checkParallelIntervals(interval2, interval3)){
-						return true;
-					}
-				}
+				interval1 = interval2;
+			}
+			interval2 = Math.abs(harmony[index + 1].getValue(voice1, 0) -
+					     harmony[index + 1].getValue(voice2, 0)) % 12;
+			if(this.checkParallelIntervals(interval1, interval2)){
+				return true;
 			}
 		}
 		return false;
@@ -125,6 +114,7 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
+			console.log("parallels");
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
