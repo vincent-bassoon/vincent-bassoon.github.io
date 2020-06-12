@@ -405,7 +405,7 @@ class MotionFunctions {
 	getMotionOptions(voice, simple_motion, suspension){
 		var direction = this.direction(simple_motion);
 		var options = [];
-		if(voice != 3 && voice != 0){
+		if(voice != 3 && voice != 0 && suspension){
 			options.push(this.type.SUSPENSION);
 		}
 		switch(Math.abs(simple_motion)){
