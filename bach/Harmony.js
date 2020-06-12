@@ -124,6 +124,9 @@ class HarmonyFunctions {
 					string += key.valueToName(value);
 					string += Math.floor(value / 12) + " ";
 				}
+				var value = harmony[index + 1].getValue(voice, 0);
+				string += harmony[index + 1].chord.key.valueToName(value);
+				string += Math.floor(value / 12) + " ";
 				console.log(string);
 			}
 			return true;
