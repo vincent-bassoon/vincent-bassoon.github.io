@@ -196,9 +196,8 @@ class HarmonyFunctions {
 	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
-		var suspension = (index > 0 && !harmony[index - 1].end_of_phrase && degree != 2 &&
+		var suspension = (index > 1 && !(harmony[index - 1].end_of_phrase || harmony[index - 2].end_of_phrase) && degree != 2 &&
 				  harmony[index - 1].chord.pitches.includes(sus_pitch));
-		console.log("numeral " + start_num + " at index " + index + " gets sus: " + suspension);
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
@@ -214,6 +213,7 @@ class HarmonyFunctions {
 		}
 		if((queue.length == 1) != suspension){
 			console.log("discrepancy");
+			console.log("numeral " + start_num + " at index " + index + " and voice " + voice + " gets sus: " + suspension);
 		}
 		while(queue.length > 0){
 			var motion = queue.pop();
