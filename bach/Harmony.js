@@ -115,7 +115,17 @@ class HarmonyFunctions {
 		}
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallels");
-			console.log(harmony[index].values);
+			var key = harmony[index].chord.key;
+			for(var i = 0; i < order_index; i++){
+				var voice = this.voice_order[i];
+				var string = "";
+				for(var j = 0; j < harmony[index].getNumNotes(voice); j++){
+					var value = harmony[index].getValue(voice, j);
+					string += key.valueToName(value);
+					string += Math.floor(value / 12) + " ";
+				}
+				console.log(string);
+			}
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
