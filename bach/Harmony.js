@@ -4,7 +4,6 @@ class HarmonyFunctions {
 		
 		this.max_dist_above = {3: 12 + 7, 2: 10, 1: 12};
 		
-		this.adjacent_direction = [-1, 1];
 		this.parallel_pitches = [0, 7];
 		this.max_total_score = 100;
 		this.max_single_score = 50;
@@ -16,7 +15,16 @@ class HarmonyFunctions {
 		this.scores = null;
 	}
 	
-	
+	shuffle(array){
+		var current_index = array.length, temp_value, random_index;
+		while (0 !== current_index) {
+			random_index = Math.floor(Math.random() * current_index);
+			current_index -= 1;
+			temp_value = array[current_index];
+			array[current_index] = array[random_index];
+			array[random_index] = temp_value;
+		}
+	}
 	distBetweenVoices(harmony, index, order_index){
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < order_index; i++){
@@ -130,11 +138,9 @@ class HarmonyFunctions {
 			console.log("score error: ", score_sum);
 			return false;
 		}
-		if(order_index == 4){
-			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
-				harmony[index].score.updateAvgs(harmony[index + 1].score);
-			}
-			return true;
+		if(order_index == 0){
+			this.shuffle(this.voice_order);
+			console.log(this.voice_order);
 		}
 		var check_same = 0;
 		for(var i = 0; i < order_index; i++){
@@ -157,6 +163,12 @@ class HarmonyFunctions {
 					}
 				}
 			}
+		}
+		if(order_index == 4){
+			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
+				harmony[index].score.updateAvgs(harmony[index + 1].score);
+			}
+			return true;
 		}
 		var voice = this.voice_order[order_index];
 		for(var i = 0; i < voicing.length; i++){
