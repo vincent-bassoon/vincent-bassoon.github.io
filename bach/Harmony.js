@@ -196,8 +196,7 @@ class HarmonyFunctions {
 	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
-		var suspension = ((voice == 1 || voice == 2) && index > 1 &&
-				  !(harmony[index - 1].end_of_phrase || harmony[index - 2].end_of_phrase) &&
+		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
 		/*if(key.valueToNum(next_value) == undefined){
