@@ -214,6 +214,7 @@ class HarmonyFunctions {
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
 		var suspension = (index > 0 && !harmony[index - 1].end_of_phrase && degree != 2 &&
 				  harmony[index - 1].chord.pitches.includes(sus_pitch));
+		console.log("numeral " + start_num + " at index " + index + " gets sus: " + suspension);
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
 		/*if(key.valueToNum(next_value) == undefined){
 			//this check isn't well written and is also possibly unnecessary
@@ -226,6 +227,9 @@ class HarmonyFunctions {
 				queue.splice(i, 1);
 				i--;
 			}
+		}
+		if((queue.length == 1) != suspension){
+			console.log("discrepancy");
 		}
 		while(queue.length > 0){
 			var motion = queue.pop();
