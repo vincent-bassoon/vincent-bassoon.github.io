@@ -439,24 +439,19 @@ class MotionFunctions {
 		
 		//restrictions for mordents
 		if(motion == this.type.MORDENT && next_direction != direction * -1){
-			console.log("mordant not followed correctly");
 			return this.max_score + 1;
 		}
 		if(next_motion == this.type.MORDENT && next_direction != direction){
-			console.log("mordant not preceded correctly");
 			return this.max_score + 1;
 		}
 		//no two consecutive leaps if one of them is a fourth
 		if(motion == this.type.LEAP && next_motion == this.type.LEAP){
-			console.log("leap leap");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.LEAP && next_motion == this.type.THIRD){
-			console.log("leap third");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.THIRD && next_motion == this.type.LEAP){
-			console.log("third leap");
 			return this.max_score + 1;
 		}
 		if(motion == this.type.THIRD && next_motion == this.type.THIRD){
@@ -466,7 +461,6 @@ class MotionFunctions {
 				//leap down then up, or up then down
 				score += 20;
 			}
-			console.log("third third");
 			return score;
 		}
 		if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
@@ -475,16 +469,14 @@ class MotionFunctions {
 			if(voice == 0){
 				score += 10;
 			}
-			console.log("constant constant");
 			return score;
 		}
 		if(motion == this.type.LEAP && next_direction != direction * -1){
 			// big leap must be followed by step in opposite direction
 			score += 20;
 			if(voice == 0){
-				score += 20;
+				score = this.max_score + 1;
 			}
-			console.log("leap (not opposite step)");
 		}
 		return score;
 	}
