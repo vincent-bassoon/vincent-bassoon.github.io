@@ -116,7 +116,7 @@ class HarmonyFunctions {
 		if(this.parallels(harmony, index, order_index)){
 			console.log("parallels");
 			var key = harmony[index].chord.key;
-			for(var i = 0; i < order_index; i++){
+			for(var i = 0; i <= order_index; i++){
 				var voice = this.voice_order[i];
 				var string = "";
 				for(var j = 0; j < harmony[index].getNumNotes(voice); j++){
