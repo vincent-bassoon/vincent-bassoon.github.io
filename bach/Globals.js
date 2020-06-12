@@ -404,28 +404,29 @@ class MotionFunctions {
 	}
 	getMotionOptions(voice, simple_motion, suspension){
 		var direction = this.direction(simple_motion);
+		var options = [];
+		if(voice != 3 && voice != 0){
+			options.push(this.type.SUSPENSION);
+		}
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
 				if(voice != 3){
-					return [this.type.MORDENT, this.type.MORDENT * -1];
+					options.push(this.type.MORDENT);
+					options.push(this.type.MORDENT * -1);
 				}
 				break;
 			case this.type.STEP:
 				if(voice != 3){
-					var options = [this.type.TURN * direction];
-					if(voice != 0 && suspension){
-						options.push(this.type.SUSPENSION);
-					}
-					return options
+					options.push(this.type.TURN * direction);
 				}
 				break;
 			case this.type.THIRD:
-				return [this.type.PASSING_8 * direction];
+				options.push(this.type.PASSING_8 * direction);
 				break;
 			case this.type.LEAP:
-				return [this.type.PASSING_16 * direction];
+				options.push(this.type.PASSING_16 * direction);
 		}
-		return [];
+		return options;
 	}
 	getMotionScore(voice, motion, next_motion){
 		var score = 1;
