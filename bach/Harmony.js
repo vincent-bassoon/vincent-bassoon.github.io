@@ -183,7 +183,7 @@ class HarmonyFunctions {
 					harmony[index].score.scores[voice] = options[i].score;
 					voicing[options[i].degree] -= 1;
 					if(!this.hasErrors(harmony, index, order_index) &&
-					   this.fillHarmony(harmony, voicing, doubling, pitch_options, index,
+					   this.fillHarmony(harmony, voicing, doubling, options, index,
 				 			    order_index + 1, score_sum + options[i].score)){
 						return true;
 					}
