@@ -160,34 +160,35 @@ class HarmonyFunctions {
 			return true;
 		}
 		var voice = this.voice_order[order_index];
-		for(var i = 0; i < options.length; i++){
-			if(voicing[options[i].degree] > 0){
+		for(var i = 0; i < options[voice].length; i++){
+			var option = options[voice][i];
+			if(voicing[option.degree] > 0){
 				var valid = true;
-				if(options[i].motion == this.mf.type.SUSPENSION){
+				if(option.motion == this.mf.type.SUSPENSION){
 					valid = false;
-					if(options[i].degree == 0 && harmony[index].bass_degree == 0){
+					if(option.degree == 0 && harmony[index].bass_degree == 0){
 						valid = true;
 					}
-					else if(options[i].degree == 1 && doubling != 1 && harmony[index].bass_degree == 0){
+					else if(option.degree == 1 && doubling != 1 && harmony[index].bass_degree == 0){
 						valid = true;
 					}
-					else if(options[i].degree == 2 && doubling != 2 && harmony[index].bass_degree == 1){
+					else if(option.degree == 2 && doubling != 2 && harmony[index].bass_degree == 1){
 						valid = true;
 					}
 				}
 				if(valid){
-					harmony[index].setNotes(voice, options[i].values, options[i].values.length, options[i].motion);
+					harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
 					if(voice == 3){
-						harmony[index].bass_degree = options[i].degree;
+						harmony[index].bass_degree = option.degree;
 					}
-					harmony[index].score.scores[voice] = options[i].score;
-					voicing[options[i].degree] -= 1;
+					harmony[index].score.scores[voice] = option.score;
+					voicing[option.degree] -= 1;
 					if(!this.hasErrors(harmony, index, order_index) &&
 					   this.fillHarmony(harmony, voicing, doubling, options, index,
-				 			    order_index + 1, score_sum + options[i].score)){
+				 			    order_index + 1, score_sum + option.score)){
 						return true;
 					}
-					voicing[options[i].degree] += 1;
+					voicing[option.degree] += 1;
 				}
 			}
 		}
