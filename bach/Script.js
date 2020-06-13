@@ -122,10 +122,10 @@ function configureSampler(){
 					staff.removeChild(staff.lastChild);
 				}
 				generateNewChorale(sampler);
+				console.log("Time: " + (Date.now() - before_time));
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
-				console.log(Date.now() - before_time);
 			}, 1);
 		}
 		start.onclick = run;
