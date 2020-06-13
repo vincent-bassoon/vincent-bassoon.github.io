@@ -241,7 +241,7 @@ class HarmonyFunctions {
 					score = this.mf.getMotionScore(voice, motion, next_motion);
 				}
 				if(motion == this.mf.type.SUSPENSION && degree == 0 && values[0] - values[1] == 1){
-					score += 40;
+					score += 20;
 				}
 				var sum = 0;
 				for(var j = 0; j < values.length; j++){
