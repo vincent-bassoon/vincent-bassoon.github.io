@@ -462,7 +462,7 @@ class HarmonyFunctions {
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
 		this.global_index = chords.length - 1;
-		this.retrace_attempts = 3 * (chords.length - 1);
+		this.retrace_attempts = 5 * (chords.length - 1);
 		while(this.global_index >= 0){
 			this.generateSingleHarmony(harmony);
 		}
