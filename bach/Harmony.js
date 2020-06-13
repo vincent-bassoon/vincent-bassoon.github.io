@@ -131,6 +131,7 @@ class HarmonyFunctions {
 					if(current_options[0].score < options[i].score){
 						options.splice(i, 0, ...current_options);
 						added = true;
+						i = options.length;
 					}
 				}
 				if(!added){
