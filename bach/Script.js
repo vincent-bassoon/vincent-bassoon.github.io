@@ -117,6 +117,7 @@ function configureSampler(){
 			start.onclick = "";
 			start.classList.add("running");
 			setTimeout(function(){
+				var before_time = Date.now();
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
@@ -124,6 +125,7 @@ function configureSampler(){
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
+				console.log(Date.now() - before_time);
 			}, 1);
 		}
 		start.onclick = run;
