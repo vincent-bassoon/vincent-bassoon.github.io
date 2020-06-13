@@ -12,7 +12,6 @@ class HarmonyFunctions {
 		this.mf = new MotionFunctions(this.max_single_score);
 		
 		this.repeat = false;
-		this.scores = null;
 	}
 	
 	shuffle(array){
@@ -473,6 +472,17 @@ class HarmonyFunctions {
 		}
 		return harmony;
 	}
+	logAvgScore(harmony){
+		var avg = 0;
+		for(var i = 0; i < harmony.length; i++){
+			var sum = 0;
+			for(var voice = 0; voice < 4; voice++){
+				sum += harmony[i].score.scores[voice];
+			}
+			avg += (sum / 4);
+		}
+		console.log("avg score: " + (avg / harmony.length));
+	}
 	generateHarmony(chords, phrase_lengths, sampler){		
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
@@ -486,6 +496,7 @@ class HarmonyFunctions {
 		}
 		new Score(harmony, this.nf, phrase_lengths, sampler).renderHarmony();
 		console.log(harmony);
+		this.logAvgScore(harmony);
 		return false;
 	}
 }
