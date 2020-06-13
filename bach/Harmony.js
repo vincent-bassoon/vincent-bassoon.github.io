@@ -240,6 +240,9 @@ class HarmonyFunctions {
 					// harmony at index (length - 1) has no valid motion b/c no notes after
 					score = this.mf.getMotionScore(voice, motion, next_motion);
 				}
+				if(motion == this.mf.type.SUSPENSION && degree == 0 && values[0] - values[1] == 1){
+					score += 40;
+				}
 				var sum = 0;
 				for(var j = 0; j < values.length; j++){
 					sum += values[j];
