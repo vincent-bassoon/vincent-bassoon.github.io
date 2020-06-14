@@ -319,6 +319,7 @@ class HarmonyUnit {
 		this.chord = chord;
 		this.bass_degree = null;
 		
+		this.voice_order = null;
 		this.options = [null, null, null, null];
 		this.options_index = [null, null, null, null];
 		this.current_doubling = null;
