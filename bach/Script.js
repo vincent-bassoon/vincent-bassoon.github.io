@@ -47,7 +47,7 @@ function generateChoralePlan(key, cadence_num, pickup){
 	return chorale_plan;
 }
 
-function generateNewChorale(sampler){
+function generateNewChorale(data, sampler){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -80,10 +80,11 @@ function generateNewChorale(sampler){
 	for(var i = 0; i < chorale_plan.length; i++){
 		phrase_lengths.push(chorale_plan[i].phrase_length);
 	}
-	if(harmony_functions.generateHarmony(chords, phrase_lengths, sampler) && counter < 10){
-		generateNewChorale(sampler);
+	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
+		generateNewChorale(data, sampler);
 		counter++;
 	}
+	data[0].attempts = counter + 1;
 }
 
 function configureSampler(){
@@ -100,8 +101,9 @@ function configureSampler(){
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
 	var staff = document.getElementById("staff");
+	var data = [];
 	var sampler = new Tone.Sampler(sources, function(){
-		generateNewChorale(sampler);
+		generateNewChorale(data, sampler);
 		start.classList.remove("running");
 		start.innerText = "NEW CHORALE";
 		function run(){
@@ -121,8 +123,10 @@ function configureSampler(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
-				generateNewChorale(sampler);
-				console.log("Time: " + (Date.now() - before_time));
+				data.unshift({time: null, avg_score: null, attempts: null});
+				generateNewChorale(data, sampler);
+				data[0].time = Date.now() - before_time;
+				console.log("Time: " + data[0].time);
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
