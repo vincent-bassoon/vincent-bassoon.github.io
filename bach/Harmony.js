@@ -449,6 +449,7 @@ class HarmonyFunctions {
 		}
 		for(var doubling = initial_doubling; doubling < 3; doubling++){
 			console.log("trying " + this.doubling_name[doubling] + " doubling at index " + index);
+			harmony[index].current_doubling = doubling;
 			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0, !is_retrace)){
 				this.global_index -= 1;
 				console.log(this.doubling_name[doubling] + " doubling at index " + index);
