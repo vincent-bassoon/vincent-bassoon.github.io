@@ -185,11 +185,11 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
+		var voice = this.voice_order[order_index];
 		if(reset_index){
 			harmony[index].options_index[voice] = 0;
 		}
 		var options = harmony[index].options;
-		var voice = this.voice_order[order_index];
 		while(harmony[index].options_index[voice] < options[voice].length){
 			var option = options[voice][harmony[index].options_index[voice]];
 			if(voicing[option.degree] > 0){
