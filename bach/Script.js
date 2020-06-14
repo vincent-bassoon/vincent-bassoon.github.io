@@ -48,6 +48,7 @@ function generateChoralePlan(key, cadence_num, pickup){
 }
 
 function generateNewChorale(data, sampler){
+	data.unshift({time: null, avg_score: null, attempts: null});
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -88,6 +89,19 @@ function generateNewChorale(data, sampler){
 }
 
 function configureSampler(){
+	function logData(data, before_time){
+		data[0].time = Date.now() - before_time;
+		console.log("Current data:    " + JSON.stringify(data[0]));
+		var avg = {time: 0, attempts: 0, avg_value: 0};
+		for(var key in avg){
+			for(var i = 0; i < data.length; i++){
+				avg[key] += data[i][key];
+			}
+			avg[key] /= data.length;
+		}
+		console.log("Cumulative data: " + JSON.stringify(avg);
+		
+	}
 	var sources = {};
 	var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
 	var file_end = "v5.mp3";
@@ -103,7 +117,9 @@ function configureSampler(){
 	var staff = document.getElementById("staff");
 	var data = [];
 	var sampler = new Tone.Sampler(sources, function(){
+		var before_time = Date.now();
 		generateNewChorale(data, sampler);
+		logData(data, before_time);
 		start.classList.remove("running");
 		start.innerText = "NEW CHORALE";
 		function run(){
@@ -123,10 +139,8 @@ function configureSampler(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
-				data.unshift({time: null, avg_score: null, attempts: null});
 				generateNewChorale(data, sampler);
-				data[0].time = Date.now() - before_time;
-				console.log("Time: " + data[0].time);
+				logData(data, before_time);
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
