@@ -48,7 +48,6 @@ function generateChoralePlan(key, cadence_num, pickup){
 }
 
 function generateNewChorale(data, sampler){
-	data.unshift({time: null, avg_score: null, attempts: null});
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -118,6 +117,7 @@ function configureSampler(){
 	var data = [];
 	var sampler = new Tone.Sampler(sources, function(){
 		var before_time = Date.now();
+		data.unshift({time: null, avg_score: null, attempts: null});
 		generateNewChorale(data, sampler);
 		logData(data, before_time);
 		start.classList.remove("running");
@@ -139,6 +139,7 @@ function configureSampler(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
+				data.unshift({time: null, avg_score: null, attempts: null});
 				generateNewChorale(data, sampler);
 				logData(data, before_time);
 				start.classList.remove("running");
