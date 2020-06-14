@@ -1,6 +1,5 @@
 class HarmonyFunctions {
 	constructor(){
-		this.voice_order = [0, 3, 1, 2];
 		
 		this.max_dist_above = {3: 12 + 7, 2: 10, 1: 12};
 		
@@ -52,13 +51,13 @@ class HarmonyFunctions {
 				voice_order.push(voice);
 			}
 		}
-		this.voice_order = voice_order;
+		return voice_order;
 	}
 	distBetweenVoices(harmony, index, order_index){
-		var voice = this.voice_order[order_index];
+		var voice = harmony[index].voice_order[order_index];
 		for(var i = 0; i < order_index; i++){
-			if(Math.abs(this.voice_order[i] - voice) == 1){
-				var voice2 = this.voice_order[i];
+			if(Math.abs(harmony[index].voice_order[i] - voice) == 1){
+				var voice2 = harmony[index].voice_order[i];
 				var max = Math.max(harmony[index].getNumNotes(voice), harmony[index].getNumNotes(voice2))
 				var sus = Math.max(voice, voice2) == 3 && (harmony[index].getMotion(voice) == this.mf.type.SUSPENSION ||
 									   harmony[index].getMotion(voice2) == this.mf.type.SUSPENSION);
@@ -95,10 +94,10 @@ class HarmonyFunctions {
 		if(index == harmony.length - 1 || order_index == 0){
 			return false;
 		}
-		var voice1 = this.voice_order[order_index];
+		var voice1 = harmony[index].voice_order[order_index];
 		var voice1_num_notes = harmony[index].getNumNotes(voice1);
 		for(var i = 0; i < order_index; i++){
-			var voice2 = this.voice_order[i];
+			var voice2 = harmony[index].voice_order[i];
 			var interval2;
 			var interval1 = Math.abs(harmony[index].getValue(voice1, 0) -
 						harmony[index].getValue(voice2, 0)) % 12;
@@ -120,22 +119,23 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasNctError(harmony, index, order_index){
-		var has_nct = (harmony[index].getNumNotes(this.voice_order[order_index]) > 1)
+		var has_nct = (harmony[index].getNumNotes(harmony[index].voice_order[order_index]) > 1)
 		if(index == harmony.length - 1 || order_index == 0 || !has_nct){
 			return false;
 		}
 		for(var i = 0; i < order_index; i++){
-			if(harmony[index].getNumNotes(this.voice_order[i]) > 1){
+			if(harmony[index].getNumNotes(harmony[index].voice_order[i]) > 1){
 				return true;
 			}
 		}
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
-		var string = "" + harmony[index].options_index[this.voice_order[0]];
+		var string = "" + harmony[index].options_index[harmony[index].voice_order[0]];
 		for(var i = 1; i <= order_index; i++){
-			string += ", " + harmony[index].options_index[this.voice_order[i]]
+			string += ", " + harmony[index].options_index[harmony[index].voice_order[i]]
 		}
+		console.log(string);
 		if(order_index == 0){
 			return false;
 		}
@@ -161,9 +161,9 @@ class HarmonyFunctions {
 			return false;
 		}
 		var check_same = false;
-		if(order_index > 1 && this.voice_order[order_index - 1] == 3 || this.voice_order[order_index - 1] == 0){
+		if(order_index > 1 && harmony[index].voice_order[order_index - 1] == 3 || harmony[index].voice_order[order_index - 1] == 0){
 			for(var i = 0; i < order_index - 1; i++){
-				if(this.voice_order[i] == 3 || this.voice_order[i] == 0){
+				if(harmony[index].voice_order[i] == 3 || harmony[index].voice_order[i] == 0){
 					check_same = true;
 				}
 			}
@@ -190,7 +190,7 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
-		var voice = this.voice_order[order_index];
+		var voice = harmony[index].voice_order[order_index];
 		if(reset_index){
 			harmony[index].options_index[voice] = 0;
 		}
@@ -436,7 +436,7 @@ class HarmonyFunctions {
 			if(!this.generateOptions(harmony, index)){
 				return;
 			}
-			this.shuffleVoiceOrder(harmony[index].options);
+			harmony[index].voice_order = this.shuffleVoiceOrder(harmony[index].options);
 		}
 		var initial_doubling = 0;
 		if(is_retrace){
