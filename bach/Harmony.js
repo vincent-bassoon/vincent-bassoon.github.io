@@ -193,11 +193,6 @@ class HarmonyFunctions {
 		while(harmony[index].options_index[voice] < options[voice].length){
 			var option = options[voice][harmony[index].options_index[voice]];
 			if(voicing[option.degree] > 0){
-				var string = "" + harmony[index].options_index[harmony[index].voice_order[0]];
-				for(var i = 1; i <= order_index; i++){
-					string += ", " + harmony[index].options_index[harmony[index].voice_order[i]]
-				}
-				console.log(string);
 				var valid = true;
 				if(option.motion == this.mf.type.SUSPENSION){
 					valid = false;
@@ -419,11 +414,6 @@ class HarmonyFunctions {
 					console.log("going back to index ", (index + 1));
 					harmony[index + 1].score.addToHistory();
 					console.log("    added to history");
-					var string = "" + harmony[index + 1].options_index[harmony[index + 1].voice_order[0]];
-					for(var i = 1; i < 4; i++){
-						string += ", " + harmony[index + 1].options_index[harmony[index + 1].voice_order[i]];
-					}
-					console.log(string);
 					this.global_index += 1;
 					return false;
 				}
@@ -437,7 +427,6 @@ class HarmonyFunctions {
 			return;
 		}
 		if(!is_retrace){
-			console.log("generating options at index " + index);
 			if(!this.generateOptions(harmony, index)){
 				return;
 			}
@@ -449,7 +438,6 @@ class HarmonyFunctions {
 			harmony[index].options_index[harmony[index].voice_order[3]] += 1;
 		}
 		for(var doubling = initial_doubling; doubling < 3; doubling++){
-			console.log("trying " + this.doubling_name[doubling] + " doubling at index " + index);
 			harmony[index].current_doubling = doubling;
 			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0, !is_retrace)){
 				this.global_index -= 1;
@@ -467,12 +455,7 @@ class HarmonyFunctions {
 		else{
 			console.log("going back to index ", (index + 1));
 			harmony[index + 1].score.addToHistory();
-			console.log("    added to history ", harmony[index + 1].options_index);
-			var string = "" + harmony[index + 1].options_index[harmony[index + 1].voice_order[0]];
-			for(var i = 1; i < 4; i++){
-				string += ", " + harmony[index + 1].options_index[harmony[index + 1].voice_order[i]];
-			}
-			console.log(string);
+			console.log("    added to history");
 			this.global_index += 1;
 			this.retrace_attempts -= 1;
 			return;
