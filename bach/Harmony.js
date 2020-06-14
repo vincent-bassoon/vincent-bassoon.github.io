@@ -446,6 +446,7 @@ class HarmonyFunctions {
 		var initial_doubling = 0;
 		if(is_retrace){
 			initial_doubling = harmony[index].current_doubling;
+			harmony[index].options_index[harmony[index].voice_order[3]] += 1;
 		}
 		for(var doubling = initial_doubling; doubling < 3; doubling++){
 			console.log("trying " + this.doubling_name[doubling] + " doubling at index " + index);
