@@ -450,7 +450,7 @@ class HarmonyFunctions {
 		}
 		return harmony;
 	}
-	logAvgScore(harmony){
+	getAvgScore(harmony){
 		var avg = 0;
 		for(var i = 0; i < harmony.length; i++){
 			var sum = 0;
@@ -459,9 +459,9 @@ class HarmonyFunctions {
 			}
 			avg += (sum / 4);
 		}
-		console.log("avg score: " + (avg / harmony.length));
+		return avg / harmony.length;
 	}
-	generateHarmony(chords, phrase_lengths, sampler){		
+	generateHarmony(data, chords, phrase_lengths, sampler){		
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
 		this.global_index = chords.length - 1;
@@ -470,11 +470,11 @@ class HarmonyFunctions {
 			this.generateSingleHarmony(harmony);
 		}
 		if(this.repeat){
-			return false;//true;
+			return true;
 		}
 		new Score(harmony, this.nf, phrase_lengths, sampler).renderHarmony();
 		console.log(harmony);
-		this.logAvgScore(harmony);
+		data[0].avg_score = this.getAvgScore(harmony);
 		return false;
 	}
 }
