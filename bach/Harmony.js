@@ -131,11 +131,6 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
-		var string = "" + harmony[index].options_index[harmony[index].voice_order[0]];
-		for(var i = 1; i <= order_index; i++){
-			string += ", " + harmony[index].options_index[harmony[index].voice_order[i]]
-		}
-		console.log(string);
 		if(order_index == 0){
 			return false;
 		}
@@ -198,6 +193,11 @@ class HarmonyFunctions {
 		while(harmony[index].options_index[voice] < options[voice].length){
 			var option = options[voice][harmony[index].options_index[voice]];
 			if(voicing[option.degree] > 0){
+				var string = "" + harmony[index].options_index[harmony[index].voice_order[0]];
+				for(var i = 1; i <= order_index; i++){
+					string += ", " + harmony[index].options_index[harmony[index].voice_order[i]]
+				}
+				console.log(string);
 				var valid = true;
 				if(option.motion == this.mf.type.SUSPENSION){
 					valid = false;
