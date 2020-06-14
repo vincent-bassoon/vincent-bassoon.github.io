@@ -418,7 +418,12 @@ class HarmonyFunctions {
 					console.log("no options");
 					console.log("going back to index ", (index + 1));
 					harmony[index + 1].score.addToHistory();
-					console.log("    added to history ", harmony[index + 1].options_index);
+					console.log("    added to history");
+					var string = "" + harmony[index + 1].options_index[harmony[index + 1].voice_order[0]];
+					for(var i = 1; i < 4; i++){
+						string += ", " + harmony[index + 1].options_index[harmony[index + 1].voice_order[i]];
+					}
+					console.log(string);
 					this.global_index += 1;
 					return false;
 				}
@@ -443,6 +448,7 @@ class HarmonyFunctions {
 			initial_doubling = harmony[index].current_doubling;
 		}
 		for(var doubling = initial_doubling; doubling < 3; doubling++){
+			console.log("trying " + this.doubling_name[doubling] + " doubling at index " + index);
 			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0, !is_retrace)){
 				this.global_index -= 1;
 				console.log(this.doubling_name[doubling] + " doubling at index " + index);
@@ -460,6 +466,11 @@ class HarmonyFunctions {
 			console.log("going back to index ", (index + 1));
 			harmony[index + 1].score.addToHistory();
 			console.log("    added to history ", harmony[index + 1].options_index);
+			var string = "" + harmony[index + 1].options_index[harmony[index + 1].voice_order[0]];
+			for(var i = 1; i < 4; i++){
+				string += ", " + harmony[index + 1].options_index[harmony[index + 1].voice_order[i]];
+			}
+			console.log(string);
 			this.global_index += 1;
 			this.retrace_attempts -= 1;
 			return;
