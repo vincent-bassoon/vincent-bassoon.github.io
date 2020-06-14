@@ -132,7 +132,10 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
-		console.log("order_index: " + order_index + ": " + harmony[index].options_index);
+		var string = "" + harmony[index].options_index[this.voice_order[0]];
+		for(var i = 1; i <= order_index; i++){
+			string += ", " + harmony[index].options_index[this.voice_order[i]]
+		}
 		if(order_index == 0){
 			return false;
 		}
