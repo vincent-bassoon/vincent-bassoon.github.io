@@ -145,7 +145,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
-			console.log("equals history");
 			return true;
 		}
 		return false;
