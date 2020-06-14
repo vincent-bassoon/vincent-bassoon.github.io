@@ -132,8 +132,15 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
+		if(order_index == 3){
+			console.log("trying " + harmony[index].options_index);
+		}
 		if(order_index == 0){
 			return false;
+		}
+		if(order_index == 3 && harmony[index].score.equalsHistory()){
+			console.log("equals history");
+			return true;
 		}
 		if(this.hasNctError(harmony, index, order_index)){
 			return true;
@@ -142,10 +149,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.parallels(harmony, index, order_index)){
-			return true;
-		}
-		if(order_index == 3 && harmony[index].score.equalsHistory()){
-			console.log("equals history");
 			return true;
 		}
 		return false;
