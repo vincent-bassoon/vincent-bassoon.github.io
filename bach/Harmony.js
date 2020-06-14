@@ -421,7 +421,6 @@ class HarmonyFunctions {
 			var voice_order = this.shuffleVoiceOrder(options);
 			for(var doubling = 0; doubling < 3; doubling++){
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
-					this.generateSingleHarmony(harmony, index - 1);
 					return true;
 				}
 			}
