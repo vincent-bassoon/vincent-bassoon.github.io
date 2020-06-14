@@ -99,7 +99,7 @@ function configureSampler(){
 			}
 			avg[key] /= data.length;
 		}
-		console.log("Cumulative data: " + JSON.stringify(avg);
+		console.log("Cumulative data: " + JSON.stringify(avg));
 		
 	}
 	var sources = {};
