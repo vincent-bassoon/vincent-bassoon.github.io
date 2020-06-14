@@ -15,9 +15,19 @@ class HarmonyFunctions {
 	}
 	
 	shuffleVoiceOrder(options){
+		var order = [0, 1, 2, 3];
+		var current_index = order.length, temp_value, random_index;
+		while (0 !== current_index) {
+			random_index = Math.floor(Math.random() * current_index);
+			current_index -= 1;
+			temp_value = order[current_index];
+			order[current_index] = order[random_index];
+			order[random_index] = temp_value;
+		}
 		var voice_order = [];
 		var avgs = {};
-		for(var voice = 0; voice < 4; voice++){
+		for(var j = 0; j < 4; j++){
+			var voice = order[j];
 			avgs[voice] = 0;
 			for(var i = 0; i < options[voice].length; i++){
 				avgs[voice] += options[voice][i].score;
@@ -36,14 +46,6 @@ class HarmonyFunctions {
 			}
 		}
 		this.voice_order = voice_order;
-		/*var current_index = array.length, temp_value, random_index;
-		while (0 !== current_index) {
-			random_index = Math.floor(Math.random() * current_index);
-			current_index -= 1;
-			temp_value = array[current_index];
-			array[current_index] = array[random_index];
-			array[random_index] = temp_value;
-		}*/
 	}
 	distBetweenVoices(harmony, index, order_index){
 		var voice = this.voice_order[order_index];
