@@ -319,6 +319,10 @@ class HarmonyUnit {
 		this.chord = chord;
 		this.bass_degree = null;
 		
+		this.options = [null, null, null, null];
+		this.options_index = [null, null, null, null];
+		this.current_doubling = null;
+		
 		this.end_of_phrase = end_of_phrase;
 		
 		this.score = new ScoreUnit(target_avgs, this);
