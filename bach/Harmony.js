@@ -12,7 +12,8 @@ class HarmonyFunctions {
 		this.nf = new NoteFunctions();
 		this.mf = new MotionFunctions(this.max_single_score);
 		
-		this.repeat = false;
+		this.state = {"running": 0, "success": 1, "failure": 2};
+		this.current_state = false;
 	}
 	
 	getVoicing(doubling){
@@ -362,7 +363,7 @@ class HarmonyFunctions {
 	generateOptions(harmony, index){
 		var chord = harmony[index].chord
 		
-		var options = harmony[index].options;
+		var options = [[], [], [], []];
 		
 		var has_next_value = (index != harmony.length - 1);
 		for(var voice = 0; voice < 4; voice++){
@@ -403,48 +404,44 @@ class HarmonyFunctions {
 				}
 			}
 			if(options[voice].length == 0){
-				if(index + 1 > harmony.length - 1){
-					console.log("COMPLETE FAILURE");
-					this.global_index = -1;
-					this.repeat = true;
-					return false;
-				}
-				else{
-					console.log("no options");
-					console.log("going back to index ", (index + 1));
-					harmony[index + 1].score.addToHistory();
-					console.log("    added to history");
-					this.global_index += 1;
-					return false;
-				}
+				console.log("no options");
+				return null;
 			}
 		}
-		return true;
+		return options;
 	}
-	generateSingleHarmony(harmony, is_retrace){
-		var index = this.global_index;
-		if(index == -1){
+	retraceSingleHarmony(harmony, index){
+		if(this.current_state != 0){
 			return;
 		}
-		if(!is_retrace){
-			if(!this.generateOptions(harmony, index)){
-				return;
-			}
-			harmony[index].voice_order = this.shuffleVoiceOrder(harmony[index].options);
+		if(index > harmony.length - 1){
+			console.log("COMPLETE FAILURE");
+			this.current_state = this.state.failure;
+			return;
 		}
-		var initial_doubling = 0;
-		if(is_retrace){
-			initial_doubling = harmony[index].current_doubling;
-			harmony[index].options_index[harmony[index].voice_order[3]] += 1;
+		console.log("Retracing to index ", index);
+		harmony[index].score.addToHistory();
+	}
+	generateSingleHarmony(harmony, index){
+		if(this.current_state != 0){
+			return true;
 		}
-		for(var doubling = initial_doubling; doubling < 3; doubling++){
-			harmony[index].current_doubling = doubling;
-			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0, !is_retrace)){
-				this.global_index -= 1;
-				console.log(this.doubling_name[doubling] + " doubling at index " + index);
-				return;
+		if(index == -1){
+			this.current_state = this.state.success;
+			return true;
+		}
+		else if(index > harmony.length - 1){
+			console.log("COMPLETE FAILURE");
+			this.current_state = this.state.failure;
+			return true;
+		}
+		var options = this.generateOptions(harmony, index);
+		var voice_order = this.shuffleVoiceOrder(options);
+		for(var doubling = 0; doubling < 3; doubling++){
+			if(this.fillHarmony(harmony, index, options, voice_order, this.getVoicing(doubling), doubling, 0, 0)){
+				this.generateSingleHarmony(harmony, index - 1);
+				return true;
 			}
-			is_retrace = false;
 		}
 		if(index + 1 > harmony.length - 1 || this.retrace_attempts <= 0){
 			console.log("COMPLETE FAILURE, AFTER ATTEMPTS: ", this.retrace_attempts);
@@ -505,15 +502,9 @@ class HarmonyFunctions {
 	generateHarmony(data, chords, phrase_lengths, sampler){		
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
-		this.global_index = chords.length - 1;
 		this.retrace_attempts = 3.5 * (chords.length - 1);
-		var is_retrace = false;
-		while(this.global_index >= 0){
-			var temp = this.global_index;
-			this.generateSingleHarmony(harmony, is_retrace);
-			is_retrace = this.global_index > temp;
-		}
-		if(this.repeat){
+		this.generateSingleHarmony(harmony, harmony.length - 1);
+		if(this.current_state != this.state.success){
 			return true;
 		}
 		new Score(harmony, this.nf, phrase_lengths, sampler).renderHarmony();
