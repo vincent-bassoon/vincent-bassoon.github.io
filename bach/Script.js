@@ -92,7 +92,7 @@ function configureSampler(){
 	function logData(data, before_time){
 		data[0].time = Date.now() - before_time;
 		console.log("Current data:    " + JSON.stringify(data[0]));
-		var avg = {time: 0, attempts: 0, avg_score: 0};
+		var avg = {time: 0, avg_score: 0, attempts: 0};
 		for(var key in avg){
 			for(var i = 0; i < data.length; i++){
 				avg[key] += data[i][key];
