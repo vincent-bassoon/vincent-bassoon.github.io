@@ -187,7 +187,7 @@ class HarmonyFunctions {
 		}
 		var options = harmony[index].options;
 		var voice = this.voice_order[order_index];
-		for(var i = harmony[index].option_index[voice]; i < options[voice].length; i++){
+		for(var i = harmony[index].options_index[voice]; i < options[voice].length; i++){
 			var option = options[voice][i];
 			if(voicing[option.degree] > 0){
 				var valid = true;
