@@ -150,7 +150,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	
-	fillHarmony(harmony, index, voicing, doubling, order_index, score_sum){
+	fillHarmony(harmony, index, voicing, doubling, order_index, score_sum, reset_index){
 		if(score_sum > this.max_total_score){
 			console.log("score error: ", score_sum);
 			return false;
@@ -185,10 +185,13 @@ class HarmonyFunctions {
 			}
 			return true;
 		}
+		if(reset_index){
+			harmony[index].options_index[voice] = 0;
+		}
 		var options = harmony[index].options;
 		var voice = this.voice_order[order_index];
-		for(var i = harmony[index].options_index[voice]; i < options[voice].length; i++){
-			var option = options[voice][i];
+		while(harmony[index].options_index[voice] < options[voice].length){
+			var option = options[voice][harmony[index].options_index[voice]];
 			if(voicing[option.degree] > 0){
 				var valid = true;
 				if(option.motion == this.mf.type.SUSPENSION){
@@ -211,13 +214,15 @@ class HarmonyFunctions {
 					harmony[index].score.scores[voice] = option.score;
 					voicing[option.degree] -= 1;
 					if(!this.hasErrors(harmony, index, order_index) &&
-					   this.fillHarmony(harmony, index, voicing, doubling,
-							    order_index + 1, score_sum + option.score)){
+					   this.fillHarmony(harmony, index, voicing, doubling, order_index + 1,
+							    score_sum + option.score, reset_index)){
 						return true;
 					}
+					reset_index = true;
 					voicing[option.degree] += 1;
 				}
 			}
+			harmony[index].options_index[voice] += 1;
 		}
 		return false;
 	}
@@ -433,12 +438,7 @@ class HarmonyFunctions {
 			initial_doubling = harmony[index].current_doubling;
 		}
 		for(var doubling = initial_doubling; doubling < 3; doubling++){
-			if(!is_retrace){
-				for(var voice = 0; voice < 4; voice++){
-					harmony[index].options_index = 0;
-				}
-			}
-			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0)){
+			if(this.fillHarmony(harmony, index, this.getVoicing(doubling), doubling, 0, 0, !is_retrace)){
 				this.global_index -= 1;
 				console.log(this.doubling_name[doubling] + " doubling at index " + index);
 				return;
