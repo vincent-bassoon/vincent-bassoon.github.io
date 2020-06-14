@@ -135,7 +135,6 @@ class HarmonyFunctions {
 			return false;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
-			console.log("equals history");
 			return true;
 		}
 		if(this.hasNctError(harmony, index, voice_order, order_index)){
@@ -392,14 +391,13 @@ class HarmonyFunctions {
 				}
 			}
 			if(options[voice].length == 0){
-				console.log("no options");
+				console.log("no options at index ", index);
 				return null;
 			}
 		}
 		return options;
 	}
 	generateSingleHarmony(harmony, index){
-		console.log("generating at index ", index);
 		if(this.current_state != 0){
 			return true;
 		}
@@ -408,7 +406,6 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(this.retrace_attempts <= 0 || index > harmony.length - 1){
-			console.log("COMPLETE FAILURE");
 			this.current_state = this.state.failure;
 			return true;
 		}
@@ -416,7 +413,6 @@ class HarmonyFunctions {
 		if(options != null){
 			var voice_order = this.shuffleVoiceOrder(options);
 			for(var doubling = 0; doubling < 3; doubling++){
-				console.log("trying " + this.doubling_name[doubling]);
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
 					return true;
 				}
@@ -425,7 +421,6 @@ class HarmonyFunctions {
 		if(index + 1 < harmony.length){
 			harmony[index + 1].score.addToHistory();
 			this.retrace_attempts -= 1;
-			console.log("going back to index " + (index + 1) + ", added to history");
 		}
 		return false;
 	}
