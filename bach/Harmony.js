@@ -25,7 +25,7 @@ class HarmonyFunctions {
 			avgs[voice] /= options[voice].length;
 			var added = false;
 			for(var i = 0; i < voice_order.length; i++){
-				if(avgs[voice] < avgs[voice_order[i]]){
+				if(avgs[voice] > avgs[voice_order[i]]){
 					voice_order.splice(i, 0, voice);
 					i = voice_order.length;
 					added = true;
@@ -36,8 +36,6 @@ class HarmonyFunctions {
 			}
 		}
 		this.voice_order = voice_order;
-		console.log("avgs: ", avgs);
-		console.log("voice order: ", voice_order);
 		/*var current_index = array.length, temp_value, random_index;
 		while (0 !== current_index) {
 			random_index = Math.floor(Math.random() * current_index);
