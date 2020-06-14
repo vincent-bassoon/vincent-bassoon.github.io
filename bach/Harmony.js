@@ -390,7 +390,6 @@ class HarmonyFunctions {
 				}
 			}
 			if(options[voice].length == 0){
-				console.log("no options at index ", index);
 				return null;
 			}
 		}
