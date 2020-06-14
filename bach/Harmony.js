@@ -132,9 +132,7 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasErrors(harmony, index, order_index){
-		if(order_index == 3){
-			console.log("trying " + harmony[index].options_index);
-		}
+		console.log("order_index: " + order_index + ": " + harmony[index].options_index);
 		if(order_index == 0){
 			return false;
 		}
