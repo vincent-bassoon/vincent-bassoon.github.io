@@ -145,6 +145,7 @@ class HarmonyFunctions {
 			return true;
 		}
 		if(order_index == 3 && harmony[index].score.equalsHistory()){
+			console.log("equals history");
 			return true;
 		}
 		return false;
@@ -423,11 +424,11 @@ class HarmonyFunctions {
 	}
 	generateSingleHarmony(harmony, is_retrace){
 		var index = this.global_index;
-		console.log("generate single harmony at index " + index);
 		if(index == -1){
 			return;
 		}
 		if(!is_retrace){
+			console.log("generating options at index " + index);
 			if(!this.generateOptions(harmony, index)){
 				return;
 			}
