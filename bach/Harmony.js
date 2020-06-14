@@ -171,7 +171,6 @@ class HarmonyFunctions {
 						}
 					}
 					if(same){
-						console.log("same error");
 						return false;
 					}
 				}
