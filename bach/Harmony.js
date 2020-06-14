@@ -417,7 +417,7 @@ class HarmonyFunctions {
 					console.log("no options");
 					console.log("going back to index ", (index + 1));
 					harmony[index + 1].score.addToHistory();
-					console.log("    added to history");
+					console.log("    added to history ", harmony[index + 1].options_index);
 					this.global_index += 1;
 					return false;
 				}
@@ -458,7 +458,7 @@ class HarmonyFunctions {
 		else{
 			console.log("going back to index ", (index + 1));
 			harmony[index + 1].score.addToHistory();
-			console.log("    added to history");
+			console.log("    added to history ", harmony[index + 1].options_index);
 			this.global_index += 1;
 			this.retrace_attempts -= 1;
 			return;
