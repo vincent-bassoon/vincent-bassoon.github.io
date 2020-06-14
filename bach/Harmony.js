@@ -19,6 +19,7 @@ class HarmonyFunctions {
 	getVoicing(doubling){
 		var voicing = {0: 1, 1: 1, 2: 1, 3: 0};
 		voicing[doubling] += 1;
+		return voicing;
 	}
 	shuffleVoiceOrder(options){
 		var order = [0, 1, 2, 3];
