@@ -237,10 +237,6 @@ class HarmonyFunctions {
 				i--;
 			}
 		}
-		if((queue.length == 1) != suspension){
-			console.log("discrepancy");
-			console.log("numeral " + start_num + " at index " + index + " and voice " + voice + " gets sus: " + suspension);
-		}
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
@@ -420,6 +416,7 @@ class HarmonyFunctions {
 		if(options != null){
 			var voice_order = this.shuffleVoiceOrder(options);
 			for(var doubling = 0; doubling < 3; doubling++){
+				console.log("trying " + this.doubling_name[doubling]);
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
 					return true;
 				}
