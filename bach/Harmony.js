@@ -148,6 +148,18 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
+	checkSus(sus_degree, bass_degree, doubling){
+		if(sus_degree == 0){
+			return (bass_degree == 0);
+		}
+		else if(sus_degree == 1){
+			return (doubling != 1 && bass_degree == 0);
+		}
+		else if(sus_degree == 2){
+			return (doubling != 2 && bass_degree == 1);
+		}
+		return false;
+	}
 	fillHarmony(harmony, index, options, voice_order, order_index, voicing, doubling, score_sum){
 		if(score_sum > this.max_total_score){
 			console.log("score error: ", score_sum);
@@ -180,27 +192,24 @@ class HarmonyFunctions {
 			return this.generateSingleHarmony(harmony, index - 1);
 		}
 		var voice = voice_order[order_index];
+		var past = voice_order.slice(0, order_index);
 		for(var i = 0; i < options[voice].length; i++){
 			var option = options[voice][i];
 			if(voicing[option.degree] > 0){
 				var valid = true;
-				if(option.motion == this.mf.type.SUSPENSION){
-					valid = false;
-					if(option.degree == 0 && harmony[index].bass_degree == 0){
-						valid = true;
-					}
-					else if(option.degree == 1 && doubling != 1 && harmony[index].bass_degree == 0){
-						valid = true;
-					}
-					else if(option.degree == 2 && doubling != 2 && harmony[index].bass_degree == 1){
-						valid = true;
+				if(option.motion == this.mf.type.SUSPENSION && past.includes(3)){
+					valid = this.checkSus(option.degree, harmony[index].getDegree(3), doubling);
+				}
+				else if(voice == 3){
+					for(var j = 1; j <= 2; j++){
+						if(valid && past.includes(j) && harmony[index].getMotion(j) == this.mf.type.SUSPENSION){
+							valid = this.checkSus(harmony[index].getDegree(j), option.degree, doubling);
+						}
 					}
 				}
 				if(valid){
-					harmony[index].setNotes(voice, option.values, option.values.length, option.motion);
-					if(voice == 3){
-						harmony[index].bass_degree = option.degree;
-					}
+					harmony[index].setNotes(voice, option.values, option.degree,
+								option.values.length, option.motion);
 					harmony[index].setScore(voice, option.score);
 					voicing[option.degree] -= 1;
 					if(!this.hasErrors(harmony, index, voice_order, order_index) &&
