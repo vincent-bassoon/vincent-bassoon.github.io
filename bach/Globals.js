@@ -244,44 +244,52 @@ class Chord {
 	}
 }
 
-class ScoreUnit {
-	constructor(target_avgs, harmony){
+
+class HarmonyUnit {
+	constructor(chord, end_of_phrase){
+		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
+		this.motion = [null, null, null, null];
+		
+		this.chord = chord;
+		this.bass_degree = null;
+		
+		this.end_of_phrase = end_of_phrase;
+		
 		this.scores = [null, null, null, null];
 		
-		this.avgs = [0, 0, 0, 0];
-		this.avg_nums = [0, 0, 0, 0];
-		this.target_avgs = target_avgs;
-		
-		this.harmony = harmony;
 		this.history = [];
 	}
-	updateAvgs(next_score){
-		for(var voice = 0; voice < 4; voice++){
-			var value = (this.harmony.getValue(voice, 0) + this.harmony.getValue(voice, 1) + this.harmony.getValue(voice, 2)) / 3;
-			this.avg_nums[voice] = next_score.avg_nums[voice] + 1;
-			this.avgs[voice] = next_score.getNextAvg(voice, value);
+	getNumNotes(voice){
+		if(this.values[1][voice] != this.values[2][voice]){
+			return 3;
+		}
+		else if(this.values[0][voice] != this.values[1][voice]){
+			return 2;
+		}
+		else{
+			return 1;
 		}
 	}
-	getAvgScore(next_score, voice, value){
-		if(voice != 0 || this.harmony.end_of_phrase){
-			return 0;
-		}
-		var score = 0;
-		var target_avg = this.target_avgs[voice];
-		var avg = next_score.getNextAvg(voice, value);
-		var diff = Math.abs(target_avg - avg);
-		if(diff > 2){
-			if((value > avg && avg > target_avg) || (value < avg && avg < target_avg)){
-				score += diff * 5;
-			}
-		}
-		if(Math.abs(value - target_avg) > 5){
-			score += 20;
-		}
-		return score;
+	getValue(voice, index){
+		return this.values[index][voice];
 	}
-	getNextAvg(voice, value){
-		return (this.avgs[voice] * this.avg_nums[voice] + value) / (this.avg_nums[voice] + 1);
+	setScore(voice, score){
+		this.scores[voice] = score;
+	}
+	getScore(voice){
+		return this.scores[voice];
+	}
+	setNotes(voice, values, num_notes, motion){
+		for(var i = 0; i < num_notes; i++){
+			this.values[i][voice] = values[i];
+		}
+		for(var i = num_notes; i < 3; i++){
+			this.values[i][voice] = values[num_notes - 1];
+		}
+		this.motion[voice] = motion;
+	}
+	getMotion(voice){
+		return this.motion[voice];
 	}
 	addToHistory(){
 		var copy = [[], [], []];
@@ -308,46 +316,6 @@ class ScoreUnit {
 			}
 		}
 		return false;
-	}
-}
-
-class HarmonyUnit {
-	constructor(chord, target_avgs, end_of_phrase){
-		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
-		this.motion = [null, null, null, null];
-		
-		this.chord = chord;
-		this.bass_degree = null;
-		
-		this.end_of_phrase = end_of_phrase;
-		
-		this.score = new ScoreUnit(target_avgs, this);
-	}
-	getNumNotes(voice){
-		if(this.values[1][voice] != this.values[2][voice]){
-			return 3;
-		}
-		else if(this.values[0][voice] != this.values[1][voice]){
-			return 2;
-		}
-		else{
-			return 1;
-		}
-	}
-	getValue(voice, index){
-		return this.values[index][voice];
-	}
-	setNotes(voice, values, num_notes, motion){
-		for(var i = 0; i < num_notes; i++){
-			this.values[i][voice] = values[i];
-		}
-		for(var i = num_notes; i < 3; i++){
-			this.values[i][voice] = values[num_notes - 1];
-		}
-		this.motion[voice] = motion;
-	}
-	getMotion(voice){
-		return this.motion[voice];
 	}
 }
 
