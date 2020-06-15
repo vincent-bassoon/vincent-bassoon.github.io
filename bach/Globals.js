@@ -325,6 +325,10 @@ class MotionFunctions {
 			     "MORDENT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
 			     "SUSPENSION": 8};
 		
+		this.super_type = {"CONSTANT": 0, "STEP": null, "THIRD": null, "LEAP": 1,
+				   "MORDENT": 2, "TURN": 3, "PASSING_8": 3, "PASSING_16": 2,
+				   "SUSPENSION": null};
+		
 		this.max_score = max_score;
 	}
 	getNumChanges(motion){
@@ -396,11 +400,12 @@ class MotionFunctions {
 		}
 		return options;
 	}
-	getMotionScore(voice, motion, next_motion){
+	getMotionScore(harmony, index, voice, motion){
 		var score = 1;
 		if(motion == this.type.SUSPENSION){
 			score = 0;
 		}
+		var next_motion = harmony[index + 1].getMotion(voice);
 		var direction = this.direction(motion);
 		var next_direction = this.direction(next_motion);
 		motion = Math.abs(motion);
@@ -430,24 +435,34 @@ class MotionFunctions {
 				//leap down then up, or up then down
 				score += 20;
 			}
-			return score;
 		}
-		if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
+		else if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
 			//consecutive stagnation
 			score += 10;
 			if(voice == 0){
 				score += 10;
 			}
-			return score;
 		}
-		if(motion == this.type.LEAP && next_direction != direction * -1){
+		else if(motion == this.type.LEAP && next_direction != direction * -1){
 			// big leap must be followed by step in opposite direction
 			score += 20;
 			if(voice == 0){
-				score = this.max_score + 1;
+				return this.max_score + 1;
 			}
 		}
-		return score;
+		return score + this.getMotionHistoryScore(harmony, index, voice, this.super_type[motion]);
+	}
+	getMotionHistoryScore(harmony, index, voice, super_type){
+		return 0;
+		if(super_type == null){
+			return 0;
+		}
+		var score = 0;
+		for(var i = 1; i < 4; i++){
+			if(index + 1 < harmony.length - 1 && super_type == this.super_type[harmony[index].getMotion(voice)]){
+				
+			}
+		}
 	}
 }
 
