@@ -325,10 +325,6 @@ class MotionFunctions {
 			     "MORDENT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
 			     "SUSPENSION": 8};
 		
-		this.super_type = {"CONSTANT": 0, "STEP": null, "THIRD": null, "LEAP": 1,
-				   "MORDENT": 2, "TURN": 3, "PASSING_8": 3, "PASSING_16": 2,
-				   "SUSPENSION": null};
-		
 		this.max_score = max_score;
 	}
 	getNumChanges(motion){
@@ -450,17 +446,18 @@ class MotionFunctions {
 				return this.max_score + 1;
 			}
 		}
-		return score + this.getMotionHistoryScore(harmony, index, voice, this.super_type[motion]);
+		return score + this.getMotionHistoryScore(harmony, index, voice, motion);
 	}
-	getMotionHistoryScore(harmony, index, voice, super_type){
-		return 0;
-		if(super_type == null){
+	getMotionHistoryScore(harmony, index, voice, motion){
+		if(motion != this.type.MORDENT && motion != this.type.PASSING_16){
 			return 0;
 		}
 		var score = 0;
-		for(var i = 1; i < 4; i++){
-			if(index + 1 < harmony.length - 1 && super_type == this.super_type[harmony[index].getMotion(voice)]){
-				
+		var max = Math.min(harmony.length - 1, index + 6);
+		for(var i = 1; i < max; i++){
+			motion = harmony[index].getMotion(voice);
+			if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
+				return this.max_score + 1;
 			}
 		}
 	}
