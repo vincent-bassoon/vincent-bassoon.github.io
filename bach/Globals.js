@@ -434,9 +434,9 @@ class MotionFunctions {
 		}
 		else if(motion == this.type.CONSTANT && next_motion == this.type.CONSTANT){
 			//consecutive stagnation
-			score += 10;
+			score += 15;
 			if(voice == 0){
-				score += 10;
+				score += 15;
 			}
 		}
 		else if(motion == this.type.LEAP && next_direction != direction * -1){
@@ -446,9 +446,12 @@ class MotionFunctions {
 				return this.max_score + 1;
 			}
 		}
-		if(harmony[index + 1].end_of_phrase){
-			if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
+		if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
+			if(harmony[index + 1].end_of_phrase){
 				return this.max_score + 1;
+			}
+			else{
+				score += 20;
 			}
 		}
 		return score + this.getMotionHistoryScore(harmony, index, voice, motion);
