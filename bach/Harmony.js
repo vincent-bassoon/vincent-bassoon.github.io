@@ -150,13 +150,10 @@ class HarmonyFunctions {
 	}
 	checkSus(sus_degree, bass_degree, doubling){
 		if(sus_degree == 0){
-			return (bass_degree == 0);
+			return (bass_degree == 0 || (bass_degree == 1 && doubling != 0));
 		}
-		else if(sus_degree == 1){
+		if(sus_degree == 1){
 			return (doubling != 1 && bass_degree == 0);
-		}
-		else if(sus_degree == 2){
-			return (doubling != 2 && bass_degree == 1);
 		}
 		return false;
 	}
