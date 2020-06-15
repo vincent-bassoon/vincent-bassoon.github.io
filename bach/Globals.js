@@ -294,9 +294,9 @@ class HarmonyUnit {
 	addToHistory(){
 		var copy = [[], [], []];
 		for(var i = 0; i < 4; i++){
-			copy[0][i] = this.harmony.values[0][i];
-			copy[1][i] = this.harmony.values[1][i];
-			copy[2][i] = this.harmony.values[2][i];
+			copy[0][i] = this.values[0][i];
+			copy[1][i] = this.values[1][i];
+			copy[2][i] = this.values[2][i];
 		}
 		this.history.push(copy);
 	}
@@ -306,7 +306,7 @@ class HarmonyUnit {
 			equals = true;
 			for(var j = 0; j < 3; j++){
 				for(var k = 0; k < 4; k++){
-					if(this.history[i][j][k] != this.harmony.values[j][k]){
+					if(this.history[i][j][k] != this.values[j][k]){
 						equals = false;
 					}
 				}
