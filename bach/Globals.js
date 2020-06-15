@@ -252,7 +252,6 @@ class HarmonyUnit {
 		this.degree = [null, null, null, null];
 		
 		this.chord = chord;
-		this.bass_degree = null;
 		
 		this.end_of_phrase = end_of_phrase;
 		
