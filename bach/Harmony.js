@@ -223,18 +223,6 @@ class HarmonyFunctions {
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
-		/*if(key.valueToNum(next_value) == undefined){
-			//this check isn't well written and is also possibly unnecessary
-			//could also check if names are equal between keys
-			console.log("next pitch not in current key");
-			return;
-		}*/
-		for(var i = 0; i < queue.length; i++){
-			if(queue[i] != this.mf.type.SUSPENSION){
-				queue.splice(i, 1);
-				i--;
-			}
-		}
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
