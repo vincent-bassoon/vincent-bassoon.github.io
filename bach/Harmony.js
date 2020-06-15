@@ -177,9 +177,6 @@ class HarmonyFunctions {
 			}
 		}
 		if(order_index == 4){
-			if(index + 1 < harmony.length && !harmony[index].end_of_phrase){
-				harmony[index].score.updateAvgs(harmony[index + 1].score);
-			}
 			return this.generateSingleHarmony(harmony, index - 1);
 		}
 		var voice = voice_order[order_index];
@@ -258,7 +255,6 @@ class HarmonyFunctions {
 				if(!this.nf.inPrefRange(avg_value, voice)){
 					score += 10;
 				}
-				//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, avg_value);
 				if(score < this.max_single_score){
 					for(var i = 0; i < options.length; i++){
 						if(score < options[i].score){
@@ -321,8 +317,6 @@ class HarmonyFunctions {
 		if(!this.nf.inPrefRange(value, voice)){
 			score += 10;
 		}
-		
-		//score += harmony[index].score.getAvgScore(harmony[index + 1].score, voice, value);
 		
 		if(score < this.max_single_score){
 			for(var i = 0; i < options.length; i++){
@@ -413,29 +407,19 @@ class HarmonyFunctions {
 	createEmptyHarmony(phrase_lengths, chords){
 		var harmony = [];
 		
-		var target_avgs = [];
 		var phrase_ends = [];
 		var index = 0;
 		for(var i = 0; i < phrase_lengths.length; i++){
-			var value;
-			if(i == 0 || i == phrase_lengths.length - 1){
-				value = (8 + 48) + chooseInt({0: 0.36, 1: 0.34, 2: 0.3});
-			}
-			else{
-				value = target_avgs[i - 1] + chooseInt({1: 0.6, 2: 0.4});
-			}
 			index += phrase_lengths[i];
 			phrase_ends.push(index - 1);
-			target_avgs.push(value);
 		}
 		for(var i = 0; i < chords.length; i++){
 			if(phrase_ends[0] == i){
 				phrase_ends.shift();
-				target_avgs.shift();
-				harmony.push(new HarmonyUnit(chords[i], [null, null, null, null], true));
+				harmony.push(new HarmonyUnit(chords[i], true));
 			}
 			else{
-				harmony.push(new HarmonyUnit(chords[i], [target_avgs[0], null, null, null], false));
+				harmony.push(new HarmonyUnit(chords[i], false));
 			}
 		}
 		return harmony;
