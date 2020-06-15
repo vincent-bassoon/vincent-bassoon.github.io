@@ -249,6 +249,7 @@ class HarmonyUnit {
 	constructor(chord, end_of_phrase){
 		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
 		this.motion = [null, null, null, null];
+		this.degree = [null, null, null, null];
 		
 		this.chord = chord;
 		this.bass_degree = null;
@@ -279,14 +280,18 @@ class HarmonyUnit {
 	getScore(voice){
 		return this.scores[voice];
 	}
-	setNotes(voice, values, num_notes, motion){
+	setNotes(voice, values, degree, num_notes, motion){
 		for(var i = 0; i < num_notes; i++){
 			this.values[i][voice] = values[i];
 		}
 		for(var i = num_notes; i < 3; i++){
 			this.values[i][voice] = values[num_notes - 1];
 		}
+		this.degree[voice] = degree;
 		this.motion[voice] = motion;
+	}
+	getDegree(voice){
+		return this.degree[voice];
 	}
 	getMotion(voice){
 		return this.motion[voice];
