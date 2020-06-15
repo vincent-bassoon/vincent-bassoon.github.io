@@ -451,7 +451,7 @@ class MotionFunctions {
 				return this.max_score + 1;
 			}
 			else{
-				score += 20;
+				score += 30;
 			}
 		}
 		return score + this.getMotionHistoryScore(harmony, index, voice, motion);
