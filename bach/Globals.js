@@ -411,6 +411,18 @@ class MotionFunctions {
 		motion = Math.abs(motion);
 		next_motion = Math.abs(next_motion);
 		
+		if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
+			if(harmony[index + 1].end_of_phrase){
+				return this.max_score + 1;
+			}
+			else{
+				score += 30;
+			}
+		}
+		
+		if(index + 1 == harmony.length - 1){
+			return score;
+		}
 		//restrictions for mordents
 		if(motion == this.type.MORDENT && next_direction != direction * -1){
 			return this.max_score + 1;
@@ -448,14 +460,6 @@ class MotionFunctions {
 			score += 20;
 			if(voice == 0){
 				return this.max_score + 1;
-			}
-		}
-		if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
-			if(harmony[index + 1].end_of_phrase){
-				return this.max_score + 1;
-			}
-			else{
-				score += 30;
 			}
 		}
 		return score + this.getMotionHistoryScore(harmony, index, voice, motion);
