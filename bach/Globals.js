@@ -447,7 +447,7 @@ class MotionFunctions {
 			}
 		}
 		if(harmony[index + 1].end_of_phrase){
-			if(motion == this.type.MORDENT || motion == this.type.TURN || motion == this.type.PASSING_16){
+			if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
 				return this.max_score + 1;
 			}
 		}
