@@ -134,7 +134,7 @@ class HarmonyFunctions {
 		if(order_index == 0){
 			return false;
 		}
-		if(order_index == 3 && harmony[index].score.equalsHistory()){
+		if(order_index == 3 && harmony[index].equalsHistory()){
 			return true;
 		}
 		if(this.hasNctError(harmony, index, voice_order, order_index)){
@@ -201,7 +201,7 @@ class HarmonyFunctions {
 					if(voice == 3){
 						harmony[index].bass_degree = option.degree;
 					}
-					harmony[index].score.scores[voice] = option.score;
+					harmony[index].setScore(voice, option.score);
 					voicing[option.degree] -= 1;
 					if(!this.hasErrors(harmony, index, voice_order, order_index) &&
 					   this.fillHarmony(harmony, index, options, voice_order, order_index + 1,
@@ -399,7 +399,7 @@ class HarmonyFunctions {
 			}
 		}
 		if(index + 1 < harmony.length){
-			harmony[index + 1].score.addToHistory();
+			harmony[index + 1].addToHistory();
 			this.retrace_attempts -= 1;
 		}
 		return false;
@@ -429,7 +429,7 @@ class HarmonyFunctions {
 		for(var i = 0; i < harmony.length; i++){
 			var sum = 0;
 			for(var voice = 0; voice < 4; voice++){
-				sum += harmony[i].score.scores[voice];
+				sum += harmony[i].getScore(voice);
 			}
 			avg += (sum / 4);
 		}
