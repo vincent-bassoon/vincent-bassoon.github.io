@@ -446,9 +446,15 @@ class MotionFunctions {
 				return this.max_score + 1;
 			}
 		}
+		if(harmony[index + 1].end_of_phrase){
+			if(motion == this.type.MORDENT || motion == this.type.TURN || motion == this.type.PASSING_16){
+				return this.max_score + 1;
+			}
+		}
 		return score + this.getMotionHistoryScore(harmony, index, voice, motion);
 	}
 	getMotionHistoryScore(harmony, index, voice, motion){
+		return 0;
 		if(motion != this.type.MORDENT && motion != this.type.PASSING_16){
 			return 0;
 		}
