@@ -374,7 +374,7 @@ class MotionFunctions {
 			return this.type.LEAP * parity;
 		}
 	}
-	getMotionOptions(voice, simple_motion, suspension){
+	getMotionOptions(voice, simple_motion, suspension, sixteenths){
 		var direction = this.direction(simple_motion);
 		var options = [];
 		if(suspension){
@@ -388,7 +388,7 @@ class MotionFunctions {
 				}
 				break;
 			case this.type.STEP:
-				if(voice != 3){
+				if(voice != 3 && sixteenths){
 					options.push(this.type.TURN * direction);
 				}
 				break;
@@ -396,7 +396,9 @@ class MotionFunctions {
 				options.push(this.type.PASSING_8 * direction);
 				break;
 			case this.type.LEAP:
-				options.push(this.type.PASSING_16 * direction);
+				if(sixteenths){
+					options.push(this.type.PASSING_16 * direction);
+				}
 		}
 		return options;
 	}
