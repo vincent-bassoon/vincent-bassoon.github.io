@@ -254,22 +254,16 @@ class Score {
 				voices[4 + i].addTickables(measure.ghost_voices[i]).setStave(staves[i]);
 				all_voices.push(voices[4 + i]);
 			}
-			/*voices[6 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-			var notes = [];
-			for(var j = 0; j < measure.duration; j++){
-				notes.push(new this.vf.GhostNote({"clef": this.voice_clefs[2 * i], "keys": ["c/4"], "duration": "q"}));
-			}
-			voices[6 + i].addTickables(notes).setStave(staves[i]);*/
 		}
 		var indent = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
 		if(initial_indent != null){
-			indent = initial_indent
+			indent = initial_indent;
 		}
 		for(var i = 0; i < 2; i++){
 			staves[i].setNoteStartX(indent);
 			this.formatter.joinVoices([voices[2 * i], voices[2 * i + 1]]);
 		}
-		this.formatter.format(all_voices, staves[0].getNoteEndX() - staves[0].getNoteStartX() - 10);
+		this.formatter.format(all_voices, staves[0].getNoteEndX() - staves[0].getNoteStartX() - 23);
 		for(var i = 0; i < all_voices.length; i++){
 			all_voices[i].setContext(this.context).draw();
 		}
