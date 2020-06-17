@@ -242,37 +242,37 @@ class Score {
 			staves[i].setContext(this.context).draw();
 		}
 		var voices = {};
-		var all_voices = [];
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
 			voices[i].addTickables(measure.notes[i]).setStave(staves[Math.floor(i / 2)]);
-			all_voices.push(voices[i]);
 		}
 		for(var i = 0; i < 2; i++){
 			if(measure.ghost_voices[i] != null){
-				voices[6 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-				voices[6 + i].addTickables(measure.ghost_voices[i]).setStave(staves[i]);
-				all_voices.push(voices[6 + i]);
+				voices[4 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+				voices[4 + i].addTickables(measure.ghost_voices[i]).setStave(staves[i]);
 			}
-			voices[4 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+			voices[6 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
 			var notes = [];
 			for(var j = 0; j < measure.duration; j++){
 				notes.push(new this.vf.GhostNote({"clef": this.voice_clefs[2 * i], "keys": ["c/4"], "duration": "q"}));
 			}
-			voices[4 + i].addTickables(notes).setStave(staves[i]);
-			all_voices.unshift(voices[4 + i]);
+			voices[6 + i].addTickables(notes).setStave(staves[i]);
 		}
-		this.formatter.joinVoices([voices[4], voices[0], voices[1]]);
-		this.formatter.joinVoices([voices[5], voices[2], voices[3]]);
 		var indent = Math.max(staves[0].getNoteStartX(), staves[1].getNoteStartX());
 		if(initial_indent != null){
 			indent = initial_indent
 		}
-		this.formatter.format(all_voices, staves[0].width - (indent - staves[0].x));
-		staves[0].setNoteStartX(indent);
-		staves[1].setNoteStartX(indent);
-		for(var i = 0; i < all_voices.length; i++){
-			all_voices[i].setContext(this.context).draw();
+		for(var i = 0; i < 2; i++){
+			staves[i].setNoteStartX(indent);
+			var voices_temp = [voices[2 * i], voices[2 * i + 1], voices[6 + i]];
+			this.formatter.joinVoices(voices_temp);
+			if(4 + i in voices){
+				voices_temp.push(voices[4 + i]);
+			}
+			this.formatter.formatToStave(voices_temp, staves[i]);
+			for(var j = 0; j < voices_temp.length; j++){
+				voices_temp[j].setContext(this.context).draw();
+			}
 		}
 		for(var i = 0; i < measure.beams.length; i++){
 			measure.beams[i].setContext(this.context).draw();
