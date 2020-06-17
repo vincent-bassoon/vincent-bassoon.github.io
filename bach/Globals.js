@@ -246,11 +246,12 @@ class Chord {
 
 
 class HarmonyUnit {
-	constructor(chord, end_of_phrase){
+	constructor(chord, end_of_phrase, sixteenths){
 		this.values = [[null, null, null, null], [null, null, null, null], [null, null, null, null]];
 		this.motion = [null, null, null, null];
 		this.degree = [null, null, null, null];
 		
+		this.sixteenths = sixteenths;	
 		this.chord = chord;
 		
 		this.end_of_phrase = end_of_phrase;
