@@ -14,8 +14,6 @@ class HarmonyFunctions {
 		
 		this.state = {"running": 0, "success": 1, "failure": 2};
 		this.current_state = false;
-		
-		this.avg_num_16 = (Math.random() * 2) / 8;
 	}
 	
 	getVoicing(doubling){
@@ -23,7 +21,7 @@ class HarmonyFunctions {
 		voicing[doubling] += 1;
 		return voicing;
 	}
-	getShuffledOrder(length){
+	getRandomOrder(length){
 		var order = [];
 		for(var i = 0; i < length; i++){
 			order.push(i);
@@ -39,7 +37,7 @@ class HarmonyFunctions {
 		return order;
 	}
 	getVoiceOrder(options){
-		var order = this.getShuffledOrder(4);
+		var order = this.getRandomOrder(4);
 		var voice_order = [];
 		var avgs = {};
 		for(var j = 0; j < 4; j++){
@@ -232,10 +230,9 @@ class HarmonyFunctions {
 	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
-		var sixteenths = false;
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
-		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, sixteenths);
+		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, harmony[index].sixteenths);
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
@@ -416,22 +413,41 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
+	randomInt(min, max){
+		return Math.floor((Math.random() * (max - min)) + min);
+	}
 	createEmptyHarmony(phrase_lengths, chords){
 		var harmony = [];
 		
-		var phrase_ends = [];
+		var phrase_ends = [0];
 		var index = 0;
 		for(var i = 0; i < phrase_lengths.length; i++){
 			index += phrase_lengths[i];
 			phrase_ends.push(index - 1);
 		}
+		
+		
+		var sixteenths = [];
+		for(var i = 0; i < chords.length; i++){
+			sixteenths.push(false);
+		}
+		var length = phrase_lengths.length;
+		var num_sixteenths = Math.random() * 2 * length;
+		var order = this.getRandomOrder(length);
+		for(var i = 0; i < num_sixteenths; i++){
+			var phrase_index = order[i % length];
+			sixteenths[this.randomInt(phrase_ends[phrase_index], phrase_ends[phrase_index + 1])] = true;
+		}
+		
+		
+		phrase_ends.shift();
 		for(var i = 0; i < chords.length; i++){
 			if(phrase_ends[0] == i){
 				phrase_ends.shift();
-				harmony.push(new HarmonyUnit(chords[i], true));
+				harmony.push(new HarmonyUnit(chords[i], true, sixteenths[i]));
 			}
 			else{
-				harmony.push(new HarmonyUnit(chords[i], false));
+				harmony.push(new HarmonyUnit(chords[i], false, sixteenths[i]));
 			}
 		}
 		return harmony;
