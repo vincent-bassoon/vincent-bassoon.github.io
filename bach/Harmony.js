@@ -14,6 +14,8 @@ class HarmonyFunctions {
 		
 		this.state = {"running": 0, "success": 1, "failure": 2};
 		this.current_state = false;
+		
+		this.avg_num_16 = (Math.random() * 2) / 8;
 	}
 	
 	getVoicing(doubling){
@@ -223,9 +225,10 @@ class HarmonyFunctions {
 	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
+		var sixteenths = false;
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
-		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension);
+		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, sixteenths);
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
