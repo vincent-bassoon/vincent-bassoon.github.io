@@ -23,16 +23,23 @@ class HarmonyFunctions {
 		voicing[doubling] += 1;
 		return voicing;
 	}
-	shuffleVoiceOrder(options){
-		var order = [0, 1, 2, 3];
+	getShuffledOrder(length){
+		var order = [];
+		for(var i = 0; i < length; i++){
+			order.push(i);
+		}
 		var current_index = order.length, temp_value, random_index;
-		while (0 !== current_index) {
+		while (current_index != 0) {
 			random_index = Math.floor(Math.random() * current_index);
 			current_index -= 1;
 			temp_value = order[current_index];
 			order[current_index] = order[random_index];
 			order[random_index] = temp_value;
 		}
+		return order;
+	}
+	getVoiceOrder(options){
+		var order = this.getShuffledOrder(4);
 		var voice_order = [];
 		var avgs = {};
 		for(var j = 0; j < 4; j++){
@@ -396,7 +403,7 @@ class HarmonyFunctions {
 		}
 		var options = this.generateOptions(harmony, index);
 		if(options != null){
-			var voice_order = this.shuffleVoiceOrder(options);
+			var voice_order = this.getVoiceOrder(options);
 			for(var doubling = 0; doubling < 3; doubling++){
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
 					return true;
