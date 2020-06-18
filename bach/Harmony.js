@@ -360,6 +360,10 @@ class HarmonyFunctions {
 					}
 				}
 			}
+			if(!has_next_value && voice == 0){
+				min_degree = 0;
+				max_degree = 1;
+			}
 			for(var degree = min_degree; degree <= max_degree; degree++){
 				if(!has_next_value){
 					var value = this.nf.getValueInPrefRange(chord.pitches[degree], voice);
