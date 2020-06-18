@@ -306,7 +306,7 @@ class HarmonyFunctions {
 			// this check ignores augmented/diminished unison
 			return;
 		}
-		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase && next_motion != this.mf.type.SUSPENSION){
+		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
