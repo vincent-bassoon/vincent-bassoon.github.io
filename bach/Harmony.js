@@ -251,6 +251,12 @@ class HarmonyFunctions {
 				//as it stands, unresolved leading tones are allowed within nct seq
 			}
 			values.pop();
+			if(valid && next_motion == this.mf.type.SUSPENSION){
+				if(value[value.length - 1] != next_value ||
+				   next_key.valueToName(next_value) != key.valueToName(value[value.length - 1])){
+					valid = false;
+				}
+			}
 			if(valid){
 				var score = this.mf.getMotionScore(harmony, index, voice, motion);
 				if(motion == this.mf.type.SUSPENSION && degree == 0 && values[0] - values[1] == 1){
@@ -292,12 +298,6 @@ class HarmonyFunctions {
 		var change = next_value - value;
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
-		
-		if(next_motion == this.mf.type.SUSPENSION){
-			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
-				return;
-			}
-		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
 			return;
@@ -310,6 +310,11 @@ class HarmonyFunctions {
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+		}
+		if(next_motion == this.mf.type.SUSPENSION){
+			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
+				return;
+			}
 		}
 		
 		if(Math.abs(change) > 5 && !(voice == 3 && (Math.abs(change) == 7 || Math.abs(change) == 12))){
