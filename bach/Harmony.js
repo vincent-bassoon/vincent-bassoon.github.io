@@ -241,7 +241,13 @@ class HarmonyFunctions {
 			var valid = true;
 			for(var i = num_changes.length - 1; i >= 0; i--){
 				var num = ((start_num + num_changes[i] + 7 - 1) % 7) + 1;
-				var pitch = key.numToPitch(num);
+				var pitch;
+				if(i > 0){
+					pitch = key.numToPitch(num);
+				}
+				else{
+					pitch = value % 12;
+				}
 				values.unshift(this.nf.getValueClosestTo(pitch, values[0]));
 				names.unshift(key.valueToName(pitch));
 				if(this.nf.isAugOrDim(values[1] - values[0], names[0], names[1])){
