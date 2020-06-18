@@ -300,7 +300,7 @@ class HarmonyFunctions {
 			return;
 		}
 		else if(index + 1 == harmony.length - 1 && voice == 0 && harmony[index + 1].getDegree(voice) == 1 &&
-			value < harmony[index + 1].getValue){
+			value < harmony[index + 1].getValue(voice, 0)){
 			return;
 		}
 		var next_key = harmony[index + 1].chord.key;
