@@ -242,11 +242,11 @@ class HarmonyFunctions {
 			for(var i = num_changes.length - 1; i >= 0; i--){
 				var num = ((start_num + num_changes[i] + 7 - 1) % 7) + 1;
 				var pitch;
-				if(i > 0){
-					pitch = key.numToPitch(num);
+				if(num_changes[i] == 0){
+					pitch = value % 12;
 				}
 				else{
-					pitch = value % 12;
+					pitch = key.numToPitch(num);
 				}
 				values.unshift(this.nf.getValueClosestTo(pitch, values[0]));
 				names.unshift(key.valueToName(pitch));
