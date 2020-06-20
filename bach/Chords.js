@@ -5,10 +5,14 @@ class ChordFunctions {
 		//{2: 0.65, 4: 0.35}
 		this.chord_to_class = {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5};
 		this.class_to_chord = {0: 1, 2: 2, 3: 4, 4: 6, 5: 3};
-		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
+		// 3-6-4/2-5-1
+		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
-		// 3-6-4/2-5-1
+		
+		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
+		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
+		
 	}
 	generateChord(roman_num, key, inversion){
 		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
@@ -90,7 +94,29 @@ class ChordFunctions {
 		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generateSegmentChords(phrase_data){
+	generatePhraseChords(phrase_lengths, key, index){
+		var cadence;
+		
+		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
+		if(index == phrase_lengths.length - 1){
+			if(key.modality == "minor"){
+				cadence = choose({"pac": 0.3, "pacm": 0.7});
+			}
+			else{
+				cadence = "pac";
+			}
+		}
+		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
+		else{
+			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+		}
+		
+		var cadence_length = this.cadence_lengths[cadence];
+		// 4 beat cadence includes a 64 tonic
+		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
+			cadence_length++;
+		}
+		
 		var sub_phrase_lengths = this.generateSubPhrases(phrase_data);
 		var chords = [];
 		var key = phrase_data.key;
@@ -182,5 +208,11 @@ class ChordFunctions {
 		sub_phrase_lengths.push(cad_length);
 		console.log("phrase lengths: ", sub_phrase_lengths);
 		return sub_phrase_lengths;
+	}
+	generateChords(key, phrase_lengths){
+		var chords = [];
+		this.generatePhraseChords(phrase_lengths, key, 0);
+		
+		
 	}
 }
