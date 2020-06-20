@@ -190,6 +190,9 @@ class Key {
 		}
 		return accidentals;
 	}
+	equals(key){
+		return this.pitch == key.pitch && this.modality = key.modality;
+	}
 }
 
 class KeyGenerator {
