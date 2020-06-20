@@ -111,12 +111,45 @@ class PhraseData {
 }
 
 class Key {
-	constructor(pitch, modality, pitch_to_num, pitch_to_name, num_to_pitch){
-		this.pitch = pitch;
-		this.modality = modality;
-		this.pitch_to_num = pitch_to_num;
-		this.num_to_pitch = num_to_pitch;
-		this.pitch_to_name = pitch_to_name;
+	constructor(key_pitch, key_modality, kg){
+		this.pitch = key_pitch;
+		this.modality = key_modality;
+		this.key_generator = kg;
+		
+		var pitches = kg.pitches[this.pitch];
+		this.pitch_to_name = {};
+		this.pitch_to_num = {};
+		var letter_index = kg.key_pitch_to_letter_index[this.modality][this.pitch];
+		for(var i = 0; i < pitches.length; i++){
+			var pitch = (pitches[i] + this.pitch) % 12;
+			var num = kg.pitch_to_num[pitches[i]];
+			var name = kg.letters[(num - 1 + letter_index) % 7];
+			name += kg.getAccidental(kg.letter_to_pitch[name], pitch);
+			this.pitch_to_name[pitch] = name;
+			this.pitch_to_num[pitch] = num;
+		}
+		this.num_to_pitch = {};
+		for(var num in kg.num_to_pitch[this.modality]){
+			this.num_to_pitch[num] = (kg.num_to_pitch[this.modality][num] + this.pitch) % 12;
+		}
+		
+		this.mod_freqs = {};
+		this.mod_choices = [];
+		for(var pitch in kg.mod_freqs[this.modality]){
+			var key_pitch = (this.pitch + pitch) % 12;
+			var key_modality;
+			if(pitch == 0 || pitch == 5 || pitch == 7){
+				key_modality = this.modality;
+			}
+			else{
+				key_modality = kg.opposite_modality[this.modality];
+			}
+			var key_letter = kg.letters[kg.key_pitch_to_letter_index[key_modality][key_pitch]];
+			if(key_letter == this.pitch_to_name[key_pitch].substring(0, 1)){
+				this.mod_freqs[key_pitch] = kg.mod_freqs[this.modality][pitch];
+				this.mod_choices.push(key_pitch);
+			}
+		}
 	}
 	numToPitch(num){
 		return this.num_to_pitch[num];
@@ -126,6 +159,18 @@ class Key {
 	}
 	valueToName(value){
 		return this.pitch_to_name[value % 12];
+	}
+	getModulation(){
+		var pitch = chooseIntFromFreqs(this.mod_freqs, this.mod_choices);
+		var modality;
+		var num = this.pitch_to_num[pitch];
+		if(num == 1 || num == 4 || num == 5){
+			modality = this.modality;
+		}
+		else{
+			modality = this.key_functions.opposite_modality[this.modality];
+		}
+		return this.key_functions.getKey(pitch, modality);
 	}
 	getAccidentals(){
 		//Note: this function returns an object using lower case letters as keys
@@ -172,6 +217,11 @@ class KeyGenerator {
 				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
 		this.pitches = {"major": [0, 2, 4, 5, 7, 9, 11], "minor": [0, 2, 3, 5, 7, 8, 10, 11]};
 		
+		this.mod_freqs = {"major": {0: 0.5, 2: 0.07, 4: 0.01, 5: 0.1, 7: 0.19, 9: 0.13},
+				  "minor": {0: 0.5, 3: 0.12, 5: 0.05, 7: 0.19, 8: 0.1, 10: 0.04}};
+		
+		this.opposite_modality = {"major": "minor", "minor": "major"};
+		
 		this.keys = {"major": {}, "minor": {}};
 		
 	}
@@ -194,31 +244,12 @@ class KeyGenerator {
 		}
 		return accidental;
 	}
-	createKey(key_pitch, key_modality){
-		var pitches = this.pitches[key_modality];
-		var pitch_to_name = {};
-		var pitch_to_num = {};
-		var letter_index = this.key_pitch_to_letter_index[key_modality][key_pitch];
-		for(var i = 0; i < pitches.length; i++){
-			var pitch = (pitches[i] + key_pitch) % 12;
-			var num = this.pitch_to_num[pitches[i]];
-			var name = this.letters[(num - 1 + letter_index) % 7];
-			name += this.getAccidental(this.letter_to_pitch[name], pitch);
-			pitch_to_name[pitch] = name;
-			pitch_to_num[pitch] = num;
-		}
-		var num_to_pitch = {};
-		for(var num in this.num_to_pitch[key_modality]){
-			num_to_pitch[num] = (this.num_to_pitch[key_modality][num] + key_pitch) % 12;
-		}
-		return new Key(key_pitch, key_modality, pitch_to_num, pitch_to_name, num_to_pitch);
-	}
 	getKey(pitch, modality){
 		if(pitch in this.keys[modality]){
 			return this.keys[modality][pitch];
 		}
 		else{
-			var key = this.createKey(pitch, modality);
+			var key = new Key(pitch, modality, this);
 			this.keys[modality][pitch] = key;
 			return key;
 		}
