@@ -116,7 +116,7 @@ class Key {
 		this.modality = key_modality;
 		this.key_generator = kg;
 		
-		var pitches = kg.pitches[this.pitch];
+		var pitches = kg.pitches[this.modality];
 		this.pitch_to_name = {};
 		this.pitch_to_num = {};
 		var letter_index = kg.key_pitch_to_letter_index[this.modality][this.pitch];
