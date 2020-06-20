@@ -1,15 +1,9 @@
 function generateChoralePlan(key, cadence_num, pickup){
-	var lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
-	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
 	var phrase_lengths = {};
 	
-	var num_beats = {7: 8, 8: 8, 9: 10, 10: 12};
-	var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
-	var beats_sum = 0;
 	for(var i = 0; i < cadence_num; i++){
 		// 75% 7-8 note segment length, 25% 9-10 note length
 		phrase_lengths[i] = pickup + chooseInt({7: 0.75, 9: 0.25});
-		beats_sum += num_beats[phrase_lengths[i]];
 	}
 	
 	var chorale_plan = [];
@@ -35,10 +29,6 @@ function generateChoralePlan(key, cadence_num, pickup){
 		// 4 beat cadence includes a 64 tonic
 		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
 			cadence_length++;
-		}
-		var fermata_duration = fermata_lengths[phrase_lengths[i]];
-		if(i == cadence_num - 1 && beats_sum % 4 != 0){
-			fermata_duration += (4 - (beats_sum % 4));
 		}
 		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration,
 						 cadence, cadence_length, previous_cadence_chord));
@@ -69,17 +59,17 @@ function generateNewChorale(data, sampler){
 	var key_generator = new KeyGenerator();
 	var chord_functions = new ChordFunctions(key_generator);
 	
-	var chorale_plan = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup);
+	var phrase_lengths = [];
+	for(var i = 0; i < cadence_num; i++){
+		// 75% 7-8 note segment length, 25% 9-10 note length
+		phrase_lengths.push(pickup + chooseInt({7: 0.75, 9: 0.25}));
+	}
 	
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		chords.push(...chord_functions.generateSegmentChords(chorale_plan[i]));
+		chords.push(chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths));
 	}
 	var counter = 0;
-	var phrase_lengths = [];
-	for(var i = 0; i < chorale_plan.length; i++){
-		phrase_lengths.push(chorale_plan[i].phrase_length);
-	}
 	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
 		generateNewChorale(data, sampler);
 		counter++;
