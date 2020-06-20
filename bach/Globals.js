@@ -135,7 +135,8 @@ class Key {
 		
 		this.mod_freqs = {};
 		this.mod_choices = [];
-		for(var pitch in kg.mod_freqs[this.modality]){
+		for(var pitch_string in kg.mod_freqs[this.modality]){
+			var pitch = parseInt(pitch_string);
 			var key_pitch = (this.pitch + pitch) % 12;
 			var key_modality;
 			if(pitch == 0 || pitch == 5 || pitch == 7){
