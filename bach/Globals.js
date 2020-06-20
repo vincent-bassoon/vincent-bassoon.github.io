@@ -151,6 +151,9 @@ class Key {
 				this.mod_choices.push(key_pitch);
 			}
 		}
+		
+		this.pivot_freqs = kg.pivot_freqs[this.modality];
+		this.qualities = kg.qualities[this.modality];
 	}
 	numToPitch(num){
 		return this.num_to_pitch[num];
@@ -190,8 +193,24 @@ class Key {
 		}
 		return accidentals;
 	}
+	getChordQuality(num){
+		return this.qualities[num];
+	}
 	equals(key){
 		return this.pitch == key.pitch && this.modality = key.modality;
+	}
+	getPivotChordNum(next_key){
+		var choices = [];
+		for(var num in this.pivot_freqs){
+			var pitch = this.num_to_pitch[pitch];
+			if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch]){
+				choices.push(num);
+			}
+		}
+		if(choices.length == 0){
+			return null;
+		}
+		return chooseIntFromFreqs(this.pivot_freqs, choices);
 	}
 }
 
@@ -223,6 +242,12 @@ class KeyGenerator {
 		
 		this.mod_freqs = {"major": {0: 0.5, 2: 0.07, 4: 0.01, 5: 0.1, 7: 0.19, 9: 0.13},
 				  "minor": {0: 0.5, 3: 0.12, 5: 0.05, 7: 0.19, 8: 0.1, 10: 0.04}};
+		
+		this.pivot_freqs = {"major": {1: 0.25, 2: 0.09, 3: 0.02, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.04},
+				    "minor": {1: 0.25, 2: 0.04, 3: 0.09, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.02}};
+		
+		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
+				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
 		
 		this.opposite_modality = {"major": "minor", "minor": "major"};
 		
