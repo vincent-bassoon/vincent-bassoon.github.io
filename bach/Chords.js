@@ -7,9 +7,6 @@ class ChordFunctions {
 		this.class_to_chord = {0: 1, 2: 2, 3: 4, 4: 6, 5: 3};
 		// 3-6-4/2-5-1
 		
-		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
-				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
-		
 		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
 		
@@ -94,11 +91,13 @@ class ChordFunctions {
 		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generatePhraseChords(phrase_lengths, key, index){
+	generatePhrase(phrase_lengths, key, prev_chord, prev_key, index){
 		var cadence;
+		var start_key = prev_key;
+		var end_key;
 		
-		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
 		if(index == phrase_lengths.length - 1){
+			end_key = key;
 			if(key.modality == "minor"){
 				cadence = choose({"pac": 0.3, "pacm": 0.7});
 			}
@@ -106,7 +105,6 @@ class ChordFunctions {
 				cadence = "pac";
 			}
 		}
-		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
 		else{
 			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
 		}
@@ -117,24 +115,23 @@ class ChordFunctions {
 			cadence_length++;
 		}
 		
+		var pivot_num = null;
+		
+		do{
+			end_key = start_key.getModulation();
+			if(!start_key.equals(end_key)){
+				pivot_num = null;
+			}
+			else{
+				pivot_num = start_key.getPivotChordNum(end_key);
+			}
+		}while(!start_key.equals(end_key) && pivot_num == null);
+		
 		var sub_phrase_lengths = this.generateSubPhrases(phrase_data);
 		var chords = [];
 		var key = phrase_data.key;
 		
-		// first chords manual input (to avoid vii)
-		var first_phrase_length = sub_phrase_lengths.shift();
-		if(first_phrase_length == 1){
-			chords.push(this.generateChord(1, key, null));
-		}
-		else if(first_phrase_length == 2){
-			chords.push(this.generateChord(5, key, null));
-			chords.push(this.generateChord(1, key, null));
-		}
-		else{
-			console.log("first sub phrase length error: ", first_phrase_length);
-		}
-		
-		var cadence_chords = this.generateCadenceChords(phrase_data.cadence, phrase_data.cadence_length,
+		var cadence_chords = this.generateCadenceChords(cadence, cadence_length,
 								  sub_phrase_lengths.pop(), key);
 		for(var i = 0; i < sub_phrase_lengths.length; i++){
 			chords.push(...this.generatePhraseChords(sub_phrase_lengths[i], key));
@@ -211,7 +208,13 @@ class ChordFunctions {
 	}
 	generateChords(key, phrase_lengths){
 		var chords = [];
-		this.generatePhraseChords(phrase_lengths, key, 0);
+		var prev_key = key;
+		var prev_chord = null;
+		for(var i = 0; i < phrase_lengths.length; i++){
+			chords.push(...this.generatePhrase(phrase_lengths, key, prev_chord, prev_key, i));
+			prev_chord = chords[chords.length - 1];
+			prev_key = prev_chord.key;
+		}
 		
 		
 	}
