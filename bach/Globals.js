@@ -168,9 +168,9 @@ class Key {
 			modality = this.modality;
 		}
 		else{
-			modality = this.key_functions.opposite_modality[this.modality];
+			modality = this.key_generator.opposite_modality[this.modality];
 		}
-		return this.key_functions.getKey(pitch, modality);
+		return this.key_generator.getKey(pitch, modality);
 	}
 	getAccidentals(){
 		//Note: this function returns an object using lower case letters as keys
