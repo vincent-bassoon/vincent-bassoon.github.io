@@ -164,18 +164,6 @@ class Key {
 	valueToName(value){
 		return this.pitch_to_name[value % 12];
 	}
-	getModulation(){
-		var pitch = chooseIntFromFreqs(this.mod_freqs, this.mod_choices);
-		var modality;
-		var num = this.pitch_to_num[pitch];
-		if(num == 1 || num == 4 || num == 5){
-			modality = this.modality;
-		}
-		else{
-			modality = this.key_generator.opposite_modality[this.modality];
-		}
-		return this.key_generator.getKey(pitch, modality);
-	}
 	getAccidentals(){
 		//Note: this function returns an object using lower case letters as keys
 		var accidentals = {};
@@ -199,7 +187,32 @@ class Key {
 	equals(key){
 		return this.pitch == key.pitch && this.modality = key.modality;
 	}
-	getPivotChordNum(next_key){
+	getModulation(current_key, type){
+		var choices = [];
+		for(var i = 0; i < this.mod_choices.length; i++){
+			choices.push(this.mod_choices[i]);
+		}
+		while(choices.length > 0){
+			var pitch = chooseIntFromFreqsRemove(this.mod_freqs, this.mod_choices);
+			var modality;
+			var num = this.pitch_to_num[pitch];
+			if(num == 1 || num == 4 || num == 5){
+				modality = this.modality;
+			}
+			else{
+				modality = this.key_generator.opposite_modality[this.modality];
+			}
+			var next_key = this.key_generator.getKey(pitch, modality);
+			if(type == "pivot"){
+				var pivot = current_key.getPivotNum(next_key);
+				if(pivot != null){
+					return {"key": next_key, "type": type, "pivot": pivot};
+				}
+			}
+		}
+		return null;
+	}
+	getPivotNum(next_key){
 		var choices = [];
 		for(var num in this.pivot_freqs){
 			var pitch = this.num_to_pitch[pitch];
@@ -240,8 +253,8 @@ class KeyGenerator {
 				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
 		this.pitches = {"major": [0, 2, 4, 5, 7, 9, 11], "minor": [0, 2, 3, 5, 7, 8, 10, 11]};
 		
-		this.mod_freqs = {"major": {0: 0.5, 2: 0.07, 4: 0.01, 5: 0.1, 7: 0.19, 9: 0.13},
-				  "minor": {0: 0.5, 3: 0.12, 5: 0.05, 7: 0.19, 8: 0.1, 10: 0.04}};
+		this.mod_freqs = {"major": {2: 0.14, 4: 0.02, 5: 0.2, 7: 0.38, 9: 0.26},
+				  "minor": {3: 0.24, 5: 0.1, 7: 0.38, 8: 0.2, 10: 0.08}};
 		
 		this.pivot_freqs = {"major": {1: 0.25, 2: 0.09, 3: 0.02, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.04},
 				    "minor": {1: 0.25, 2: 0.04, 3: 0.09, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.02}};
