@@ -91,13 +91,42 @@ class ChordFunctions {
 		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generatePhrase(phrase_lengths, key, prev_chord, prev_key, index){
+	generatePhrase(phrase_lengths, key, index){
 		var cadence;
-		var start_key = prev_key;
-		var end_key;
+		var start_key;
+		if(index == 0){
+			start_key = key;
+		}
+		else{
+			start_key = phrase_lengths[index - 1][phrase_lengths[index - 1].length].key;
+		}
+		
+		var probs;
+		if(index == phrase_lengths.length - 1){
+			if(start_key.equals(key)){
+				probs = {0: 0.9, 2: 0.1};
+			}
+			else{
+				probs = {1: 0.9, 2: 0.1};
+			}
+		}
+		else if(index == 0){
+			probs = {0: 0.7, 1: 0.2, 2: 0.1};
+		}
+		else{
+			probs = {0: 0.3, 1: 0.4, 2: 0.25, 3: 0.05};
+		}
+		
+		var choices = [];
+		for(var num in probs){
+			choices.push(parseInt(num));
+		}
+		
+		while(choices.length > 0){
+			this.generateModulations(phrase_lengths, key, index, start_key, chooseIntFromFreqsRemove(probs, choices));
+		}
 		
 		if(index == phrase_lengths.length - 1){
-			end_key = key;
 			if(key.modality == "minor"){
 				cadence = choose({"pac": 0.3, "pacm": 0.7});
 			}
@@ -206,16 +235,17 @@ class ChordFunctions {
 		console.log("phrase lengths: ", sub_phrase_lengths);
 		return sub_phrase_lengths;
 	}
-	generateChords(key, phrase_lengths){
-		var chords = [];
-		var prev_key = key;
-		var prev_chord = null;
-		for(var i = 0; i < phrase_lengths.length; i++){
-			chords.push(...this.generatePhrase(phrase_lengths, key, prev_chord, prev_key, i));
-			prev_chord = chords[chords.length - 1];
-			prev_key = prev_chord.key;
+	generateModulations(key, phrase_lengths){
+			
+			for(var j = 0; j < num_mods; j++){
+				var mod = key.getModulation(modulations[modulations.length - 1].key);
+				if(mod != 0)
+			}
 		}
-		
+	}
+	generateChords(key, phrase_lengths){
+		var phrases = {};
+		this.generatePhrase(phrase_lengths, key, 0);
 		
 	}
 }
