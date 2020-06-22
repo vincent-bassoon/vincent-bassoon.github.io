@@ -93,6 +93,27 @@ class ChordFunctions {
 	}
 	generatePhrase(phrase_lengths, key, index){
 		var cadence;
+		if(index == phrase_lengths.length - 1){
+			if(key.modality == "minor"){
+				cadence = choose({"pac": 0.3, "pacm": 0.7});
+			}
+			else{
+				cadence = "pac";
+			}
+		}
+		else if(index == 0){
+			cadence = choose({"pac": 0.4, "pac/iac": 0.37, "hc": 0.23});
+		}
+		else{
+			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+		}
+		
+		var cadence_length = this.cadence_lengths[cadence];
+		// 4 beat cadence includes a 64 tonic
+		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
+			cadence_length++;
+		}
+		
 		var start_key;
 		if(index == 0){
 			start_key = key;
@@ -126,23 +147,7 @@ class ChordFunctions {
 			this.generateModulations(phrase_lengths, key, index, start_key, chooseIntFromFreqsRemove(probs, choices));
 		}
 		
-		if(index == phrase_lengths.length - 1){
-			if(key.modality == "minor"){
-				cadence = choose({"pac": 0.3, "pacm": 0.7});
-			}
-			else{
-				cadence = "pac";
-			}
-		}
-		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
-		}
 		
-		var cadence_length = this.cadence_lengths[cadence];
-		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
-			cadence_length++;
-		}
 		
 		var pivot_num = null;
 		
