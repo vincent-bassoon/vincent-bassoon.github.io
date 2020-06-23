@@ -1,42 +1,3 @@
-function generateChoralePlan(key, cadence_num, pickup){
-	var phrase_lengths = {};
-	
-	for(var i = 0; i < cadence_num; i++){
-		// 75% 7-8 note segment length, 25% 9-10 note length
-		phrase_lengths[i] = pickup + chooseInt({7: 0.75, 9: 0.25});
-	}
-	
-	var chorale_plan = [];
-	var previous_cadence_chord = null;
-	for(var i = 0; i < cadence_num; i++){
-		var cadence;
-		
-		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
-		if(i == cadence_num - 1){
-			if(key.modality == "minor"){
-				cadence = choose({"pac": 0.3, "pacm": 0.7});
-			}
-			else{
-				cadence = "pac";
-			}
-		}
-		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
-		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
-		}
-		
-		var cadence_length = lengths[cadence];
-		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
-			cadence_length++;
-		}
-		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration,
-						 cadence, cadence_length, previous_cadence_chord));
-		previous_cadence_chord = endings[cadence];
-	}
-	return chorale_plan;
-}
-
 function generateNewChorale(data, sampler){
 	// Decide basic structure
 	
@@ -65,9 +26,9 @@ function generateNewChorale(data, sampler){
 		phrase_lengths.push(pickup + chooseInt({7: 0.75, 9: 0.25}));
 	}
 	
-	var chords = [];
-	for(var i = 0; i < cadence_num; i++){
-		chords.push(chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths));
+	var chords = null;
+	while(chords == null){
+		chords = chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths);
 	}
 	var counter = 0;
 	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
