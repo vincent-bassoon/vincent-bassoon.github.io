@@ -10,6 +10,8 @@ class ChordFunctions {
 		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
 		
+		this.state = {"running": 0, "success": 1, "failure": 2};
+		this.current_state = this.state.running;
 	}
 	generateChord(roman_num, key, inversion){
 		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
@@ -91,7 +93,7 @@ class ChordFunctions {
 		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generatePhrase(phrase_lengths, key, index){
+	generatePhrase(key, chords, phrase_lengths, index){
 		var cadence;
 		if(index == phrase_lengths.length - 1){
 			if(key.modality == "minor"){
@@ -119,7 +121,11 @@ class ChordFunctions {
 			start_key = key;
 		}
 		else{
-			start_key = phrase_lengths[index - 1][phrase_lengths[index - 1].length].key;
+			var chord_index = 0;
+			for(var i = 0; i < index; i++){
+				chord_index += phrase_lengths[i];
+			}
+			start_key = chords[chord_index - 1].key;
 		}
 		
 		var probs;
@@ -143,12 +149,16 @@ class ChordFunctions {
 			choices.push(parseInt(num));
 		}
 		
+		
 		while(choices.length > 0){
-			this.generateModulations(phrase_lengths, key, index, start_key, chooseIntFromFreqsRemove(probs, choices));
+			if(this.generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, chooseIntFromFreqsRemove(probs, choices))){
+				return true;
+			}
 		}
-		
-		
-		
+		return false;
+	}
+	generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, num_mods){
+		if(
 		var pivot_num = null;
 		
 		do{
@@ -240,17 +250,13 @@ class ChordFunctions {
 		console.log("phrase lengths: ", sub_phrase_lengths);
 		return sub_phrase_lengths;
 	}
-	generateModulations(key, phrase_lengths){
-			
-			for(var j = 0; j < num_mods; j++){
-				var mod = key.getModulation(modulations[modulations.length - 1].key);
-				if(mod != 0)
-			}
-		}
-	}
 	generateChords(key, phrase_lengths){
-		var phrases = {};
-		this.generatePhrase(phrase_lengths, key, 0);
-		
+		var chords = [];
+		this.generatePhrase(key, chords, phrase_lengths, 0);
+		if(this.current_state != this.state.success){
+			console.log("FAILED TO GENERATE CHORDS");
+			return null;
+		}
+		return chords;
 	}
 }
