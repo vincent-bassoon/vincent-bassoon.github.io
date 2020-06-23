@@ -13,7 +13,7 @@ class HarmonyFunctions {
 		this.mf = new MotionFunctions(this.max_single_score);
 		
 		this.state = {"running": 0, "success": 1, "failure": 2};
-		this.current_state = false;
+		this.current_state = this.state.running;
 	}
 	
 	getVoicing(doubling){
@@ -406,7 +406,7 @@ class HarmonyFunctions {
 		return options;
 	}
 	generateSingleHarmony(harmony, index){
-		if(this.current_state != 0){
+		if(this.current_state != this.state.running){
 			return true;
 		}
 		if(index == -1){
