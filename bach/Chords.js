@@ -93,44 +93,18 @@ class ChordFunctions {
 		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
 		return cadence_chords;
 	}
-	generatePhrase(key, chords, phrase_lengths, index){
-		var cadence;
-		if(index == phrase_lengths.length - 1){
-			if(key.modality == "minor"){
-				cadence = choose({"pac": 0.3, "pacm": 0.7});
-			}
-			else{
-				cadence = "pac";
-			}
-		}
-		else if(index == 0){
-			cadence = choose({"pac": 0.4, "pac/iac": 0.37, "hc": 0.23});
-		}
-		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
-		}
-		
-		var cadence_length = this.cadence_lengths[cadence];
-		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
-			cadence_length++;
-		}
-		
-		var start_key;
+	generatePhrase(key, chords, phrase_data, index){
+		var prev_key;
 		if(index == 0){
-			start_key = key;
+			prev_key = key;
 		}
 		else{
-			var chord_index = 0;
-			for(var i = 0; i < index; i++){
-				chord_index += phrase_lengths[i];
-			}
-			start_key = chords[chord_index - 1].key;
+			prev_key = chords[phrase_data[index].chord_index - 1].key;
 		}
 		
 		var probs;
-		if(index == phrase_lengths.length - 1){
-			if(start_key.equals(key)){
+		if(index == phrase_data.length - 1){
+			if(prev_key.equals(key)){
 				probs = {0: 0.9, 2: 0.1};
 			}
 			else{
@@ -151,14 +125,13 @@ class ChordFunctions {
 		
 		
 		while(choices.length > 0){
-			if(this.generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, chooseIntFromFreqsRemove(probs, choices))){
+			if(this.generateModulations(key, chords, phrase_lengths, index, chooseIntFromFreqsRemove(probs, choices))){
 				return true;
 			}
 		}
 		return false;
 	}
 	generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, num_mods){
-		if(
 		var pivot_num = null;
 		
 		do{
@@ -250,9 +223,41 @@ class ChordFunctions {
 		console.log("phrase lengths: ", sub_phrase_lengths);
 		return sub_phrase_lengths;
 	}
+	generatePhraseData(phrase_lengths){
+		var phrase_data = [];
+		var sum = 0;
+		for(var i = 0; i < phrase_lengths.length; i++){
+			var cadence;
+			if(i == phrase_lengths.length - 1){
+				if(key.modality == "minor"){
+					cadence = choose({"pac": 0.3, "pacm": 0.7});
+				}
+				else{
+					cadence = "pac";
+				}
+			}
+			else if(i == 0){
+				cadence = choose({"pac": 0.4, "pac/iac": 0.37, "hc": 0.23});
+			}
+			else{
+				cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+			}
+			
+			var cadence_length = this.cadence_lengths[cadence];
+			// 4 beat cadence includes a 64 tonic
+			if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
+				cadence_length++;
+			}
+			
+			phrase_data.push({"length": phrase_lengths[i], "chord_index": sum, "cadence": cadence, "cadence_length": cadence_length});
+			sum += phrase_lengths[i];
+		}
+		return phrase_data;
+	}
 	generateChords(key, phrase_lengths){
+		var phrase_data = this.generatePhraseData(phrase_lengths);
 		var chords = [];
-		this.generatePhrase(key, chords, phrase_lengths, 0);
+		this.generatePhrase(key, chords, phrase_data, 0);
 		if(this.current_state != this.state.success){
 			console.log("FAILED TO GENERATE CHORDS");
 			return null;
