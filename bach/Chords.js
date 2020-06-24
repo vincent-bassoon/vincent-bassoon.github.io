@@ -118,18 +118,9 @@ class ChordFunctions {
 			probs = {0: 0.3, 1: 0.4, 2: 0.25, 3: 0.05};
 		}
 		
-		var choices = [];
-		for(var num in probs){
-			choices.push(parseInt(num));
-		}
+		var num_mods = chooseInt(probs);
 		
 		
-		while(choices.length > 0){
-			if(this.generateModulations(key, chords, phrase_lengths, index, chooseIntFromFreqsRemove(probs, choices))){
-				return true;
-			}
-		}
-		return false;
 	}
 	generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, num_mods){
 		var pivot_num = null;
