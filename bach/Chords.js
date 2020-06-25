@@ -228,10 +228,19 @@ class ChordFunctions {
 				}
 			}
 			else if(i == 0){
-				cadence = choose({"pac": 0.4, "pac/iac": 0.37, "hc": 0.23});
+				cadence = choose({"pac": 0.39, "pac/iac": 0.37, "hc": 0.24});
 			}
 			else{
-				cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+				var probs = {"pac": 0.37, "pac/iac": 0.34, "hc": 0.21, "dc": 0.07, "pc": 0.01};
+				if(i == 0){
+					cadence = chooseFromFreqs(probs, ["pac", "pac/iac", "hc"]);
+				}
+				else if(i + 1 == phrase_lengths.length - 1){
+					cadence = chooseFromFreqs(probs, ["hc", "dc", "pc"]);
+				}
+				else{
+					cadence = choose(probs);
+				}
 			}
 			
 			var cadence_length = this.cadence_lengths[cadence];
