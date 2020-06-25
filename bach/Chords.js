@@ -4,7 +4,7 @@ class ChordFunctions {
 		// 0 is I, 1 is V or vii, 2 ii, 3 IV, 4 vi, 5 iii
 		//{2: 0.65, 4: 0.35}
 		this.chord_to_class = {1: 0, 5: 1, 7: 1, 2: 2, 4: 3, 6: 4, 3: 5};
-		this.class_to_chord = {0: 1, 2: 2, 3: 4, 4: 6, 5: 3};
+		this.class_to_chord = {2: 2, 3: 4, 4: 6, 5: 3};
 		// 3-6-4/2-5-1
 		
 		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
@@ -17,8 +17,11 @@ class ChordFunctions {
 		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
 	}
 	getChordRomanNum(chord_class){
+		if(chord_class == 0){
+			return chooseInt({1: 0.95, 6: 0.05});
+		}
 		if(chord_class == 1){
-			return chooseInt({5: 0.95, 7: 0.05})
+			return chooseInt({5: 0.9, 7: 0.1});
 		}
 		else{
 			return this.class_to_chord[chord_class];
@@ -119,6 +122,8 @@ class ChordFunctions {
 		}
 		
 		var num_mods = chooseInt(probs);
+		
+		var modulations = null;
 		
 		
 	}
