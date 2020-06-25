@@ -125,37 +125,10 @@ class ChordFunctions {
 		
 		var modulations = null;
 		
-		
-	}
-	generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, num_mods){
-		var pivot_num = null;
-		
-		do{
-			end_key = start_key.getModulation();
-			if(!start_key.equals(end_key)){
-				pivot_num = null;
-			}
-			else{
-				pivot_num = start_key.getPivotChordNum(end_key);
-			}
-		}while(!start_key.equals(end_key) && pivot_num == null);
-		
-		var sub_phrase_lengths = this.generateSubPhrases(phrase_data);
-		var chords = [];
-		var key = phrase_data.key;
-		
-		var cadence_chords = this.generateCadenceChords(cadence, cadence_length,
-								  sub_phrase_lengths.pop(), key);
-		for(var i = 0; i < sub_phrase_lengths.length; i++){
-			chords.push(...this.generatePhraseChords(sub_phrase_lengths[i], key));
+		var spaces = phrase_data[index].length - phrase_data[index].cadence_length;
+		while(spaces > 0 && modulations.length > 0){
+			
 		}
-		chords.push(...cadence_chords);
-		var string = "" + chords[0].roman_num;
-		for(var i = 1; i < chords.length; i++){
-			string += ", " + chords[i].roman_num;
-		}
-		console.log("chords: ", string);
-		return chords;
 	}
 	generateSubPhrases(phrase_data){
 		var sub_phrase_lengths = [];
@@ -218,6 +191,36 @@ class ChordFunctions {
 		sub_phrase_lengths.push(cad_length);
 		console.log("phrase lengths: ", sub_phrase_lengths);
 		return sub_phrase_lengths;
+	}
+	generateModulations(key, chords, phrase_lengths, index, cadence, cadence_length, num_mods){
+		var pivot_num = null;
+		
+		do{
+			end_key = start_key.getModulation();
+			if(!start_key.equals(end_key)){
+				pivot_num = null;
+			}
+			else{
+				pivot_num = start_key.getPivotChordNum(end_key);
+			}
+		}while(!start_key.equals(end_key) && pivot_num == null);
+		
+		var sub_phrase_lengths = this.generateSubPhrases(phrase_data);
+		var chords = [];
+		var key = phrase_data.key;
+		
+		var cadence_chords = this.generateCadenceChords(cadence, cadence_length,
+								  sub_phrase_lengths.pop(), key);
+		for(var i = 0; i < sub_phrase_lengths.length; i++){
+			chords.push(...this.generatePhraseChords(sub_phrase_lengths[i], key));
+		}
+		chords.push(...cadence_chords);
+		var string = "" + chords[0].roman_num;
+		for(var i = 1; i < chords.length; i++){
+			string += ", " + chords[i].roman_num;
+		}
+		console.log("chords: ", string);
+		return chords;
 	}
 	generatePhraseData(phrase_lengths){
 		var phrase_data = [];
