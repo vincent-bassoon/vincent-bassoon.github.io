@@ -97,12 +97,15 @@ class ChordFunctions {
 		return cadence_chords;
 	}
 	generatePhrase(key, chords, phrase_data, index){
+		var prev_chord;
 		var prev_key;
 		if(index == 0){
+			prev_chord = null;
 			prev_key = key;
 		}
 		else{
-			prev_key = chords[phrase_data[index].chord_index - 1].key;
+			prev_chord = chords[phrase_data[index].chord_index - 1];
+			prev_key = prev_chord.key;
 		}
 		
 		var probs;
@@ -123,11 +126,36 @@ class ChordFunctions {
 		
 		var num_mods = chooseInt(probs);
 		
-		var modulations = null;
+		var possible_mods = null;
+		
+		switch(prev_chord.roman_num){
+			case 1:
+				probs = {1: 0.6, 2: 0.4};
+				break;
+			case 5:
+				probs = {1: 0.85, 2: 0.15};
+				break;
+			case 6:
+				probs = {1: 0.9, 2: 0.1};
+				break;
+			default:
+				probs = {1: 0.4, 2: 0.6};
+		}
+		
+		var prev_num = prev_chord.roman_num;
+		
+		var mods = [];
 		
 		var spaces = phrase_data[index].length - phrase_data[index].cadence_length;
-		while(spaces > 0 && modulations.length > 0){
-			
+		while(spaces > 0 && possible_mods.length > 0){
+			var mod = possible_mods.shift();
+			if(mod.nums[0] == prev_num && mod.type = "mediant"){
+				mods.push(mod);
+				spaces -= mod.length;
+			}
+			else{
+				
+			}
 		}
 	}
 	generateSubPhrases(phrase_data){
@@ -136,18 +164,7 @@ class ChordFunctions {
 		// sub_phrase_length of 2 means V-I, 1 means I
 		var probs;
 		switch(phrase_data.previous_cadence_chord){
-			case 1:
-				probs = {1: 0.6, 2: 0.4};
-				break;
-			case 5:
-					probs = {1: 0.85, 2: 0.15};
-				break;
-			case 6:
-				probs = {1: 0.9, 2: 0.1};
-				break;
-			default:
-				// Starting chord: 70% V, 30% I
-				probs = {1: 0.4, 2: 0.6};
+			
 		}
 		sub_phrase_lengths.push(chooseInt(probs));
 		
