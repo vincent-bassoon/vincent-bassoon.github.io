@@ -27,6 +27,26 @@ class ChordFunctions {
 			return this.class_to_chord[chord_class];
 		}
 	}
+	connectNums(prev_num, mod_num, mod_type){
+		var nums = [];
+		if(prev_num == mod_num && mod_type == "mediant"){
+			return nums;
+		}
+		var prev_class = this.num_to_class[prev_num];
+		var mod_class;
+		if(mod_num == 6 && prev_class > 0 && chooseInt({0: 0.2, 0: 0.8}) == 0){
+			mod_class = 0;
+		}
+		else{
+			mod_class = this.num_to_class[mod_num];
+		}
+		if(mod_class >= prev_class){
+			
+		}
+		else{
+			
+		}
+	}
 	generateRemainingChords(phrase_chords, num_chords, next_chord_roman_num, key){
 		var chord_class = this.chord_to_class[next_chord_roman_num];
 		if(5 - chord_class < num_chords){
@@ -160,7 +180,8 @@ class ChordFunctions {
 		}
 		
 		for(var i = mod_index_start; i < mods.length; i++){
-			mods[0].connect_nums = this.connectNums(prev_num, mods[0].nums[0]);
+			mods[i].connect_nums = this.connectNums(prev_num, mods[i].nums[0], mods[i].type);
+			prev_num = mods[i].nums[1];
 		}
 		
 		while(mods.length > min_modulations && this.getLength(mods) > phrase_data[index].length){
