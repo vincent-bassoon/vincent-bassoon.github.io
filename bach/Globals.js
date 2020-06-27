@@ -185,7 +185,7 @@ class Key {
 		return this.qualities[num];
 	}
 	equals(key){
-		return this.pitch == key.pitch && this.modality = key.modality;
+		return this.pitch == key.pitch && this.modality == key.modality;
 	}
 	getModulation(current_key, type){
 		var choices = [];
