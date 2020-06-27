@@ -5,7 +5,7 @@ class ChordFunctions {
 		//{2: 0.65, 4: 0.35}
 		// 3-6-4/2-5-1
 		
-		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
+		this.cadence_lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
 		
 		this.state = {"running": 0, "success": 1, "failure": 2};
@@ -192,12 +192,42 @@ class ChordFunctions {
 	finalizeModulations(mods, phrase_length){
 		var additions = phrase_length - this.getLength(mods);
 	}
-	addToChords(mods, chords, chord_index, prev_key){
+	addToChords(mods, chords, chord_index, prev_key, cad){
 		for(var i = 0; i < mods.length; i++){
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
-				
+				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null);
+				chord_index++;
 			}
-			
+			if(mods[i].type == "cadence"){
+				for(var j = 0; j < mods[i].nums.length; j++){
+					var inversion = null;
+					if(j + this.cadences[cad].length >= mods[i].nums.length){
+						inversion = 1;
+					}
+					else if(mods[i].nums[j] == 1){
+						inversion = 2;
+					}
+					
+					if(cad == "pacm" && j == mods[i].nums.length - 1){
+						this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0));
+					}
+					else{
+						this.generateChord(mods[i].nums[j], prev_key, inversion));
+					}
+					chord_index++;
+				}
+			}
+			else{
+				var start = 0;
+				if(mods[i].type == "pivot"){
+					start = 1;
+				}
+				for(var j = start; j < 2; j++){
+					chords[chord_index] = this.generateChord(mods[i].nums[j], mods[i].keys[j], null);
+					chord_index++;
+				}
+				prev_key = mods[i].keys[1];
+			}
 		}
 	}
 	getLength(mods){
@@ -254,7 +284,7 @@ class ChordFunctions {
 		var prev_num = prev_chord.roman_num;
 		var mod_index_start = 0;
 		
-		if(mods[0].nums[0] == prev_num && mods[0].type = "mediant"){
+		if(mods[0].nums[0] == prev_num && mods[0].type == "mediant"){
 			mod_index_start = 1;
 			prev_num = mods[0].nums[1];
 		}
@@ -291,7 +321,7 @@ class ChordFunctions {
 		}
 		else{
 			if(this.finalizeModulations(mods, phrase_data[index].length)){
-				this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key);
+				this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
 				return this.generatePhrase(key, chords, phrase_data, index + 1);
 			}
 		}
