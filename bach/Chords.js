@@ -245,6 +245,7 @@ class ChordFunctions {
 	}
 	generatePhrase(key, chords, phrase_data, index){
 		if(index == phrase_data.length){
+			this.current_state = this.state.success;
 			return true;
 		}
 		
@@ -313,18 +314,16 @@ class ChordFunctions {
 		
 		while(mods.length > min_modulations && this.getLength(mods) > phrase_data[index].length){
 			mods.splice(mods.length - 2, 1);
-			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1],
-									      mods[mods.length - 1].nums[0]);
+			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0]);
 		}
-		if(this.getLength(mods) > phrase_data[index].length){
+		if(this.getLength(mods) > phrase_data[index].length || (index = phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key))){
 			return false;
 		}
-		else{
-			if(this.finalizeModulations(mods, phrase_data[index].length)){
-				this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
-				return this.generatePhrase(key, chords, phrase_data, index + 1);
-			}
+		else if(this.finalizeModulations(mods, phrase_data[index].length)){
+			this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
+			return this.generatePhrase(key, chords, phrase_data, index + 1);
 		}
+		return false;
 	}
 	generatePhraseData(phrase_lengths){
 		var phrase_data = [];
