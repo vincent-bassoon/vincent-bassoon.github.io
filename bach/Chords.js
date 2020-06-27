@@ -6,10 +6,12 @@ class ChordFunctions {
 		// 3-6-4/2-5-1
 		
 		this.cadence_lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
-		this.cadences = {"pac": [1, 5], "pac/iac": [1], "hc": [5], "dc": [6, 5], "pc": [1, 4], "pacm": [1, 5]};
+		this.cadences = {"pac": [5, 1], "pac/iac": [1], "hc": [5], "dc": [5, 6], "pc": [4, 1], "pacm": [5, 1]};
 		
-		this.state = {"running": 0, "success": 1, "failure": 2};
-		this.current_state = this.state.running;
+		this.addition_freqs = {1: 5, 2: 15, 3: 46, 4: 37, 5: 6, 6: 1};
+		this.class_chances = {1: 1, 2: 0.6, 3: 0.2, 4: 0.02};
+		
+		this.phrase_attempts = 5;
 	}
 	generateChord(roman_num, key, inversion){
 		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
@@ -46,7 +48,7 @@ class ChordFunctions {
 				return 3;
 		}
 	}
-	connectNums(prev_num, mod_num){
+	connectNums(prev_num, mod_num, additions){
 		var nums = [];
 		
 		var prev_class = this.numToClass(mod_num);
@@ -63,134 +65,70 @@ class ChordFunctions {
 		}
 		else{
 			end_class = mod_class + 1;
+			if(additions != 0){
+				return null;
+			}
 		}
 		for(var i = prev_class - 1; i >= end_class; i--){
 			nums.push(this.classToNum(i));
 		}
-		return nums;
-	}/*
-	generateRemainingChords(phrase_chords, num_chords, next_chord_roman_num, key){
-		var chord_class = this.chord_to_class[next_chord_roman_num];
-		if(5 - chord_class < num_chords){
-			console.log("phrase length error: ", num_chords);
+		
+		var extra_nums = [];
+		if(additions > 0 && mod_num == 2 && chooseInt({0: 0.35, 1: 0.65}) == 0){
+			extra_nums.push(4);
+			additions--;
 		}
-		else if(num_chords == 0){
-			return;
+		while(additions > 0 && mod_class < 3 && Math.random() < this.class_chances[mod_class + 1]){
+			extra_nums.unshift(this.classToNum(mod_class + 1));
+			mod_class++;
+			additions--;
 		}
-		else if(5 - chord_class == num_chords){
-			for(var i = 0; i < num_chords; i++){
-				chord_class++
-				var num = this.getChordRomanNum(chord_class);
-				phrase_chords.unshift(this.generateChord(num, key, null));
-			}
-			return;
-		}
-		else{
-			var choices = [];
-			for(var i = 2; i <= 3; i++){
-				if(i >= chord_class + 1 && i < chord_class + 1 + num_chords + 1){
-					choices.push(i);
-				}
-			}
-			if(chord_class + num_chords + 1 == 5){
-				choices.push(5);
-			}
-			else if(chord_class + num_chords + 1 == 4){
-				choices.push(4);
-			}
-			// choices should be a subset of [2, 3, (4 or 5)]
-			
-			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
-			var removed = chooseIntFromFreqs(freqs, choices);
-			for(var i = 0; i < num_chords + 1; i++){
-				chord_class++
-				if(chord_class != removed){
-					var num = this.getChordRomanNum(chord_class);
-					phrase_chords.unshift(this.generateChord(num, key, null));
-				}
-			}
-			return;
-		}
-	}
-	// returns chords of a phrase of specified length, first chord of phrase is at index 0
-	generatePhraseChords(phrase_length, key){
-		var phrase_chords = [];
-		phrase_chords.unshift(this.generateChord(1, key, null));
-		this.generateRemainingChords(phrase_chords, phrase_length - 1, 1, key);
-		return phrase_chords;
-	}
-	// returns chords of the entire cadence phrase, first chord of phrase is at index 0
-	generateCadenceChords(cad, cad_length, phrase_length, key){
-		var cadence_chords = [];
-		for(var i = 0; i < this.cadences[cad].length; i++){
-			if(cad == "pacm" && i == 0){
-				cadence_chords.unshift(this.generateChord(this.cadences[cad][i],
-									  this.key_generator.getKey(key.pitch, "major"), 0));
+		if(additions == 1){
+			if(extra_nums.length > 0){
+				extra_nums.shift();
+				additions++;
 			}
 			else{
-				cadence_chords.unshift(this.generateChord(this.cadences[cad][i], key, 0));
+				return null;
 			}
 		}
-		if(cad_length == 4){
-			cadence_chords.unshift(this.generateChord(1, key, 2));
-		}
-		var roman_num = this.cadences[cad][this.cadences[cad].length - 1];
-		this.generateRemainingChords(cadence_chords, phrase_length - cadence_chords.length, roman_num, key);
-		return cadence_chords;
-	}
-	generateSubPhrases(phrase_data){
-		var sub_phrase_lengths = [];
-		
-		// sub_phrase_length of 2 means V-I, 1 means I
-		var probs;
-		switch(phrase_data.previous_cadence_chord){
-			
-		}
-		sub_phrase_lengths.push(chooseInt(probs));
-		
-		var cad_length = phrase_data.cadence_length;
-		var spaces = phrase_data.phrase_length - cad_length - sub_phrase_lengths[0];
-		
-		// frequency of each addition to cadence sub-phrase
-		var freqs = {0: 58, 1: 40, 2: 2};
-		var choices = [0, 1, 2];
-		for(var i = choices.length - 1; i >= 0; i--){
-			if(choices[i] > spaces || choices[i] + 1 == spaces){
-				choices.splice(i, 1);
-			}
-		}
-		cad_length += chooseIntFromFreqs(freqs, choices);
-		spaces = phrase_data.phrase_length - cad_length - sub_phrase_lengths[0];
-		
-		// frequency of each length of sub-phrase
-		freqs = {2: 10, 3: 46, 4: 37, 5: 6, 6: 1};
-		if(sub_phrase_lengths[0] == 2){
-			freqs[2] = 5;
-		}
-		
-		while(spaces > 4){
-			choices = [];
-			for(var i = Math.min(6, spaces); i >= 2; i--){
-				if(i + 1 != spaces){
-					choices.push(i);
+		if(additions > 0){
+			for(var i = 0; i < additions; i++){
+				extra_nums.unshift(this.classToNum(i));
+				if(extra_nums[0] == 2 && i < additions - 1 && chooseInt({0: 0.35, 1: 0.65}) == 0){
+					extra_nums.unshift(4);
+					additions--;
 				}
 			}
-			var length_temp = chooseIntFromFreqs(freqs, choices);
-			sub_phrase_lengths.push(length_temp);
-			spaces -= length_temp;
 		}
-		if(spaces != 0){
-			sub_phrase_lengths.push(spaces);
-			if(spaces == 1){
-				console.log("sub phrase length 1 error");
+		return nums;
+	}
+	finalizeModulations(mods, mod_index, phrase_length){
+		var spaces = phrase_length - this.getLength(mods);
+		if(mod_index == mods.length || spaces == 0){
+			return true;
+		}
+		var choices = [];
+		if(mod_index == mods.length - 1){
+			choices.push(spaces);
+		}
+		else{
+			for(var j = 1; j <= 6; j++){
+				if(j <= spaces){
+					choices.push(j);
+				}
 			}
 		}
-		sub_phrase_lengths.push(cad_length);
-		console.log("phrase lengths: ", sub_phrase_lengths);
-		return sub_phrase_lengths;
-	}*/
-	finalizeModulations(mods, phrase_length){
-		var additions = phrase_length - this.getLength(mods);
+		while(choices.length > 0){
+			var nums_temp = this.connectNums(mods[mod_index - 1].nums[1], mods[mod_index].nums[0], chooseIntFromFreqsRemove(this.addition_freqs, choices));
+			if(nums_temp != null){
+				mods[mod_index].connect_nums = nums_temp;
+				if(this.finalizeModulations(mods, mod_index + 1, phrase_length)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	addToChords(mods, chords, chord_index, prev_key, cad){
 		for(var i = 0; i < mods.length; i++){
@@ -209,7 +147,7 @@ class ChordFunctions {
 					}
 					
 					if(cad == "pacm" && j == mods[i].nums.length - 1){
-						this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0));
+						this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
 					}
 					else{
 						this.generateChord(mods[i].nums[j], prev_key, inversion));
@@ -230,6 +168,19 @@ class ChordFunctions {
 			}
 		}
 	}
+	generateCadence(cadence, length){
+		var nums = [];
+		nums.push(...this.cadences[cadence]);
+		var next_class = this.numToClass(nums[0]);
+		if(length == 4){
+			nums.unshift(1);
+		}
+		for(var i = nums.length; i < length; i++){
+			next_class++;
+			nums.unshift(this.classToNum(next_class));
+		}
+		var cadence = {"type": "cadence", "nums": nums, "connect_nums": []};
+	}
 	getLength(mods){
 		var sum = 0;
 		for(var i = 0; i < mods.length; i++){
@@ -245,29 +196,29 @@ class ChordFunctions {
 	}
 	generatePhrase(key, chords, phrase_data, index){
 		if(index == phrase_data.length){
-			this.current_state = this.state.success;
 			return true;
 		}
 		
-		var prev_chord;
+		var prev_num;
 		var prev_key;
 		if(index == 0){
-			prev_chord = null;
+			prev_num = null;
 			prev_key = key;
 		}
 		else{
-			prev_chord = chords[phrase_data[index].chord_index - 1];
+			var prev_chord = chords[phrase_data[index].chord_index - 1];
+			prev_num = prev_chord.roman_num;
 			prev_key = prev_chord.key;
 		}
 		
-		var min_modulations = 1;
+		var min_modulations = 0;
 		var probs;
 		if(index == phrase_data.length - 1){
 			if(prev_key.equals(key)){
 				probs = {0: 0.9, 2: 0.1};
 			}
 			else{
-				min_modulations = 2;
+				min_modulations = 1;
 				probs = {1: 0.9, 2: 0.1};
 			}
 		}
@@ -281,15 +232,13 @@ class ChordFunctions {
 		var num_mods = chooseInt(probs);
 		
 		var mods = null;
-		
-		var prev_num = prev_chord.roman_num;
-		var mod_index_start = 0;
-		
-		if(mods[0].nums[0] == prev_num && mods[0].type == "mediant"){
-			mod_index_start = 1;
-			prev_num = mods[0].nums[1];
+		while(mods == null){
+			mods = this.generateModulations(key, prev_key, num_mods, index == phrase_data.length - 1);
 		}
-		else{
+		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length));
+		min_modulations += 1;
+		
+		if(!(prev_num != null && mods[0].nums[0] == prev_num && mods[0].type == "mediant")){
 			var probs;
 			switch(prev_num){
 				case 1:
@@ -304,26 +253,42 @@ class ChordFunctions {
 				default:
 					probs = {1: 0.4, 2: 0.6};
 			}
-			prev_num = this.classToNum(chooseInt(probs) - 1);
+			mods.push({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
 		}
 		
-		for(var i = mod_index_start; i < mods.length; i++){
-			mods[i].connect_nums = this.connectNums(prev_num, mods[i].nums[0]);
-			prev_num = mods[i].nums[1];
+		for(var i = 1; i < mods.length; i++){
+			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], 0);
 		}
 		
 		while(mods.length > min_modulations && this.getLength(mods) > phrase_data[index].length){
 			mods.splice(mods.length - 2, 1);
-			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0]);
+			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0], 0);
 		}
 		if(this.getLength(mods) > phrase_data[index].length || (index = phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key))){
 			return false;
 		}
-		else if(this.finalizeModulations(mods, phrase_data[index].length)){
+		else if(this.finalizeModulations(mods, 1, phrase_data[index].length)){
 			this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
-			return this.generatePhrase(key, chords, phrase_data, index + 1);
+			for(var i = 0; i < this.phrase_attempts; i++){
+				if(this.generatePhrase(key, chords, phrase_data, index + 1)){
+					return true;
+				}
+			}
+			return false;
 		}
 		return false;
+	}
+	generateModulations(key, prev_key, num_mods, is_last){
+		var mods = [];
+		for(var i = 0; i < num_mods; i++){
+			if(is_last && i == num_mods - 1){
+				var next_key = key;
+			}
+			else{
+				mods.push(key.getModulation(prev_key));
+				prev_key = mods[mods.length - 1].keys[1];
+			}
+		}
 	}
 	generatePhraseData(phrase_lengths){
 		var phrase_data = [];
@@ -368,11 +333,12 @@ class ChordFunctions {
 	generateChords(key, phrase_lengths){
 		var phrase_data = this.generatePhraseData(phrase_lengths);
 		var chords = [];
-		this.generatePhrase(key, chords, phrase_data, 0);
-		if(this.current_state != this.state.success){
-			console.log("FAILED TO GENERATE CHORDS");
-			return null;
+		for(var i = 0; i < this.phrase_attempts; i++){
+			if(this.generatePhrase(key, chords, phrase_data, 0)){
+				return chords;
+			}
 		}
-		return chords;
+		console.log("FAILED TO GENERATE CHORDS");
+		return null;
 	}
 }
