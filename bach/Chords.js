@@ -303,7 +303,7 @@ class ChordFunctions {
 			}
 		}
 	}
-	generatePhraseData(phrase_lengths){
+	generatePhraseData(key, phrase_lengths){
 		var phrase_data = [];
 		var sum = 0;
 		for(var i = 0; i < phrase_lengths.length; i++){
@@ -344,7 +344,7 @@ class ChordFunctions {
 		return phrase_data;
 	}
 	generateChords(key, phrase_lengths){
-		var phrase_data = this.generatePhraseData(phrase_lengths);
+		var phrase_data = this.generatePhraseData(key, phrase_lengths);
 		var chords = [];
 		for(var i = 0; i < this.phrase_attempts; i++){
 			if(this.generatePhrase(key, chords, phrase_data, 0)){
