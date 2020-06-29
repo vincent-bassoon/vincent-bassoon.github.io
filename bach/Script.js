@@ -2,15 +2,15 @@ function generateNewChorale(data, sampler){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
-	var modality = choose({"major": 0.5, "minor": 0.5});
+	var modality = choose({"major": 50, "minor": 50});
 	// 80% four-cadence length, 20% five-cadence
-	var cadence_num = chooseInt({4: 0.8, 5: 0.2});
+	var cadence_num = chooseInt({4: 80, 5: 20});
 	// 66.7% with pickup, 33.3% without
-	var pickup = chooseInt({1: 0.667, 0: 0.333});
+	var pickup = chooseInt({1: 67, 0: 33});
 	
 	// key
-	var num_accidentals = chooseInt({0: 0.22, 1: 0.23, 2: 0.23, 3: 0.22, 4: 0.07, 5: 0.02, 6: 0.01});
-	var sharp_or_flat = chooseInt({0: 0.5, 2: 0.5}) - 1;
+	var num_accidentals = chooseInt({0: 22, 1: 23, 2: 23, 3: 22, 4: 7, 5: 2, 6: 1});
+	var sharp_or_flat = chooseInt({0: 50, 2: 50}) - 1;
 	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
 	if(modality == "minor"){
 		pitch = (pitch + 9) % 12;
@@ -23,7 +23,7 @@ function generateNewChorale(data, sampler){
 	var phrase_lengths = [];
 	for(var i = 0; i < cadence_num; i++){
 		// 75% 7-8 note segment length, 25% 9-10 note length
-		phrase_lengths.push(pickup + chooseInt({7: 0.75, 9: 0.25}));
+		phrase_lengths.push(pickup + chooseInt({7: 75, 9: 25}));
 	}
 	
 	var chords = null;
