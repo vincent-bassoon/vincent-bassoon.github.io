@@ -202,10 +202,10 @@ class Key {
 	getModulationNums(next_key, type){
 		var choices = [];
 		for(var num in this.type_freqs[type][this.modality]){
-			var pitch = this.num_to_pitch[pitch];
+			var pitch = this.num_to_pitch[num];
 			if(type == "pivot"){
 				if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch] &&
-				   this.qualities[num] == next_key.qualitites[next_key.pitch_to_num[pitch]]){
+				   this.qualities[num] == next_key.qualities[next_key.pitch_to_num[pitch]]){
 					choices.push(num);
 				}
 			}
@@ -216,7 +216,7 @@ class Key {
 		if(choices.length == 0){
 			return null;
 		}
-		return chooseIntFromFreqs(this.pivot_freqs, choices);
+		return chooseIntFromFreqs(this.type_freqs[type][this.modality], choices);
 	}
 }
 
