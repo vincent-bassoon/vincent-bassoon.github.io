@@ -201,7 +201,7 @@ class Key {
 	}
 	getModulationNums(next_key, type){
 		var choices = [];
-		for(var num in this.type_freqs[this.modality][type]){
+		for(var num in this.type_freqs[type][this.modality]){
 			var pitch = this.num_to_pitch[pitch];
 			if(type == "pivot"){
 				if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch] &&
