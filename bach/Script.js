@@ -102,4 +102,4 @@ function configureSampler(){
 	}, "samples/").toDestination();
 }
 
-window.onload = configureSampler;
+//window.onload = configureSampler;
