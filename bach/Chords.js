@@ -39,9 +39,9 @@ class ChordFunctions {
 			case 0:
 				return 1;
 			case 1:
-				return chooseInt({5: 0.9, 7: 0.1});
+				return chooseInt({5: 90, 7: 10});
 			case 2:
-				return chooseInt({4: 0.35, 2: 0.65});
+				return chooseInt({4: 35, 2: 65});
 			case 3:
 				return 6;
 			case 4:
@@ -74,7 +74,7 @@ class ChordFunctions {
 		}
 		
 		var extra_nums = [];
-		if(additions > 0 && mod_num == 2 && chooseInt({0: 0.35, 1: 0.65}) == 0){
+		if(additions > 0 && mod_num == 2 && chooseInt({0: 35, 1: 65}) == 0){
 			extra_nums.push(4);
 			additions--;
 		}
@@ -95,7 +95,7 @@ class ChordFunctions {
 		if(additions > 0){
 			for(var i = 0; i < additions; i++){
 				extra_nums.unshift(this.classToNum(i));
-				if(extra_nums[0] == 2 && i < additions - 1 && chooseInt({0: 0.35, 1: 0.65}) == 0){
+				if(extra_nums[0] == 2 && i < additions - 1 && chooseInt({0: 35, 1: 65}) == 0){
 					extra_nums.unshift(4);
 					additions--;
 				}
@@ -197,7 +197,7 @@ class ChordFunctions {
 	generateModulations(key, prev_key, num_mods, is_last){
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
-			mods.push(key.getModulation(prev_key, choose({"mediant": 0.0, "pivot": 1.0})));
+			mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
 			prev_key = mods[i].keys[1];
 		}
 	}
@@ -222,18 +222,18 @@ class ChordFunctions {
 		var probs;
 		if(index == phrase_data.length - 1){
 			if(prev_key.equals(key)){
-				probs = {0: 0.9, 2: 0.1};
+				probs = {0: 90, 2: 10};
 			}
 			else{
 				min_modulations = 1;
-				probs = {1: 0.9, 2: 0.1};
+				probs = {1: 90, 2: 10};
 			}
 		}
 		else if(index == 0){
-			probs = {0: 0.7, 1: 0.2, 2: 0.1};
+			probs = {0: 70, 1: 20, 2: 10};
 		}
 		else{
-			probs = {0: 0.4, 1: 0.4, 2: 0.15, 3: 0.05};
+			probs = {0: 40, 1: 40, 2: 15, 3: 5};
 		}
 		
 		var num_mods = chooseInt(probs);
@@ -249,16 +249,16 @@ class ChordFunctions {
 			var probs;
 			switch(prev_num){
 				case 1:
-					probs = {1: 0.6, 2: 0.4};
+					probs = {1: 60, 2: 40};
 					break;
 				case 5:
-					probs = {1: 0.85, 2: 0.15};
+					probs = {1: 85, 2: 15};
 					break;
 				case 6:
-					probs = {1: 0.9, 2: 0.1};
+					probs = {1: 90, 2: 10};
 					break;
 				default:
-					probs = {1: 0.4, 2: 0.6};
+					probs = {1: 40, 2: 60};
 			}
 			mods.push({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
 		}
@@ -310,17 +310,17 @@ class ChordFunctions {
 			var cadence;
 			if(i == phrase_lengths.length - 1){
 				if(key.modality == "minor"){
-					cadence = choose({"pac": 0.3, "pacm": 0.7});
+					cadence = choose({"pac": 30, "pacm": 70});
 				}
 				else{
 					cadence = "pac";
 				}
 			}
 			else if(i == 0){
-				cadence = choose({"pac": 0.39, "pac/iac": 0.37, "hc": 0.24});
+				cadence = choose({"pac": 39, "pac/iac": 37, "hc": 24});
 			}
 			else{
-				var probs = {"pac": 0.37, "pac/iac": 0.34, "hc": 0.21, "dc": 0.07, "pc": 0.01};
+				var probs = {"pac": 37, "pac/iac": 34, "hc": 21, "dc": 7, "pc": 1};
 				if(i == 0){
 					cadence = chooseFromFreqs(probs, ["pac", "pac/iac", "hc"]);
 				}
@@ -334,7 +334,7 @@ class ChordFunctions {
 			
 			var cadence_length = this.cadence_lengths[cadence];
 			// 4 beat cadence includes a 64 tonic
-			if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
+			if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 80, 1: 20}) == 0){
 				cadence_length++;
 			}
 			
