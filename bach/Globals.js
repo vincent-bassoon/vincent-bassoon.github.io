@@ -31,7 +31,7 @@ function choose(probs){
 	var choice = null;
 	var sum = 0;
 	for(var key in probs){
-		sum = +(sum + probs[key]).toFixed(12);
+		sum += probs[key];
 		if(sum > num && choice == null){
 			choice = key;
 		}
@@ -39,7 +39,7 @@ function choose(probs){
 	if(choice == null){
 		console.log("Probability null choice error: ", probs);
 	}
-	if(sum != 1.0){
+	if(sum != 100){
 		console.log("Probability sum error: ", probs);
 	}
 	return choice;
@@ -52,12 +52,12 @@ function chooseInt(probs){
 function chooseFromFreqs(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum = +(sum + freqs[choices[i]]).toFixed(12);
+		sum += freqs[choices[i]];
 	}
 	var num = Math.random() * sum;
 	sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum = +(sum + freqs[choices[i]]).toFixed(12);
+		sum += freqs[choices[i]];
 		if(sum > num){
 			return choices[i];
 		}
@@ -73,12 +73,12 @@ function chooseIntFromFreqs(freqs, choices){
 function chooseIntFromFreqsRemove(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum = +(sum + freqs[choices[i]]).toFixed(12);
+		sum += freqs[choices[i]];
 	}
 	var num = Math.random() * sum;
 	sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum = +(sum + freqs[choices[i]]).toFixed(12);
+		sum += freqs[choices[i]];
 		if(sum > num){
 			return parseInt(choices.splice(i, 1)[0]);
 		}
@@ -249,10 +249,10 @@ class KeyGenerator {
 		this.mod_freqs = {"major": {2: 0.14, 4: 0.02, 5: 0.2, 7: 0.38, 9: 0.26},
 				  "minor": {3: 0.24, 5: 0.1, 7: 0.38, 8: 0.2, 10: 0.08}};
 		
-		this.type_freqs = {"pivot": {"major": {1: 0.25, 2: 0.09, 3: 0.02, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.04},
-					     "minor": {1: 0.25, 2: 0.04, 3: 0.09, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.02}},
-				   "mediant": {"major": {1: 0.35, 2: 0.05, 3: 0.00, 4: 0.25, 5: 0.4, 6: 0.05, 7: 0.0},
-					       "minor": {1: 0.35, 2: 0.00, 3: 0.05, 4: 0.25, 5: 0.4, 6: 0.05, 7: 0.0}}};
+		this.type_freqs = {"pivot": {"major": {1: 25, 2: 9, 3: 2, 4: 15, 5: 15, 6: 3, 7: 4},
+					     "minor": {1: 25, 2: 4, 3: 9, 4: 15, 5: 15, 6: 3, 7: 2}},
+				   "mediant": {"major": {1: 35, 2: 5, 3: 0, 4: 25, 5: 4, 6: 5, 7: 0},
+					       "minor": {1: 35, 2: 0, 3: 5, 4: 25, 5: 4, 6: 5, 7: 0}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
