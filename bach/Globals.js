@@ -46,25 +46,10 @@ function choose(probs){
 }
 
 function chooseInt(probs){
-	var num = Math.random();
-	var choice = null;
-	var sum = 0;
-	for(var key in probs){
-		sum += probs[key];
-		if(sum > num && choice == null){
-			choice = key;
-		}
-	}
-	if(choice == null){
-		console.log("Probability null choice error: ", probs);
-	}
-	if(sum != 1.0){
-		console.log("Probability sum error: ", probs);
-	}
-	return parseInt(choice);
+	return parseInt(choose(probs));
 }
 
-function chooseIntFromFreqs(freqs, choices){
+function chooseFromFreqs(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
@@ -74,11 +59,15 @@ function chooseIntFromFreqs(freqs, choices){
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
 		if(sum > num){
-			return parseInt(choices[i]);
+			return choices[i];
 		}
 	}
 	console.log("Probability null choice error: ", choices, freqs);
 	return null;
+}
+
+function chooseIntFromFreqs(freqs, choices){
+	return parseInt(chooseFromFreqs(freqs, choices));
 }
 
 function chooseIntFromFreqsRemove(freqs, choices){
