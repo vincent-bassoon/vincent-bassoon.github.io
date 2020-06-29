@@ -216,7 +216,9 @@ class Key {
 		if(choices.length == 0){
 			return null;
 		}
-		return chooseIntFromFreqs(this.type_freqs[type][this.modality], choices);
+		var num1 = chooseIntFromFreqs(this.type_freqs[type][this.modality], choices);
+		var num2 = next_key.pitch_to_num[this.num_to_pitch[num1]];
+		return [num1, num2];
 	}
 }
 
