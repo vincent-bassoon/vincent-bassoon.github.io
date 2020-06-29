@@ -49,6 +49,7 @@ class ChordFunctions {
 		}
 	}
 	connectNums(prev_num, mod_num, additions){
+		console.log("trying to connect nums");
 		var nums = [];
 		
 		var prev_class = this.numToClass(mod_num);
@@ -104,6 +105,7 @@ class ChordFunctions {
 		return nums;
 	}
 	finalizeModulations(mods, mod_index, phrase_length){
+		console.log("finalizing modulations at mod index ", mod_index);
 		var spaces = phrase_length - this.getLength(mods);
 		if(mod_index == mods.length || spaces == 0){
 			return true;
@@ -131,6 +133,7 @@ class ChordFunctions {
 		return false;
 	}
 	addToChords(mods, chords, chord_index, prev_key, cad){
+		console.log("adding to chords");
 		for(var i = 0; i < mods.length; i++){
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null);
@@ -169,6 +172,7 @@ class ChordFunctions {
 		}
 	}
 	generateCadence(cadence, length){
+		console.log("generating cadence");
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
@@ -195,11 +199,19 @@ class ChordFunctions {
 		return sum;
 	}
 	generateModulations(key, prev_key, num_mods, is_last){
+		console.log("generating modulations");
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
-			mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
-			prev_key = mods[i].keys[1];
+			if(is_last && i == num_mods - 1){
+				var type = choose({"mediant": 0, "pivot": 100});
+				mods.push({"connect_nums": [], "keys": [prev_key, key], "nums": prev_key.getModulationNums(key, type), "type": type});
+			}
+			else{
+				mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
+				prev_key = mods[i].keys[1];
+			}
 		}
+		return mods;
 	}
 	generatePhrase(key, chords, phrase_data, index){
 		if(index == phrase_data.length){
