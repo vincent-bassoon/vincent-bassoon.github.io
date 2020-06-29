@@ -152,7 +152,7 @@ class Key {
 			}
 		}
 		
-		this.pivot_freqs = kg.pivot_freqs[this.modality];
+		this.type_freqs = kg.type_freqs;
 		this.qualities = kg.qualities[this.modality];
 	}
 	numToPitch(num){
@@ -193,7 +193,7 @@ class Key {
 			choices.push(this.mod_choices[i]);
 		}
 		while(choices.length > 0){
-			var pitch = chooseIntFromFreqsRemove(this.mod_freqs, this.mod_choices);
+			var pitch = chooseIntFromFreqsRemove(this.mod_freqs, choices);
 			var modality;
 			var num = this.pitch_to_num[pitch];
 			if(num == 1 || num == 4 || num == 5){
@@ -203,21 +203,25 @@ class Key {
 				modality = this.key_generator.opposite_modality[this.modality];
 			}
 			var next_key = this.key_generator.getKey(pitch, modality);
-			if(type == "pivot"){
-				var pivot = current_key.getPivotNum(next_key);
-				if(pivot != null){
-					return {"key": next_key, "type": type, "pivot": pivot};
-				}
+			var mod_nums = current_key.getModulationNums(next_key, type);
+			if(mod_nums != null){
+				return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": null};
 			}
 		}
 		return null;
 	}
-	getPivotNum(next_key){
+	getModulationNums(next_key, type){
 		var choices = [];
-		for(var num in this.pivot_freqs){
+		for(var num in this.type_freqs[this.modality][type]){
 			var pitch = this.num_to_pitch[pitch];
-			if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch]){
-				choices.push(num);
+			if(type == "pivot"){
+				if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch] &&
+				   this.qualities[num] == next_key.qualitites[next_key.pitch_to_num[pitch]]){
+					choices.push(num);
+				}
+			}
+			else if(type == "mediant"){
+				
 			}
 		}
 		if(choices.length == 0){
@@ -256,8 +260,10 @@ class KeyGenerator {
 		this.mod_freqs = {"major": {2: 0.14, 4: 0.02, 5: 0.2, 7: 0.38, 9: 0.26},
 				  "minor": {3: 0.24, 5: 0.1, 7: 0.38, 8: 0.2, 10: 0.08}};
 		
-		this.pivot_freqs = {"major": {1: 0.25, 2: 0.09, 3: 0.02, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.04},
-				    "minor": {1: 0.25, 2: 0.04, 3: 0.09, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.02}};
+		this.type_freqs = {"pivot": {"major": {1: 0.25, 2: 0.09, 3: 0.02, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.04},
+					     "minor": {1: 0.25, 2: 0.04, 3: 0.09, 4: 0.15, 5: 0.15, 6: 0.3, 7: 0.02}},
+				   "mediant": {"major": {1: 0.35, 2: 0.05, 3: 0.00, 4: 0.25, 5: 0.4, 6: 0.05, 7: 0.0},
+					       "minor": {1: 0.35, 2: 0.00, 3: 0.05, 4: 0.25, 5: 0.4, 6: 0.05, 7: 0.0}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
