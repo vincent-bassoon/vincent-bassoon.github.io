@@ -194,6 +194,13 @@ class ChordFunctions {
 		}
 		return sum;
 	}
+	generateModulations(key, prev_key, num_mods, is_last){
+		var mods = [];
+		for(var i = 0; i < num_mods; i++){
+			mods.push(key.getModulation(prev_key, choose({"mediant": 0.3, "pivot": 0.7})));
+			prev_key = mods[i].keys[1];
+		}
+	}
 	generatePhrase(key, chords, phrase_data, index){
 		if(index == phrase_data.length){
 			return true;
@@ -226,7 +233,7 @@ class ChordFunctions {
 			probs = {0: 0.7, 1: 0.2, 2: 0.1};
 		}
 		else{
-			probs = {0: 0.3, 1: 0.4, 2: 0.25, 3: 0.05};
+			probs = {0: 0.4, 1: 0.4, 2: 0.15, 3: 0.05};
 		}
 		
 		var num_mods = chooseInt(probs);
@@ -260,14 +267,20 @@ class ChordFunctions {
 			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], 0);
 		}
 		
-		while(mods.length > min_modulations && this.getLength(mods) > phrase_data[index].length){
+		var valid = false;
+		while(mods.length > min_modulations && !valid){
 			mods.splice(mods.length - 2, 1);
 			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0], 0);
+			if(this.getLength(mods) == phrase_data[index].length){
+				valid = true;
+			}
+			else if(this.getLength(mods) < phrase_data[index].length && !(index == phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key))){
+				if(this.finalizeModulations(mods, 1, phrase_data[index].length)){
+					valid = true;
+				}
+			}
 		}
-		if(this.getLength(mods) > phrase_data[index].length || (index = phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key))){
-			return false;
-		}
-		else if(this.finalizeModulations(mods, 1, phrase_data[index].length)){
+		if(valid){
 			this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
 			for(var i = 0; i < this.phrase_attempts; i++){
 				if(this.generatePhrase(key, chords, phrase_data, index + 1)){
