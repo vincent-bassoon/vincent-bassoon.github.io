@@ -197,7 +197,7 @@ class ChordFunctions {
 	generateModulations(key, prev_key, num_mods, is_last){
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
-			mods.push(key.getModulation(prev_key, choose({"mediant": 0.3, "pivot": 0.7})));
+			mods.push(key.getModulation(prev_key, choose({"mediant": 0.0, "pivot": 1.0})));
 			prev_key = mods[i].keys[1];
 		}
 	}
