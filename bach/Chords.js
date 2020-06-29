@@ -198,21 +198,6 @@ class ChordFunctions {
 		}
 		return sum;
 	}
-	generateModulations(key, prev_key, num_mods, is_last){
-		console.log("generating modulations");
-		var mods = [];
-		for(var i = 0; i < num_mods; i++){
-			if(is_last && i == num_mods - 1){
-				var type = choose({"mediant": 0, "pivot": 100});
-				mods.push({"connect_nums": [], "keys": [prev_key, key], "nums": prev_key.getModulationNums(key, type), "type": type});
-			}
-			else{
-				mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
-				prev_key = mods[i].keys[1];
-			}
-		}
-		return mods;
-	}
 	generatePhrase(key, chords, phrase_data, index){
 		if(index == phrase_data.length){
 			return true;
@@ -304,16 +289,19 @@ class ChordFunctions {
 		return false;
 	}
 	generateModulations(key, prev_key, num_mods, is_last){
+		console.log("generating modulations");
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
 			if(is_last && i == num_mods - 1){
-				var next_key = key;
+				var type = choose({"mediant": 0, "pivot": 100});
+				mods.push({"connect_nums": [], "keys": [prev_key, key], "nums": prev_key.getModulationNums(key, type), "type": type});
 			}
 			else{
-				mods.push(key.getModulation(prev_key));
-				prev_key = mods[mods.length - 1].keys[1];
+				mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
+				prev_key = mods[i].keys[1];
 			}
 		}
+		return mods;
 	}
 	generatePhraseData(key, phrase_lengths){
 		var phrase_data = [];
