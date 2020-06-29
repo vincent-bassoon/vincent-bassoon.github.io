@@ -150,7 +150,7 @@ class ChordFunctions {
 						this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
 					}
 					else{
-						this.generateChord(mods[i].nums[j], prev_key, inversion));
+						this.generateChord(mods[i].nums[j], prev_key, inversion);
 					}
 					chord_index++;
 				}
