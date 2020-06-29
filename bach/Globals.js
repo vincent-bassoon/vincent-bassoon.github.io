@@ -31,7 +31,7 @@ function choose(probs){
 	var choice = null;
 	var sum = 0;
 	for(var key in probs){
-		sum += probs[key];
+		sum = +(sum + probs[key]).toFixed(12);
 		if(sum > num && choice == null){
 			choice = key;
 		}
@@ -52,12 +52,12 @@ function chooseInt(probs){
 function chooseFromFreqs(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum += freqs[choices[i]];
+		sum = +(sum + freqs[choices[i]]).toFixed(12);
 	}
 	var num = Math.random() * sum;
 	sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum += freqs[choices[i]];
+		sum = +(sum + freqs[choices[i]]).toFixed(12);
 		if(sum > num){
 			return choices[i];
 		}
@@ -73,12 +73,12 @@ function chooseIntFromFreqs(freqs, choices){
 function chooseIntFromFreqsRemove(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum += freqs[choices[i]];
+		sum = +(sum + freqs[choices[i]]).toFixed(12);
 	}
 	var num = Math.random() * sum;
 	sum = 0;
 	for(var i = 0; i < choices.length; i++){
-		sum += freqs[choices[i]];
+		sum = +(sum + freqs[choices[i]]).toFixed(12);
 		if(sum > num){
 			return parseInt(choices.splice(i, 1)[0]);
 		}
