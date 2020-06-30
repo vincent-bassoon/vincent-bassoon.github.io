@@ -183,7 +183,7 @@ class ChordFunctions {
 			next_class++;
 			nums.unshift(this.classToNum(next_class));
 		}
-		var cadence = {"type": "cadence", "nums": nums, "connect_nums": []};
+		return {"type": "cadence", "nums": nums, "connect_nums": []};
 	}
 	getLength(mods){
 		var sum = 0;
@@ -257,7 +257,7 @@ class ChordFunctions {
 				default:
 					probs = {1: 40, 2: 60};
 			}
-			mods.push({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
+			mods.unshift({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
 		}
 		
 		for(var i = 1; i < mods.length; i++){
