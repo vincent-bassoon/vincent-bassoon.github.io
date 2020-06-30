@@ -192,9 +192,11 @@ class Key {
 				modality = this.key_generator.opposite_modality[this.modality];
 			}
 			var next_key = this.key_generator.getKey(pitch, modality);
-			var mod_nums = current_key.getModulationNums(next_key, type);
-			if(mod_nums != null){
-				return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": null};
+			if(!next_key.equals(current_key)){
+				var mod_nums = current_key.getModulationNums(next_key, type);
+				if(mod_nums != null){
+					return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": null};
+				}
 			}
 		}
 		return null;
