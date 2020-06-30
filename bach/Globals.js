@@ -195,7 +195,7 @@ class Key {
 			if(!next_key.equals(current_key)){
 				var mod_nums = current_key.getModulationNums(next_key, type);
 				if(mod_nums != null){
-					return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": null};
+					return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": []};
 				}
 			}
 		}
