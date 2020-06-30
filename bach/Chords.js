@@ -122,7 +122,14 @@ class ChordFunctions {
 			}
 		}
 		while(choices.length > 0){
-			var nums_temp = this.connectNums(mods[mod_index - 1].nums[1], mods[mod_index].nums[0], chooseIntFromFreqsRemove(this.addition_freqs, choices));
+			var choice;
+			if(choices.length == 1){
+				choice = choices.pop();
+			}
+			else{
+				choice = chooseIntFromFreqsRemove(this.addition_freqs, choices);
+			}
+			var nums_temp = this.connectNums(mods[mod_index - 1].nums[1], mods[mod_index].nums[0], choice);
 			if(nums_temp != null){
 				mods[mod_index].connect_nums = nums_temp;
 				if(this.finalizeModulations(mods, mod_index + 1, phrase_length)){
