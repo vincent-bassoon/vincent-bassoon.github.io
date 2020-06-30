@@ -14,7 +14,7 @@ class ChordFunctions {
 		this.phrase_attempts = 5;
 	}
 	generateChord(roman_num, key, inversion){
-		return new Chord(roman_num, key, this.qualities[key.modality][roman_num], inversion);
+		return new Chord(roman_num, key, this.key_generator.qualities[key.modality][roman_num], inversion);
 	}
 	numToClass(num){
 		switch(num){
