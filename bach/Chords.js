@@ -188,8 +188,8 @@ class ChordFunctions {
 	getLength(mods){
 		var sum = 0;
 		for(var i = 0; i < mods.length; i++){
-			sum += mods[i].connect_nums.lenght;
-			if(mods[i].type == "pivot"){
+			sum += mods[i].connect_nums.length;
+			if(mods[i].type == "pivot" || mods[i].nums[0] == null){
 				sum += 1;
 			}
 			else{
