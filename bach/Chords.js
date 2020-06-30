@@ -264,7 +264,7 @@ class ChordFunctions {
 			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], 0);
 		}
 		
-		var valid = false;
+		var valid = this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, 1, phrase_data[index].length);
 		while(mods.length > min_modulations && !valid){
 			mods.splice(mods.length - 2, 1);
 			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0], 0);
