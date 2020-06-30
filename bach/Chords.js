@@ -49,10 +49,9 @@ class ChordFunctions {
 		}
 	}
 	connectNums(prev_num, mod_num, additions){
-		console.log("trying to connect nums");
 		var nums = [];
 		
-		var prev_class = this.numToClass(mod_num);
+		var prev_class = this.numToClass(prev_num);
 		var mod_class;
 		if(mod_num == 6 && prev_class > 0){
 			mod_class = 0;
