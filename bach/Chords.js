@@ -189,7 +189,7 @@ class ChordFunctions {
 		var sum = 0;
 		for(var i = 0; i < mods.length; i++){
 			sum += mods[i].connect_nums.length;
-			if(mods[i].type == "pivot" || mods[i].nums[0] == null){
+			if(mods[i].type == "pivot"){
 				sum += 1;
 			}
 			else{
@@ -242,23 +242,23 @@ class ChordFunctions {
 		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length));
 		min_modulations += 1;
 		
-		if(!(prev_num != null && mods[0].nums[0] == prev_num && mods[0].type == "mediant")){
-			var probs;
-			switch(prev_num){
-				case 1:
-					probs = {1: 60, 2: 40};
-					break;
-				case 5:
-					probs = {1: 85, 2: 15};
-					break;
-				case 6:
-					probs = {1: 90, 2: 10};
-					break;
-				default:
-					probs = {1: 40, 2: 60};
-			}
-			mods.unshift({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
+		//!(prev_num != null && mods[0].nums[0] == prev_num && mods[0].type == "mediant")
+		var probs;
+		switch(prev_num){
+			case 1:
+				probs = {1: 60, 2: 40};
+				break;
+			case 5:
+				probs = {1: 85, 2: 15};
+				break;
+			case 6:
+				probs = {1: 90, 2: 10};
+				break;
+			default:
+				probs = {1: 40, 2: 60};
 		}
+		mods.unshift({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
+		min_modulations += 1;
 		
 		for(var i = 1; i < mods.length; i++){
 			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], 0);
