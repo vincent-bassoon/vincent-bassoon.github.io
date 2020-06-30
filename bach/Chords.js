@@ -107,8 +107,11 @@ class ChordFunctions {
 	finalizeModulations(mods, mod_index, phrase_length){
 		console.log("finalizing modulations at mod index ", mod_index);
 		var spaces = phrase_length - this.getLength(mods);
-		if(mod_index == mods.length || spaces == 0){
+		if(spaces == 0){
 			return true;
+		}
+		if(mod_index == mods.length){
+			return spaces == 0;
 		}
 		var choices = [];
 		if(mod_index == mods.length - 1){
