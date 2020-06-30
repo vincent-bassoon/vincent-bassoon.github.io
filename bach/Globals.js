@@ -27,7 +27,7 @@ function watchForHover(){
 watchForHover();
 
 function choose(probs){
-	var num = Math.random();
+	var num = 100 * Math.random();
 	var choice = null;
 	var sum = 0;
 	for(var key in probs){
