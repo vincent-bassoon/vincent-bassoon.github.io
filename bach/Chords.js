@@ -150,10 +150,10 @@ class ChordFunctions {
 					}
 					
 					if(cad == "pacm" && j == mods[i].nums.length - 1){
-						this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
+						chords[chord_index] = this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
 					}
 					else{
-						this.generateChord(mods[i].nums[j], prev_key, inversion);
+						chords[chord_index] = this.generateChord(mods[i].nums[j], prev_key, inversion);
 					}
 					chord_index++;
 				}
