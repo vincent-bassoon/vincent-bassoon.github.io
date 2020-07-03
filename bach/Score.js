@@ -501,7 +501,7 @@ class Score {
 		}
 		else{
 			if(!(octave in accidentals_in_key[clef_index])){
-				accidentals_in_key[clef_index][octave] = this.harmony[index].chord.key.getAccidentals();
+				accidentals_in_key[clef_index][octave] = this.key.getAccidentals();
 			}
 			if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
 				accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
