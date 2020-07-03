@@ -391,6 +391,14 @@ class ChordFunctions {
 		var chords = [];
 		for(var i = 0; i < this.phrase_attempts; i++){
 			if(this.generatePhrase(key, chords, phrase_data, 0)){
+				var index = 0;
+				for(var i = 0; i < chords.length; i++){
+					if(index < phrase_data.length && i == phrase_data[index].chord_index){
+						console.log("new");
+						index++;
+					}
+					console.log(chords[i].roman_num + " of " + chords[i].key.valueToName(chords[i].key.pitch) + " " + chords[i].key.modality);
+				}
 				return chords;
 			}
 		}
