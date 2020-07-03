@@ -82,7 +82,10 @@ class ChordFunctions {
 			// choices should be a subset of [2, 3, (4 or 5)]
 			
 			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
-			var removed = chooseIntFromFreqs(freqs, choices);
+			var removed = null;
+			if(choices.length > 0){
+				removed = chooseIntFromFreqs(freqs, choices);
+			}
 			for(var i = 0; i < length; i++){
 				if(i != removed){
 					nums.unshift(this.classToNum(i));
