@@ -166,7 +166,7 @@ class ChordFunctions {
 			for(var j = 0; j < mods[i].additions.length; j++){
 				additions.push(...this.generateSubPhraseNums(mods[i].additions[j]));
 			}
-			if(mods[i].nums[0] == 6 || mods[i].nums[0] == 1){
+			if(mods[i].nums[0] == 6 || mods[i].nums[0] == 1 && additions.length > 0){
 				mods[i].connect_nums.push(additions.pop());
 			}
 			mods[i].connect_nums.push(...additions);
