@@ -8,10 +8,42 @@ class ChordFunctions {
 		this.cadence_lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [5, 1], "pac/iac": [1], "hc": [5], "dc": [5, 6], "pc": [4, 1], "pacm": [5, 1]};
 		
+		this.num_to_string = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII"};
+		this.inversion_to_string = {0: ", root position", 1: ", 1st inversion", 2: ", 2nd inversion"};
+		
 		this.phrase_attempts = 5;
 	}
-	generateChord(roman_num, key, inversion){
-		return new Chord(roman_num, key, this.key_generator.qualities[key.modality][roman_num], inversion);
+	generateNumString(num, key, inversion){
+		var string = this.num_to_string[num];
+		switch(this.key_generator.qualities[key.modality][num]){
+			case "minor":
+				string = string.toLowerCase();
+				break;
+			case "aug":
+				string += "+";
+				break;
+			case "dim":
+				string = string.toLowerCase() + "°";
+				break;
+		}
+		if(key.pitch != this.key.pitch){
+			string += " / ";
+			var temp = this.num_to_string[this.key.pitchToNum(key.pitch)];
+			if(key.modality == "minor"){
+				temp = temp.toLowerCase();
+			}
+			string += temp;
+		}
+		if(inversion != null){
+			string += this.inversion_to_string[inversion];
+		}
+		return string;
+	}
+	generatePivotNumString(nums, keys){
+		return this.generateNumString(nums[0], keys[0], null) + " -> " + this.generateNumString(nums[1], keys[1], null);
+	}
+	generateChord(num, key, inversion){
+		return new Chord(num, key, this.key_generator.qualities[key.modality][num], inversion);
 	}
 	numToClass(num){
 		switch(num){
@@ -179,6 +211,7 @@ class ChordFunctions {
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null);
+				this.chord_strings[chord_index] = this.generateNumString(mods[i].connect_nums[j], prev_key, null);
 				chord_index++;
 			}
 			if(mods[i].type == "cadence"){
@@ -193,9 +226,11 @@ class ChordFunctions {
 					
 					if(cad == "pacm" && j == mods[i].nums.length - 1){
 						chords[chord_index] = this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
+						this.chord_strings[chord_index] = this.generateNumString(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
 					}
 					else{
 						chords[chord_index] = this.generateChord(mods[i].nums[j], prev_key, inversion);
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], prev_key, inversion);
 					}
 					chord_index++;
 				}
@@ -204,9 +239,13 @@ class ChordFunctions {
 				var start = 0;
 				if(mods[i].type == "pivot"){
 					start = 1;
+					this.chord_strings[chord_index] = this.generatePivotNumString(mods[i].nums, mods[i].keys);
 				}
 				for(var j = start; j < 2; j++){
 					chords[chord_index] = this.generateChord(mods[i].nums[j], mods[i].keys[j], null);
+					if(mods[i].type != "pivot"){
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], null);
+					}
 					chord_index++;
 				}
 				prev_key = mods[i].keys[1];
@@ -334,6 +373,7 @@ class ChordFunctions {
 			}
 			return false;
 		}
+		console.log("failed to generate phrase at index " + index + " with length " + phrase_data[index].length + " and num_mods " + num_mods);
 		return false;
 	}
 	generateModulations(key, prev_key, num_mods, is_last){
@@ -392,17 +432,18 @@ class ChordFunctions {
 		return phrase_data;
 	}
 	generateChords(key, phrase_lengths){
+		this.key = key;
+		this.chord_strings = [];
 		var phrase_data = this.generatePhraseData(key, phrase_lengths);
 		var chords = [];
 		for(var i = 0; i < this.phrase_attempts; i++){
 			if(this.generatePhrase(key, chords, phrase_data, 0)){
-				var index = 0;
-				for(var i = 0; i < chords.length; i++){
-					if(index < phrase_data.length && i == phrase_data[index].chord_index){
-						console.log("new");
-						index++;
+				for(var j = 0; j < this.chord_strings.length; j++){
+					var num = "" + j;
+					if(num.length == 1){
+						num = "0" + num;
 					}
-					console.log(chords[i].roman_num + " of " + chords[i].key.valueToName(chords[i].key.pitch) + " " + chords[i].key.modality);
+					console.log(num + ": " + this.chord_strings[j]);
 				}
 				return chords;
 			}
