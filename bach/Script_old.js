@@ -1,9 +1,11 @@
 function generateChoralePlan(key, cadence_num, pickup){
 	var phrase_lengths = {};
 
+	var endings = {"pac": 1, "pac/iac": 1, "hc": 5, "dc": 6, "pc": 1, "pacm": 1};
+    var lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 	for(var i = 0; i < cadence_num; i++){
 		// 75% 7-8 note segment length, 25% 9-10 note length
-		phrase_lengths[i] = pickup + chooseInt({7: 0.75, 9: 0.25});
+		phrase_lengths[i] = pickup + chooseInt({7: 75, 9: 25});
 	}
 
 	var chorale_plan = [];
@@ -14,7 +16,7 @@ function generateChoralePlan(key, cadence_num, pickup){
 		// Ending: 100% PAC ... 70% Piccardy third for minor, 30% not
 		if(i == cadence_num - 1){
 			if(key.modality == "minor"){
-				cadence = choose({"pac": 0.3, "pacm": 0.7});
+				cadence = choose({"pac": 30, "pacm": 70});
 			}
 			else{
 				cadence = "pac";
@@ -22,15 +24,15 @@ function generateChoralePlan(key, cadence_num, pickup){
 		}
 		// 74% PAC/IAC, 17% HC, 7% DC, 2% PC
 		else{
-			cadence = choose({"pac": 0.37, "pac/iac": 0.34, "hc": 0.2, "dc": 0.07, "pc": 0.02});
+			cadence = choose({"pac": 37, "pac/iac": 34, "hc": 20, "dc": 7, "pc": 2});
 		}
 
 		var cadence_length = lengths[cadence];
 		// 4 beat cadence includes a 64 tonic
-		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 0.8, 1: 0.2}) == 0){
+		if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 80, 1: 20}) == 0){
 			cadence_length++;
 		}
-		chorale_plan.push(new PhraseData(key, phrase_lengths[i], fermata_duration,
+		chorale_plan.push(new PhraseData(key, phrase_lengths[i], 0, 
 						 cadence, cadence_length, previous_cadence_chord));
 		previous_cadence_chord = endings[cadence];
 	}
@@ -64,11 +66,12 @@ function generateNewChorale(data, sampler){
 		// 75% 7-8 note segment length, 25% 9-10 note length
 		phrase_lengths.push(pickup + chooseInt({7: 75, 9: 25}));
 	}
-
+    var phrase_data = generateChoralePlan(key_generator.getKey(pitch, modality), cadence_num, pickup);
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
-		chords.push(chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths));
+		chords.push(...chord_functions.generateSegmentChords(phrase_data[i]));
 	}
+	console.log(chords);
 	var counter = 0;
 	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
 		generateNewChorale(data, sampler);
