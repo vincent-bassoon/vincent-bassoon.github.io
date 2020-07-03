@@ -212,7 +212,7 @@ class Score {
 		this.phrase_lengths = phrase_lengths;
 		this.pickup = phrase_lengths[0] % 2 == 0;
 		this.vf = Vex.Flow;
-		this.formatter = new this.vf.Formatter({softmaxFactor: 2});
+		this.formatter = new this.vf.Formatter({softmaxFactor: 10});
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
