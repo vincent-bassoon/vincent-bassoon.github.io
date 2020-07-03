@@ -180,7 +180,7 @@ class ChordFunctions {
 				for(var j = 0; j < mods[i].nums.length; j++){
 					var inversion = null;
 					if(j + this.cadences[cad].length >= mods[i].nums.length){
-						inversion = 1;
+						inversion = 0;
 					}
 					else if(mods[i].nums[j] == 1){
 						inversion = 2;
