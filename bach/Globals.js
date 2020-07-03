@@ -99,6 +99,16 @@ class PhraseData {
 	}
 }
 
+class Modulation {
+	constructor(type, nums, keys){
+		this.type = type;
+		this.nums = nums;
+		this.keys = keys;
+		this.connect_nums = [];
+		this.additions = [];
+	}
+}
+
 class Key {
 	constructor(key_pitch, key_modality, kg){
 		this.pitch = key_pitch;
@@ -195,7 +205,7 @@ class Key {
 			if(!next_key.equals(current_key)){
 				var mod_nums = current_key.getModulationNums(next_key, type);
 				if(mod_nums != null){
-					return {"keys": [current_key, next_key], "type": type, "nums": mod_nums, "connect_nums": []};
+					return new Modulation(type, mod_nums, [current_key, next_key]);
 				}
 			}
 		}
