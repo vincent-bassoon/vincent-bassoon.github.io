@@ -443,7 +443,12 @@ class ChordFunctions {
 		var chords = [];
 		for(var i = 0; i < this.phrase_attempts; i++){
 			if(this.generatePhrase(key, chords, phrase_data, 0)){
+				var phrase_index = 0;
 				for(var j = 0; j < this.chord_strings.length; j++){
+					if(phrase_index < phrase_data.length && j == phrase_data[phrase_index].chord_index){
+						console.log("New phrase:");
+						phrase_index++;
+					}
 					var num = "" + j;
 					if(num.length == 1){
 						num = "0" + num;
