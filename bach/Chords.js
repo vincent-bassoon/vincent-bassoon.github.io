@@ -167,7 +167,6 @@ class ChordFunctions {
 		return nums;
 	}
 	finalizeModulations(mods, phrase_length){
-		console.log("finalizing modulations");
 		var spaces = phrase_length - this.getLength(mods);
 		if(spaces == 1){
 			return false;
@@ -197,7 +196,6 @@ class ChordFunctions {
 		return true;
 	}
 	addToChords(mods, chords, chord_index, prev_key, cad){
-		console.log("adding to chords");
 		for(var i = 0; i < mods.length; i++){
 			var additions = [];
 			for(var j = 0; j < mods[i].additions.length; j++){
@@ -258,7 +256,6 @@ class ChordFunctions {
 		}
 	}
 	generateCadence(cadence, length){
-		console.log("generating cadence");
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
@@ -382,7 +379,6 @@ class ChordFunctions {
 		return false;
 	}
 	generateModulations(key, prev_key, num_mods, is_last){
-		console.log("generating modulations");
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
 			if(is_last && i == num_mods - 1){
