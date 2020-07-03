@@ -292,7 +292,7 @@ class ChordFunctions {
 			default:
 				probs = {1: 40, 2: 60};
 		}
-		mods.unshift(new Modulation("pivot", [null, this.classToNum(chooseInt(probs) - 1)], [null, prev_key]);
+		mods.unshift(new Modulation("pivot", [null, this.classToNum(chooseInt(probs) - 1)], [null, prev_key]));
 		min_modulations += 1;
 		
 		for(var i = 1; i < mods.length; i++){
