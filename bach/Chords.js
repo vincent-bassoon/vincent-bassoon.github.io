@@ -239,7 +239,12 @@ class ChordFunctions {
 				var start = 0;
 				if(mods[i].type == "pivot"){
 					start = 1;
-					this.chord_strings[chord_index] = this.generatePivotNumString(mods[i].nums, mods[i].keys);
+					if(mods[i].nums[0] == null){
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[1], mods[i].keys[1], null);
+					}
+					else{
+						this.chord_strings[chord_index] = this.generatePivotNumString(mods[i].nums, mods[i].keys);
+					}
 				}
 				for(var j = start; j < 2; j++){
 					chords[chord_index] = this.generateChord(mods[i].nums[j], mods[i].keys[j], null);
