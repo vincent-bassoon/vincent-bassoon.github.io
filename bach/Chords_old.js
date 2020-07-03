@@ -1,5 +1,4 @@
 class ChordFunctions {
-	constructor(){
 	constructor(key_generator){
 		this.key_generator = key_generator;
 		// 0 is I, 1 is V or vii, 2 ii, 3 IV, 4 vi, 5 iii
