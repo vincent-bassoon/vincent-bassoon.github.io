@@ -86,7 +86,7 @@ class ChordFunctions {
 			if(choices.length > 0){
 				removed = chooseIntFromFreqs(freqs, choices);
 			}
-			for(var i = 0; i < length; i++){
+			for(var i = 0; i < length + 1; i++){
 				if(i != removed){
 					nums.unshift(this.classToNum(i));
 				}
