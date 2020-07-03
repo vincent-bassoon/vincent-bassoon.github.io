@@ -8,9 +8,6 @@ class ChordFunctions {
 		this.cadence_lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [5, 1], "pac/iac": [1], "hc": [5], "dc": [5, 6], "pc": [4, 1], "pacm": [5, 1]};
 		
-		this.addition_freqs = {0: 7, 1: 5, 2: 15, 3: 46, 4: 37, 5: 6, 6: 1};
-		this.class_chances = {1: 1, 2: 0.6, 3: 0.2, 4: 0.07, 5: 0};
-		
 		this.phrase_attempts = 5;
 	}
 	generateChord(roman_num, key, inversion){
@@ -52,44 +49,70 @@ class ChordFunctions {
 	}
 	getModOrder(mods){
 		var order = [];
-		for(var j = 0; j < 2; j++){
-			var sub_order = [];
-			for(var i = 1; i < mods.length; i++){
-				sub_order.push(i);
-			}
-			var current_index = sub_order.length, temp_value, random_index;
-			while (current_index != 0) {
-				random_index = Math.floor(Math.random() * current_index);
-				current_index -= 1;
-				temp_value = sub_order[current_index];
-				sub_order[current_index] = sub_order[random_index];
-				sub_order[random_index] = temp_value;
-			}
-			order.push(...sub_order);
+		for(var i = 1; i < mods.length; i++){
+			order.push(i);
+		}
+		var current_index = order.length, temp_value, random_index;
+		while (current_index != 0) {
+			random_index = Math.floor(Math.random() * current_index);
+			current_index -= 1;
+			temp_value = order[current_index];
+			order[current_index] = order[random_index];
+			order[random_index] = temp_value;
 		}
 		return order;
 	}
-	connectNums(prev_num, mod_num, additions){
+	generateSubPhraseNums(length){
+		var nums = [];
+		if(length == 6){
+			for(var i = 0; i < length; i++){
+				nums.unshift(this.classToNum(i));
+			}
+		}
+		else{
+			var choices = [];
+			for(var i = 2; i <= 3; i++){
+				if(i < length){
+					choices.push(i);
+				}
+			}
+			if(length >= 4){
+				choices.push(length);
+			}
+			// choices should be a subset of [2, 3, (4 or 5)]
+			
+			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
+			var removed = chooseIntFromFreqs(freqs, choices);
+			for(var i = 0; i < length; i++){
+				if(i != removed){
+					nums.unshift(this.classToNum(i));
+				}
+			}
+		}
+		return nums;
+	}
+	connectNums(prev_num, mod_num){
 		var nums = [];
 		
 		var prev_class = this.numToClass(prev_num);
-		var mod_class;
-		if(mod_num == 6 && prev_class > 0){
+		var mod_class = this.numToClass(mod_num);
+		var end_class;
+		if(mod_class == 0 || mod_num == 6){
 			mod_class = 0;
+			end_class = 1;
 		}
 		else{
-			mod_class = this.numToClass(mod_num);
-		}
-		var end_class;
-		if(mod_class >= prev_class){
 			end_class = 0;
 		}
-		else{
-			end_class = mod_class + 1;
+		if(prev_class == 0 && mod_class == 0){
+			prev_class = 1;
 		}
 		
 		var omit_class;
-		if(prev_class == 3){
+		if(chooseInt({0: 90, 1: 10}) == 1){
+			omit_class = null;
+		}
+		else if(prev_class == 3){
 			omit_class = 2;
 		}
 		else{
@@ -101,84 +124,49 @@ class ChordFunctions {
 				nums.push(this.classToNum(i));
 			}
 		}
-		
-		var extra_nums = [];
-		if(additions > 0 && mod_num == 2 && chooseInt({0: 35, 1: 65}) == 0){
-			extra_nums.push(4);
-			additions--;
-		}
-		while(additions > 0 && Math.random() < this.class_chances[mod_class + 1]){
-			if(extra_nums.length == 0){
-				extra_nums.unshift(this.classToNum(mod_class + 1));
-			}
-			else{
-				extra_nums.unshift(this.classToNum(extra_nums[0] + 1));
-			}
-			additions--;
-		}
-		if(additions == 1){
-			if(extra_nums.length > 0){
-				extra_nums.shift();
-				additions++;
-				if(extra_nums.length > 0 && chooseInt({0: 60, 1: 40}) == 0){
-					extra_nums.shift();
-					additions++;
-				}
-			}
-			else{
-				return null;
-			}
-		}
-		if(extra_nums.length > 0){
-			mod_num = extra_nums[0];
-			mod_class = this.numToClass(mod_num);
-		}
-		if(additions > 0){
-			for(var i = 0; i < additions; i++){
-				extra_nums.unshift(this.classToNum(i));
-				if(extra_nums[0] == 2 && i < additions - 1 && chooseInt({0: 35, 1: 65}) == 0){
-					extra_nums.unshift(4);
-					additions--;
-				}
-			}
-		}
 		return nums;
 	}
-	finalizeModulations(mods, additions, mod_order, order_index, phrase_length){
-		console.log("finalizing modulations at mod order index ", order_index);
-		if(order_index == 0){
-			mod_order = this.getModOrder(mods);
-		}
+	finalizeModulations(mods, phrase_length){
+		console.log("finalizing modulations");
 		var spaces = phrase_length - this.getLength(mods);
-		if(spaces == 0){
-			return true;
+		if(spaces == 1){
+			return false;
 		}
-		if(order_index == mod_order.length){
-			return spaces == 0;
-		}
-		var choices = [];
-		for(var i = 0; i <= 6; i++){
-			if(i <= spaces){
-				choices.push(i);
-			}
-		}
-		var mod_index = mod_order[order_index];
-		while(choices.length > 0){
-			var choice;
-			choice = chooseIntFromFreqsRemove(this.addition_freqs, choices);
-			var nums_temp = this.connectNums(mods[mod_index - 1].nums[1], mods[mod_index].nums[0], choice);
-			if(nums_temp != null){
-				mods[mod_index].connect_nums = nums_temp;
-				if(this.finalizeModulations(mods, additions, mod_order, order_index + 1, phrase_length)){
-					return true;
+		var mod_order = this.getModOrder(mods);
+		var mod_index = 0;
+		var freqs = {2: 13, 3: 50, 4: 30, 5: 6, 6: 1};
+		
+		while(spaces > 4){
+			var choices = [];
+			for(var i = Math.min(6, spaces); i >= 2; i--){
+				if(i + 1 != spaces){
+					choices.push(i);
 				}
 			}
+			var length_temp = chooseIntFromFreqs(freqs, choices);
+			mods[mod_order[mod_index]].additions.push(length_temp);
+			mod_index++;
+			if(mod_index == mod_order.length){
+				mod_index = 0;
+			}
+			spaces -= length_temp;
 		}
-		return false;
+		if(spaces != 0){
+			mods[mod_order[mod_index]].additions.push(spaces);
+		}
+		return true;
 	}
 	addToChords(mods, chords, chord_index, prev_key, cad){
 		console.log("adding to chords");
 		for(var i = 0; i < mods.length; i++){
+			var additions = [];
+			for(var j = 0; j < mods[i].additions.length; j++){
+				additions.push(...this.generateSubPhraseNums(mods[i].additions[j]));
+			}
+			if(mods[i].nums[0] == 6 || mods[i].nums[0] == 1){
+				mods[i].connect_nums.push(additions.pop());
+			}
+			mods[i].connect_nums.push(...additions);
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null);
 				chord_index++;
@@ -227,7 +215,7 @@ class ChordFunctions {
 			next_class++;
 			nums.unshift(this.classToNum(next_class));
 		}
-		return {"type": "cadence", "nums": nums, "connect_nums": []};
+		return new Modulation("cadence", nums, null);
 	}
 	getLength(mods){
 		var sum = 0;
@@ -238,6 +226,9 @@ class ChordFunctions {
 			}
 			else{
 				sum += mods[i].nums.length;
+			}
+			for(var j = 0; j < mods[i].additions.length; j++){
+				sum += mods[i].additions[j];
 			}
 		}
 		return sum;
@@ -301,25 +292,25 @@ class ChordFunctions {
 			default:
 				probs = {1: 40, 2: 60};
 		}
-		mods.unshift({"connect_nums": [], "keys": [null, prev_key], "nums": [null, this.classToNum(chooseInt(probs) - 1)], "type": "pivot"});
+		mods.unshift(new Modulation("pivot", [null, this.classToNum(chooseInt(probs) - 1)], [null, prev_key]);
 		min_modulations += 1;
 		
 		for(var i = 1; i < mods.length; i++){
-			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], 0);
+			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0]);
 		}
 		
 		var valid = this.getLength(mods) == phrase_data[index].length;
 		if(!valid){
-			valid = this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, null, null, 0, phrase_data[index].length);
+			valid = this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length);
 		}
 		while(mods.length > min_modulations && !valid){
 			mods.splice(mods.length - 2, 1);
-			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0], 0);
+			mods[mods.length - 1].connect_nums = this.connectNums(mods[mods.length - 2].nums[1], mods[mods.length - 1].nums[0]);
 			if(this.getLength(mods) == phrase_data[index].length){
 				valid = true;
 			}
 			else if(this.getLength(mods) < phrase_data[index].length && !(index == phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key))){
-				if(this.finalizeModulations(mods, null, null, 0, phrase_data[index].length)){
+				if(this.finalizeModulations(mods, phrase_data[index].length)){
 					valid = true;
 				}
 			}
@@ -341,7 +332,7 @@ class ChordFunctions {
 		for(var i = 0; i < num_mods; i++){
 			if(is_last && i == num_mods - 1){
 				var type = choose({"mediant": 0, "pivot": 100});
-				mods.push({"connect_nums": [], "keys": [prev_key, key], "nums": prev_key.getModulationNums(key, type), "type": type});
+				mods.push(new Modulation(type, prev_key.getModulationNums(key, type), [prev_key, key]));
 			}
 			else{
 				mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
