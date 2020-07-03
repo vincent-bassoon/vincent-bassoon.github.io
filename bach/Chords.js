@@ -28,7 +28,7 @@ class ChordFunctions {
 		}
 		if(key.pitch != this.key.pitch){
 			string += " / ";
-			var temp = this.num_to_string[this.key.pitchToNum(key.pitch)];
+			var temp = this.num_to_string[this.key.valueToNum(key.pitch)];
 			if(key.modality == "minor"){
 				temp = temp.toLowerCase();
 			}
