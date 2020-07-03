@@ -15,7 +15,7 @@ class ChordFunctions {
 	}
 	getChordRomanNum(chord_class){
 		if(chord_class == 1){
-			return chooseInt({5: 0.95, 7: 0.05})
+			return chooseInt({5: 95, 7: 5})
 		}
 		else{
 			return this.class_to_chord[chord_class];
@@ -129,17 +129,17 @@ class ChordFunctions {
 		var probs;
 		switch(phrase_data.previous_cadence_chord){
 			case 1:
-				probs = {1: 0.6, 2: 0.4};
+				probs = {1: 60, 2: 40};
 				break;
 			case 5:
-					probs = {1: 0.85, 2: 0.15};
+					probs = {1: 85, 2: 15};
 				break;
 			case 6:
-				probs = {1: 0.9, 2: 0.1};
+				probs = {1: 90, 2: 10};
 				break;
 			default:
 				// Starting chord: 70% V, 30% I
-				probs = {1: 0.4, 2: 0.6};
+				probs = {1: 40, 2: 60};
 		}
 		sub_phrase_lengths.push(chooseInt(probs));
 		
