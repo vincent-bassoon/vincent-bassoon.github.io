@@ -69,6 +69,11 @@ class ChordFunctions {
 				nums.unshift(this.classToNum(i));
 			}
 		}
+		else if(length <= 2){
+			for(var i = 0; i < length; i++){
+				nums.unshift(this.classToNum(i));
+			}
+		}
 		else{
 			var choices = [];
 			for(var i = 2; i <= 3; i++){
@@ -304,9 +309,9 @@ class ChordFunctions {
 			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0]);
 		}
 		
-		var valid = this.getLength(mods) == phrase_data[index].length;
+		var valid = (this.getLength(mods) == phrase_data[index].length);
 		if(!valid){
-			valid = this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length);
+			valid = (this.getLength(mods) < phrase_data[index].length) && this.finalizeModulations(mods, phrase_data[index].length);
 		}
 		while(mods.length > min_modulations && !valid){
 			mods.splice(mods.length - 2, 1);
