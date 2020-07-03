@@ -39,17 +39,35 @@ function generateChoralePlan(key, cadence_num, pickup){
 
 function generateNewChorale(data, sampler){
 	// Decide basic structure
-
-@@ -65,9 +26,9 @@ function generateNewChorale(data, sampler){
-		phrase_lengths.push(pickup + chooseInt({7: 0.75, 9: 0.25}));
+	
+	// 50% major, 50% minor
+	var modality = choose({"major": 50, "minor": 50});
+	// 80% four-cadence length, 20% five-cadence
+	var cadence_num = chooseInt({4: 80, 5: 20});
+	// 66.7% with pickup, 33.3% without
+	var pickup = chooseInt({1: 67, 0: 33});
+	
+	// key
+	var num_accidentals = chooseInt({0: 22, 1: 23, 2: 23, 3: 22, 4: 7, 5: 2, 6: 1});
+	var sharp_or_flat = chooseInt({0: 50, 2: 50}) - 1;
+	var pitch = (7 * (12 + (sharp_or_flat * num_accidentals))) % 12;
+	if(modality == "minor"){
+		pitch = (pitch + 9) % 12;
+	}
+	
+	var harmony_functions = new HarmonyFunctions();
+	var key_generator = new KeyGenerator();
+	var chord_functions = new ChordFunctions(key_generator);
+	
+	var phrase_lengths = [];
+	for(var i = 0; i < cadence_num; i++){
+		// 75% 7-8 note segment length, 25% 9-10 note length
+		phrase_lengths.push(pickup + chooseInt({7: 75, 9: 25}));
 	}
 
 	var chords = [];
 	for(var i = 0; i < cadence_num; i++){
 		chords.push(chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths));
-	var chords = null;
-	while(chords == null){
-		chords = chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths);
 	}
 	var counter = 0;
 	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
