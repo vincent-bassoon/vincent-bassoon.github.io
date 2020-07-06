@@ -4,6 +4,7 @@ class HarmonyFunctions {
 		this.max_dist_above = {3: 12 + 7, 2: 10, 1: 12};
 		
 		this.parallel_pitches = [0, 7];
+		this.thirds_and_sixths = [3, 4, 8, 9];
 		this.max_total_score = 100;
 		this.max_single_score = 50;
 		
@@ -130,9 +131,27 @@ class HarmonyFunctions {
 		if(index == harmony.length - 1 || order_index == 0 || harmony[index].getNumNotes(voice_order[order_index]) == 1){
 			return false;
 		}
+		var doubling_valid;
+		switch(Math.abs(harmony[index].getMotion(voice_order[order_index]))){
+			case this.mf.type.PASSING_8:
+				doubling_valid = true;
+				break;
+			case this.mf.type.PASSING_16:
+				doubling_valid = true;
+				break;
+			default:
+				doubling_valid = false;
+				break;
+		}
 		for(var i = 0; i < order_index; i++){
 			if(harmony[index].getNumNotes(voice_order[i]) > 1){
-				return true;
+				if(doubling_valid && harmony[index].getMotion(voice_order[i]) == harmony[index].getMotion(voice_order[order_index]) &&
+				   this.thirds_and_sixths.includes(Math.abs(harmony[index].getValue(voice_order[i], 0) - harmony[index].getValue(voice_order[order_index], 0)) % 12)){
+					doubling_valid = false;
+				}
+				else{
+					return true;
+				}
 			}
 		}
 		return false;
