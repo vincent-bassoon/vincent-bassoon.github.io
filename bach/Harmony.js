@@ -146,6 +146,7 @@ class HarmonyFunctions {
 		for(var i = 0; i < order_index; i++){
 			if(harmony[index].getNumNotes(voice_order[i]) > 1){
 				if(doubling_valid && harmony[index].getMotion(voice_order[i]) == harmony[index].getMotion(voice_order[order_index]) &&
+				   !harmony[index + 1].end_of_phrase && !harmony[index + 2].end_of_phrase &&
 				   this.thirds_and_sixths.includes(Math.abs(harmony[index].getValue(voice_order[i], 0) - harmony[index].getValue(voice_order[order_index], 0)) % 12)){
 					doubling_valid = false;
 				}
