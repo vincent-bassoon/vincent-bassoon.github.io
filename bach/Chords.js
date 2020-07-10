@@ -302,24 +302,22 @@ class ChordFunctions {
 		}
 		
 		var min_modulations = 0;
-		var probs;
+		var num_mods;
 		if(index == phrase_data.length - 1){
 			if(prev_key.equals(key)){
-				probs = {0: 90, 2: 10};
+				num_mods = 0;
 			}
 			else{
 				min_modulations = 1;
-				probs = {1: 90, 2: 10};
+				num_mods = 1;
 			}
 		}
 		else if(index == 0){
-			probs = {0: 70, 1: 20, 2: 10};
+			num_mods = chooseInt({0: 70, 1: 20, 2: 10});
 		}
 		else{
-			probs = {0: 40, 1: 40, 2: 15, 3: 5};
+			num_mods = chooseInt({0: 40, 1: 40, 2: 15, 3: 5});
 		}
-		
-		var num_mods = chooseInt(probs);
 		
 		var mods = null;
 		while(mods == null){
