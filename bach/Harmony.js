@@ -377,7 +377,6 @@ class HarmonyFunctions {
 		
 		var options = [[], [], [], []];
 		
-		var has_next_value = (index != harmony.length - 1);
 		for(var voice = 0; voice < 4; voice++){
 			options[voice] = [];
 			var inversion = chord.inversion;
@@ -395,12 +394,12 @@ class HarmonyFunctions {
 					}
 				}
 			}
-			if(!has_next_value && voice == 0){
+			if(index == harmony.length - 1 && voice == 0){
 				min_degree = 0;
-				max_degree = 1;
+				max_degree = 0;
 			}
 			for(var degree = min_degree; degree <= max_degree; degree++){
-				if(!has_next_value){
+				if(index != harmony.length - 1){
 					var value = this.nf.getValueInPrefRange(chord.pitches[degree], voice);
 					this.addOption(options[voice], degree, harmony, index, voice, value);
 				}
