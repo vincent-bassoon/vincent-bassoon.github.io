@@ -203,12 +203,12 @@ class Key {
 					order = [1, -1];
 				}
 				for(var i = 0; i < 2; i++){
-					var change = [3, 4];
+					var changes = [3, 4];
 					if(chooseInt({0: 50, 1: 50}) == 1){
-						change = [4, 3];
+						changes = [4, 3];
 					}
 					for(var j = 0; j < 2; j++){
-						var change = (current_key.pitch + 24 - this.pitch - 7 + order[i] * change[j]) % 12;
+						var change = (current_key.pitch + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
 						if(change in this.kg.mod_modalities[this.modality]){
 							var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
 							if(new_key.numToName(7).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
