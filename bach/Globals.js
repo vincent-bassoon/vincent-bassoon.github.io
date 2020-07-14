@@ -261,7 +261,7 @@ class KeyGenerator {
 		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-V": 65},
 					    "mediant": {"I-V": 95, "IV-V": 5}},
 				  "minor": {"pivot": {"VII-V": 10, "III-V": 10, "i-iv": 10},
-					    "mediant": {"III-V": 10, "VI-V": 10}}};
+					    "mediant": {"III-V": 50, "VI-V": 50}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
