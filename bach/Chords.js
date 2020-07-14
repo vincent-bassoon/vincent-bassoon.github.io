@@ -379,14 +379,12 @@ class ChordFunctions {
 	generateModulations(key, prev_key, num_mods, is_last){
 		var mods = [];
 		for(var i = 0; i < num_mods; i++){
-			if(is_last && i == num_mods - 1){
-				var type = choose({"mediant": 0, "pivot": 100});
-				mods.push(new Modulation(type, prev_key.getModulationNums(key, type), [prev_key, key]));
+			var mod = key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100}), (is_last && i == num_mods - 1));
+			if(mod == null){
+				return null;
 			}
-			else{
-				mods.push(key.getModulation(prev_key, choose({"mediant": 0, "pivot": 100})));
-				prev_key = mods[i].keys[1];
-			}
+			mods.push(mod);
+			prev_key = mods[i].keys[1];
 		}
 		return mods;
 	}
