@@ -320,8 +320,13 @@ class ChordFunctions {
 		}
 		
 		var mods = null;
+		var counter = 0;
 		while(mods == null){
 			mods = this.generateModulations(key, prev_key, num_mods, index == phrase_data.length - 1);
+			counter++;
+			if(counter > 10){
+				return false;
+			}
 		}
 		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length));
 		min_modulations += 1;
