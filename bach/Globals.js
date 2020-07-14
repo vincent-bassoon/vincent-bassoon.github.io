@@ -70,7 +70,7 @@ function chooseIntFromFreqs(freqs, choices){
 	return parseInt(chooseFromFreqs(freqs, choices));
 }
 
-function chooseIntFromFreqsRemove(freqs, choices){
+function chooseFromFreqsRemove(freqs, choices){
 	var sum = 0;
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
@@ -80,11 +80,15 @@ function chooseIntFromFreqsRemove(freqs, choices){
 	for(var i = 0; i < choices.length; i++){
 		sum += freqs[choices[i]];
 		if(sum > num){
-			return parseInt(choices.splice(i, 1)[0]);
+			return choices.splice(i, 1)[0];
 		}
 	}
 	console.log("Probability null choice error: ", choices, freqs);
 	return null;
+}
+
+function chooseIntFromFreqsRemove(freqs, choices){
+	return parseInt(chooseFromFreqsRemove(freqs, choices));
 }
 
 class PhraseData {
