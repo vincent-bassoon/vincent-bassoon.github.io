@@ -399,7 +399,7 @@ class HarmonyFunctions {
 				max_degree = 0;
 			}
 			for(var degree = min_degree; degree <= max_degree; degree++){
-				if(index != harmony.length - 1){
+				if(index == harmony.length - 1){
 					var value = this.nf.getValueInPrefRange(chord.pitches[degree], voice);
 					this.addOption(options[voice], degree, harmony, index, voice, value);
 				}
