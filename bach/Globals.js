@@ -113,7 +113,7 @@ class Key {
 	constructor(key_pitch, key_modality, kg){
 		this.pitch = key_pitch;
 		this.modality = key_modality;
-		this.key_generator = kg;
+		this.kg = kg;
 		
 		var pitches = kg.pitches[this.modality];
 		this.pitch_to_name = {};
@@ -132,30 +132,14 @@ class Key {
 			this.num_to_pitch[num] = (kg.num_to_pitch[this.modality][num] + this.pitch) % 12;
 		}
 		
-		this.mod_freqs = {};
-		this.mod_choices = [];
-		for(var pitch_string in kg.mod_freqs[this.modality]){
-			var pitch = parseInt(pitch_string);
-			var key_pitch = (this.pitch + pitch) % 12;
-			var key_modality;
-			if(pitch == 0 || pitch == 5 || pitch == 7){
-				key_modality = this.modality;
-			}
-			else{
-				key_modality = kg.opposite_modality[this.modality];
-			}
-			var key_letter = kg.letters[kg.key_pitch_to_letter_index[key_modality][key_pitch]];
-			if(key_letter == this.pitch_to_name[key_pitch].substring(0, 1)){
-				this.mod_freqs[key_pitch] = kg.mod_freqs[this.modality][pitch];
-				this.mod_choices.push(key_pitch);
-			}
-		}
-		
-		this.type_freqs = kg.type_freqs;
+		this.mod_freqs = kg.mod_freqs[this.modality];
 		this.qualities = kg.qualities[this.modality];
 	}
 	numToPitch(num){
 		return this.num_to_pitch[num];
+	}
+	numToName(num){
+		return this.pitch_to_name[this.num_to_pitch[num]];
 	}
 	valueToNum(value){
 		return this.pitch_to_num[value % 12];
@@ -188,49 +172,51 @@ class Key {
 	}
 	getModulation(current_key, type){
 		var choices = [];
-		for(var i = 0; i < this.mod_choices.length; i++){
-			choices.push(this.mod_choices[i]);
+		for(var choice in current_key.mod_freqs[type]){
+			choices.push(choice);
 		}
 		while(choices.length > 0){
-			var pitch = chooseIntFromFreqsRemove(this.mod_freqs, choices);
-			var modality;
-			var num = this.pitch_to_num[pitch];
-			if(num == 1 || num == 4 || num == 5){
-				modality = this.modality;
-			}
-			else{
-				modality = this.key_generator.opposite_modality[this.modality];
-			}
-			var next_key = this.key_generator.getKey(pitch, modality);
-			if(!next_key.equals(current_key)){
-				var mod_nums = current_key.getModulationNums(next_key, type);
-				if(mod_nums != null){
-					return new Modulation(type, mod_nums, [current_key, next_key]);
-				}
-			}
-		}
-		return null;
-	}
-	getModulationNums(next_key, type){
-		var choices = [];
-		for(var num in this.type_freqs[type][this.modality]){
-			var pitch = this.num_to_pitch[num];
+			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices));
 			if(type == "pivot"){
-				if(pitch in next_key.pitch_to_name && next_key.pitch_to_name[pitch] == this.pitch_to_name[pitch] &&
-				   this.qualities[num] == next_key.qualities[next_key.pitch_to_num[pitch]]){
-					choices.push(num);
+				var modality = current_key.modality;
+				if(current_key.getChordQuality(nums[0]) != current_key.getChordQuality(nums[1])){
+					modality = this.kg.opposite_modality[current_key.modality];
+				}
+				var change = (this.kg.getKey(0, current_key.modality).numToPitch(nums[0]) + 12 - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
+				if(change in this.kg.mod_modalities[this.modality] && (nums[1] == 5 || this.kg.mod_modalities[this.modality][change] == modality)){
+					var new_key = this.kg.getKey((current_key.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
+					return new Modulation(type, nums, [current_key, new_key]);
 				}
 			}
 			else if(type == "mediant"){
-				
+				if(nums[1] != 5){
+					console.log("5 mediant error");
+				}
+				var order = [-1, 1];
+				if(chooseInt({0: 90, 1: 10}) == 1){
+					order = [1, -1];
+				}
+				for(var i = 0; i < 2; i++){
+					var change = [3, 4];
+					if(chooseInt({0: 50, 1: 50}) == 1){
+						change = [4, 3];
+					}
+					for(var j = 0; j < 2; j++){
+						var change = (12 - 7 + order[i] * change[j]) % 12;
+						if(change in this.kg.mod_modalities[this.modality]){
+							var new_key = this.kg.getKey((current_key.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
+							if(new_key.numToName(7).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
+								return new Modulation(type, nums, [current_key, new_key]);
+							}
+						}
+					}
+				}
+			}
+			else{
+				console.log("error, invalid type ", type);
 			}
 		}
-		if(choices.length == 0){
-			return null;
-		}
-		var num1 = chooseIntFromFreqs(this.type_freqs[type][this.modality], choices);
-		var num2 = next_key.pitch_to_num[this.num_to_pitch[num1]];
-		return [num1, num2];
+		return null;
 	}
 }
 
@@ -260,13 +246,14 @@ class KeyGenerator {
 				     "minor": {1: 0, 2: 2, 3: 3, 4: 5, 5: 7, 6: 8, 7: 11}};
 		this.pitches = {"major": [0, 2, 4, 5, 7, 9, 11], "minor": [0, 2, 3, 5, 7, 8, 10, 11]};
 		
-		this.mod_freqs = {"major": {2: 0.14, 4: 0.02, 5: 0.2, 7: 0.38, 9: 0.26},
-				  "minor": {3: 0.24, 5: 0.1, 7: 0.38, 8: 0.2, 10: 0.08}};
+		this.mod_modalities = {"major": {0: "major", 2: "minor", 4: "minor", 5: "major", 7: "major", 9: "minor"},
+				       "minor": {0: "minor", 3: "major", 5: "minor", 7: "minor", 8: "major", 10: "major"}};
 		
-		this.type_freqs = {"pivot": {"major": {1: 25, 2: 9, 3: 2, 4: 15, 5: 15, 6: 30, 7: 4},
-					     "minor": {1: 25, 2: 4, 3: 9, 4: 15, 5: 15, 6: 30, 7: 2}},
-				   "mediant": {"major": {1: 30, 2: 5, 3: 0, 4: 20, 5: 40, 6: 5, 7: 0},
-					       "minor": {1: 30, 2: 0, 3: 5, 4: 20, 5: 40, 6: 5, 7: 0}}};
+		//mediant should always go to V
+		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-V": 65},
+					    "mediant": {"I-V": 95, "IV-V": 5}},
+				  "minor": {"pivot": {"VII-V": 10, "III-V": 10, "i-iv": 10},
+					    "mediant": {"III-V": 10, "VI-V": 10}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
@@ -275,6 +262,15 @@ class KeyGenerator {
 		
 		this.keys = {"major": {}, "minor": {}};
 		
+		this.string_to_num = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5, "vi": 6, "vii": 7};
+	}
+	modStringToNums(mod_string){
+		var strings = mod_string.split("-");
+		var nums = [];
+		for(var i = 0; i < 2; i++){
+			nums[i] = this.string_to_num[strings[i].toLowerCase()];
+		}
+		return nums;
 	}
 	getAccidental(base_pitch, target_pitch){
 		var accidental = "";
