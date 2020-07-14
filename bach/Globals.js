@@ -174,7 +174,7 @@ class Key {
 	equals(key){
 		return this.pitch == key.pitch && this.modality == key.modality;
 	}
-	getModulation(current_key, type){
+	getModulation(current_key, type, is_last){
 		var choices = [];
 		for(var choice in current_key.mod_freqs[type]){
 			choices.push(choice);
@@ -189,7 +189,9 @@ class Key {
 				var change = (current_key.numToPitch(nums[0]) + 12 - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
 				if(change in this.kg.mod_modalities[this.modality] && (nums[1] == 5 || this.kg.mod_modalities[this.modality][change] == modality)){
 					var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
-					return new Modulation(type, nums, [current_key, new_key]);
+					if(!is_last || new_key.equals(this)){
+						return new Modulation(type, nums, [current_key, new_key]);
+					}
 				}
 			}
 			else if(type == "mediant"){
@@ -210,7 +212,9 @@ class Key {
 						if(change in this.kg.mod_modalities[this.modality]){
 							var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
 							if(new_key.numToName(7).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
-								return new Modulation(type, nums, [current_key, new_key]);
+								if(!is_last || new_key.equals(this)){
+									return new Modulation(type, nums, [current_key, new_key]);
+								}
 							}
 						}
 					}
