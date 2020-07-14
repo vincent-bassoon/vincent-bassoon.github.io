@@ -186,7 +186,7 @@ class Key {
 				if(current_key.getChordQuality(nums[0]) != current_key.getChordQuality(nums[1])){
 					modality = this.kg.opposite_modality[current_key.modality];
 				}
-				var change = (current_key.numToPitch(nums[0]) + 12 - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
+				var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
 				if(change in this.kg.mod_modalities[this.modality] && (nums[1] == 5 || this.kg.mod_modalities[this.modality][change] == modality)){
 					var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
 					if(!is_last || new_key.equals(this)){
@@ -208,7 +208,7 @@ class Key {
 						change = [4, 3];
 					}
 					for(var j = 0; j < 2; j++){
-						var change = (current_key.pitch + 12 - 7 + order[i] * change[j]) % 12;
+						var change = (current_key.pitch + 24 - this.pitch - 7 + order[i] * change[j]) % 12;
 						if(change in this.kg.mod_modalities[this.modality]){
 							var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
 							if(new_key.numToName(7).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
