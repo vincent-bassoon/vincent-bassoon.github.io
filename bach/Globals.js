@@ -208,10 +208,17 @@ class Key {
 						changes = [4, 3];
 					}
 					for(var j = 0; j < 2; j++){
-						var change = (current_key.pitch + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
+						var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
 						if(change in this.kg.mod_modalities[this.modality]){
 							var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
-							if(new_key.numToName(7).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
+							var temp_num;
+							if(order[i] == -1){
+								temp_num = 7;
+							}
+							else{
+								temp_num = 3;
+							}
+							if(new_key.numToName(temp_num).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
 								if(!is_last || new_key.equals(this)){
 									return new Modulation(type, nums, [current_key, new_key]);
 								}
