@@ -249,7 +249,7 @@ class Key {
 		while(choices.length > 0){
 			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices));
 			var mod = this.generateTypeModulation(current_key, nums, type);
-			if(mod != null && !(is_last && !new_key.equals(this))){
+			if(mod != null && !(is_last && !mod.keys[1].equals(this))){
 				return mod;
 			}
 		}
