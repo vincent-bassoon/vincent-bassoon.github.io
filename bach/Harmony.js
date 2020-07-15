@@ -186,7 +186,7 @@ class HarmonyFunctions {
 	}
 	fillHarmony(harmony, index, options, voice_order, order_index, voicing, doubling, score_sum){
 		if(score_sum > this.max_total_score){
-			console.log("score error: ", score_sum);
+			console.log("score error");
 			return false;
 		}
 		var check_same = false;
