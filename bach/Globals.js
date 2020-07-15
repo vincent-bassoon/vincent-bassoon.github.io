@@ -174,6 +174,73 @@ class Key {
 	equals(key){
 		return this.pitch == key.pitch && this.modality == key.modality;
 	}
+	generateTypeModulation(current_key, nums, type){
+		if(type == "pivot"){
+			var modality = current_key.modality;
+			if(current_key.getChordQuality(nums[0]) != current_key.getChordQuality(nums[1])){
+				modality = this.kg.opposite_modality[current_key.modality];
+			}
+			var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
+			if(change in this.kg.mod_modalities[this.modality] && (nums[1] == 5 || this.kg.mod_modalities[this.modality][change] == modality)){
+				var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
+				return new Modulation(type, nums, [current_key, new_key]);
+			}
+		}
+		else if(type == "mediant"){
+			if(nums[1] != 5){
+				console.log("5 mediant error");
+			}
+			var order = [-1, 1];
+			if(chooseInt({0: 90, 1: 10}) == 1){
+				order = [1, -1];
+			}
+			for(var i = 0; i < 2; i++){
+				var changes = [3, 4];
+				if(chooseInt({0: 50, 1: 50}) == 1){
+					changes = [4, 3];
+				}
+				for(var j = 0; j < 2; j++){
+					var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
+					if(change in this.kg.mod_modalities[this.modality]){
+						var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
+						var temp_num;
+						if(order[i] == -1){
+							temp_num = 7;
+						}
+						else{
+							temp_num = 3;
+						}
+						if(new_key.numToName(temp_num).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
+							return new Modulation(type, nums, [current_key, new_key]);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	getStartModulation(current_key, current_num, first_num, type){
+		var nums;
+		if(type == "pivot"){
+			if(current_key.getChordQuality(first_num) != "major"){
+				return null;
+			}
+			var nums;
+			if(first_num == 1){
+				nums = [1, 5];
+			}
+			else if(first_num == 5){
+				nums = [5, 1];
+			}
+		}
+		else if(type == "mediant"){
+			if(current_num == 5 || current_key.getChordQuality(current_num) != "major"){
+				return null;
+			}
+			var nums = [current_num, 5];
+		}
+		return this.generateTypeModulation(current_key, nums, type);
+	}
 	getModulation(current_key, type, is_last){
 		var choices = [];
 		for(var choice in current_key.mod_freqs[type]){
@@ -181,54 +248,9 @@ class Key {
 		}
 		while(choices.length > 0){
 			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices));
-			if(type == "pivot"){
-				var modality = current_key.modality;
-				if(current_key.getChordQuality(nums[0]) != current_key.getChordQuality(nums[1])){
-					modality = this.kg.opposite_modality[current_key.modality];
-				}
-				var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - this.kg.getKey(0, modality).numToPitch(nums[1])) % 12;
-				if(change in this.kg.mod_modalities[this.modality] && (nums[1] == 5 || this.kg.mod_modalities[this.modality][change] == modality)){
-					var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
-					if(!is_last || new_key.equals(this)){
-						return new Modulation(type, nums, [current_key, new_key]);
-					}
-				}
-			}
-			else if(type == "mediant"){
-				if(nums[1] != 5){
-					console.log("5 mediant error");
-				}
-				var order = [-1, 1];
-				if(chooseInt({0: 90, 1: 10}) == 1){
-					order = [1, -1];
-				}
-				for(var i = 0; i < 2; i++){
-					var changes = [3, 4];
-					if(chooseInt({0: 50, 1: 50}) == 1){
-						changes = [4, 3];
-					}
-					for(var j = 0; j < 2; j++){
-						var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
-						if(change in this.kg.mod_modalities[this.modality]){
-							var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
-							var temp_num;
-							if(order[i] == -1){
-								temp_num = 7;
-							}
-							else{
-								temp_num = 3;
-							}
-							if(new_key.numToName(temp_num).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
-								if(!is_last || new_key.equals(this)){
-									return new Modulation(type, nums, [current_key, new_key]);
-								}
-							}
-						}
-					}
-				}
-			}
-			else{
-				console.log("error, invalid type ", type);
+			var mod = this.generateTypeModulation(current_key, nums, type);
+			if(mod != null && !(is_last && !new_key.equals(this))){
+				return mod;
 			}
 		}
 		return null;
