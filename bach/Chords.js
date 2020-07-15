@@ -322,32 +322,15 @@ class ChordFunctions {
 		var mods = null;
 		var counter = 0;
 		while(mods == null){
-			mods = this.generateModulations(key, prev_key, num_mods, index == phrase_data.length - 1);
+			mods = this.generateModulations(key, prev_key, prev_num, num_mods, index == phrase_data.length - 1);
 			counter++;
 			if(counter > 10){
 				return false;
 			}
 		}
 		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length));
-		min_modulations += 1;
-		
-		//!(prev_num != null && mods[0].nums[0] == prev_num && mods[0].type == "mediant")
-		var probs;
-		switch(prev_num){
-			case 1:
-				probs = {1: 60, 2: 40};
-				break;
-			case 5:
-				probs = {1: 85, 2: 15};
-				break;
-			case 6:
-				probs = {1: 90, 2: 10};
-				break;
-			default:
-				probs = {1: 40, 2: 60};
-		}
-		mods.unshift(new Modulation("pivot", [null, this.classToNum(chooseInt(probs) - 1)], [null, prev_key]));
-		min_modulations += 1;
+		min_modulations += 2;
+		//one for cadence, one for first modulation
 		
 		for(var i = 1; i < mods.length; i++){
 			mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0]);
@@ -381,8 +364,45 @@ class ChordFunctions {
 		console.log("failed to generate phrase at index " + index + " with length " + phrase_data[index].length + " and num_mods " + num_mods);
 		return false;
 	}
-	generateModulations(key, prev_key, num_mods, is_last){
+	generateModulations(key, prev_key, prev_num, num_mods, is_last){
+		var probs;
+		switch(prev_num){
+			case 1:
+				probs = {1: 60, 2: 40};
+				break;
+			case 5:
+				probs = {1: 85, 2: 15};
+				break;
+			case 6:
+				probs = {1: 90, 2: 10};
+				break;
+			default:
+				probs = {1: 40, 2: 60};
+		}
+		var first_num = this.classToNum(chooseInt(probs) - 1);
+		if(prev_num == null && first_num == 7){
+			first_num = 5;
+		}
+		var done = false;
 		var mods = [];
+		if(!key.equals(prev_key)){
+			var order = ["mediant", "pivot"];
+			if(chooseInt({0: 35, 1: 65}) == 1){
+				order.unshift(order.pop());
+			}
+			for(var i = 0; i < 2; i++){
+				var mod = key.getStartModulation(prev_key, prev_num, first_num, order[i]);
+				if(mod != null){
+					mods.unshift(new Modulation("pivot", [null, mod.nums[1]], [null, mod.keys[1]]));
+					prev_key = mod.keys[1];
+					i = 2;
+					done = true;
+				}
+			}
+		}
+		if(!done){
+			mods.unshift(new Modulation("pivot", [null, first_num], [null, prev_key]));
+		}
 		for(var i = 0; i < num_mods; i++){
 			var mod = key.getModulation(prev_key, choose({"mediant": 35, "pivot": 65}), (is_last && i == num_mods - 1));
 			if(mod == null){
