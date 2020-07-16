@@ -387,7 +387,7 @@ class ChordFunctions {
 		var mods = [];
 		if(!key.equals(prev_key)){
 			var order = ["mediant", "pivot"];
-			if(chooseInt({0: 35, 1: 65}) == 0){
+			if(chooseInt({0: 35, 1: 65}) == 1){
 				order.unshift(order.pop());
 			}
 			for(var i = 0; i < 2; i++){
