@@ -173,7 +173,7 @@ class ChordFunctions {
 		}
 		var mod_order = this.getModOrder(mods);
 		var mod_index = 0;
-		var freqs = {2: 13, 3: 50, 4: 30, 5: 6, 6: 1};
+		var freqs = {2: 3, 3: 50, 4: 40, 5: 6, 6: 1};
 		
 		while(spaces > 4){
 			var choices = [];
