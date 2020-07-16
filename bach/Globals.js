@@ -188,6 +188,7 @@ class Key {
 		}
 		else if(type == "mediant"){
 			var parity = nums[1] / 5;
+			nums[1] = 5;
 			var changes = [3, 4];
 			if(chooseInt({0: 50, 1: 50}) == 1){
 				changes = [4, 3];
