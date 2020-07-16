@@ -191,7 +191,7 @@ class Key {
 				console.log("5 mediant error");
 			}
 			var order = [-1, 1];
-			if(chooseInt({0: 90, 1: 10}) == 1){
+			if(chooseInt({0: 80, 1: 20}) == 0){
 				order = [1, -1];
 			}
 			for(var i = 0; i < 2; i++){
@@ -288,9 +288,9 @@ class KeyGenerator {
 		
 		//mediant should always go to V
 		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-V": 65},
-					    "mediant": {"I-V": 95, "IV-V": 5}},
+					    "mediant": {"I-V": 20, "IV-V": 80}},
 				  "minor": {"pivot": {"VII-V": 10, "III-V": 10, "i-iv": 10},
-					    "mediant": {"III-V": 50, "VI-V": 50}}};
+					    "mediant": {"III-V": 34, "VI-V": 33, "VII-V": 33}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
