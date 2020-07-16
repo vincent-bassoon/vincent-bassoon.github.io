@@ -187,32 +187,24 @@ class Key {
 			}
 		}
 		else if(type == "mediant"){
-			if(nums[1] != 5){
-				console.log("5 mediant error");
+			var parity = nums[1] / 5;
+			var changes = [3, 4];
+			if(chooseInt({0: 50, 1: 50}) == 1){
+				changes = [4, 3];
 			}
-			var order = [-1, 1];
-			if(chooseInt({0: 80, 1: 20}) == 0){
-				order = [1, -1];
-			}
-			for(var i = 0; i < 2; i++){
-				var changes = [3, 4];
-				if(chooseInt({0: 50, 1: 50}) == 1){
-					changes = [4, 3];
-				}
-				for(var j = 0; j < 2; j++){
-					var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - 7 + order[i] * changes[j]) % 12;
-					if(change in this.kg.mod_modalities[this.modality]){
-						var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
-						var temp_num;
-						if(order[i] == -1){
-							temp_num = 7;
-						}
-						else{
-							temp_num = 3;
-						}
-						if(new_key.numToName(temp_num).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
-							return new Modulation(type, nums, [current_key, new_key]);
-						}
+			for(var j = 0; j < 2; j++){
+				var change = (current_key.numToPitch(nums[0]) + 24 - this.pitch - 7 + parity * changes[j]) % 12;
+				if(change in this.kg.mod_modalities[this.modality]){
+					var new_key = this.kg.getKey((this.pitch + change) % 12, this.kg.mod_modalities[this.modality][change]);
+					var temp_num;
+					if(parity == -1){
+						temp_num = 7;
+					}
+					else{
+						temp_num = 3;
+					}
+					if(new_key.numToName(temp_num).substring(0, 1) == current_key.numToName(nums[0]).substring(0, 1)){
+						return new Modulation(type, nums, [current_key, new_key]);
 					}
 				}
 			}
@@ -225,21 +217,32 @@ class Key {
 			if(current_key.getChordQuality(first_num) != "major"){
 				return null;
 			}
-			var nums;
+			var num_options = [];
 			if(first_num == 1){
-				nums = [1, 5];
+				num_options.push([1, 5]);
 			}
 			else if(first_num == 5){
-				nums = [5, 1];
+				num_options.push([5, 1]);
 			}
+			num_options.push([4, 5]);
+			num_options.push([4, 1]);
+			
+			var mod = null;
+			for(var i = 0; i < num_options.length; i++){
+				mod = this.generateTypeModulation(current_key, num_options[i], type);
+				if(mod != null){
+					return mod;
+				}
+			}
+			return mod;
 		}
 		else if(type == "mediant"){
 			if(current_num == 5 || current_key.getChordQuality(current_num) != "major"){
 				return null;
 			}
-			var nums = [current_num, 5];
+			var nums = [current_num, -5];
+			return this.generateTypeModulation(current_key, nums, type);
 		}
-		return this.generateTypeModulation(current_key, nums, type);
 	}
 	getModulation(current_key, type, is_last){
 		var choices = [];
@@ -247,7 +250,7 @@ class Key {
 			choices.push(choice);
 		}
 		while(choices.length > 0){
-			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices));
+			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices), type);
 			var mod = this.generateTypeModulation(current_key, nums, type);
 			if(mod != null && !(is_last && !mod.keys[1].equals(this))){
 				return mod;
@@ -288,9 +291,9 @@ class KeyGenerator {
 		
 		//mediant should always go to V
 		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-V": 65},
-					    "mediant": {"I-V": 20, "IV-V": 80}},
+					    "mediant": {"I+": 50, "IV-": 50}},
 				  "minor": {"pivot": {"VII-V": 10, "III-V": 10, "i-iv": 10},
-					    "mediant": {"III-V": 34, "VI-V": 33, "VII-V": 33}}};
+					    "mediant": {"III-": 50, "VI+": 50}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
 				   "minor": {1: "minor", 2: "dim", 3: "major", 4: "minor", 5: "major", 6: "major", 7: "dim"}};
@@ -301,11 +304,22 @@ class KeyGenerator {
 		
 		this.string_to_num = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5, "vi": 6, "vii": 7};
 	}
-	modStringToNums(mod_string){
-		var strings = mod_string.split("-");
+	modStringToNums(mod_string, type){
 		var nums = [];
-		for(var i = 0; i < 2; i++){
-			nums[i] = this.string_to_num[strings[i].toLowerCase()];
+		if(type == "pivot"){
+			var strings = mod_string.split("-");
+			for(var i = 0; i < 2; i++){
+				nums[i] = this.string_to_num[strings[i].toLowerCase()];
+			}
+		}
+		else if(type == "mediant"){
+			nums[0] = this.string_to_num[mod_string.substring(0, mod_string.length - 1).toLowerCase()];
+			if(mod_string.substring(mod_string.length - 1) == "+"){
+				nums[1] = 5;
+			}
+			else{
+				nums[1] = -5;
+			}
 		}
 		return nums;
 	}
