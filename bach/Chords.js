@@ -40,7 +40,7 @@ class ChordFunctions {
 		return string;
 	}
 	generatePivotNumString(nums, keys){
-		return this.generateNumString(nums[0], keys[0], null) + " -> " + this.generateNumString(nums[1], keys[1], null);
+		return this.generateNumString(nums[0], keys[0], null) + " -> " + this.generateNumString(nums[1], keys[1], null) + " (pivot)";
 	}
 	generateChord(num, key, inversion){
 		return new Chord(num, key, this.key_generator.qualities[key.modality][num], inversion);
