@@ -238,7 +238,7 @@ class ChordFunctions {
 				if(mods[i].type == "pivot"){
 					start = 1;
 					if(mods[i].nums[0] == null){
-						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[1], mods[i].keys[1], null);
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[1], mods[i].keys[1], null) + " pivot";
 					}
 					else{
 						this.chord_strings[chord_index] = this.generatePivotNumString(mods[i].nums, mods[i].keys);
