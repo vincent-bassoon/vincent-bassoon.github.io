@@ -226,6 +226,7 @@ class Key {
 				num_options.push([5, 1]);
 			}
 			num_options.push([4, 1]);
+			num_options.push([4, 5]);
 			
 			var mod = null;
 			for(var i = 0; i < num_options.length; i++){
