@@ -225,7 +225,6 @@ class Key {
 			else if(first_num == 5){
 				num_options.push([5, 1]);
 			}
-			num_options.push([4, 5]);
 			num_options.push([4, 1]);
 			
 			var mod = null;
