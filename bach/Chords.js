@@ -409,7 +409,7 @@ class ChordFunctions {
 				return null;
 			}
 			mods.push(mod);
-			prev_key = mods[i].keys[1];
+			prev_key = mods[mods.length - 1].keys[1];
 		}
 		return mods;
 	}
