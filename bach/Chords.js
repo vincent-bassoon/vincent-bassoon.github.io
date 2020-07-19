@@ -313,7 +313,7 @@ class ChordFunctions {
 			}
 		}
 		else if(index == 0){
-			num_mods = chooseInt({0: 70, 1: 20, 2: 10});
+			num_mods = 0;
 		}
 		else{
 			num_mods = chooseInt({0: 40, 1: 40, 2: 15, 3: 5});
