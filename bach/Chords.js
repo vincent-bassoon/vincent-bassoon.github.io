@@ -247,7 +247,7 @@ class ChordFunctions {
 				for(var j = start; j < 2; j++){
 					chords[chord_index] = this.generateChord(mods[i].nums[j], mods[i].keys[j], null);
 					if(mods[i].type != "pivot"){
-						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], null);
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], null) + " mod";
 					}
 					chord_index++;
 				}
