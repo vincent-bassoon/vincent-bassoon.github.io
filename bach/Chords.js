@@ -410,6 +410,9 @@ class ChordFunctions {
 		if(!done){
 			mods.unshift(new Modulation("pivot", [null, first_num], [null, prev_key]));
 		}
+		if(!prev_key.equals(key) && num_mods == 0){
+			num_mods = 1;
+		}
 		for(var i = 0; i < num_mods; i++){
 			var mod = key.getModulation(prev_key, choose({"mediant": 35, "pivot": 65}), (is_last && i == num_mods - 1));
 			if(mod == null){
