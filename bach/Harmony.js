@@ -406,7 +406,7 @@ class HarmonyFunctions {
 				else{
 					var value = this.nf.getValueClosestTo(chord.pitches[degree], harmony[index + 1].getValue(voice, 0));
 					this.addOption(options[voice], degree, harmony, index, voice, value);
-					if(voice == 3){
+					if(voice == 3 && (harmony[index].end_of_phrase || harmony[index + 1].end_of_phrase || harmony[index + 2].end_of_phrase)){
 						var change = value - harmony[index + 1].getValue(voice, 0);
 						if(change == 0 || change == 5){
 							this.addOption(options[voice], degree, harmony, index, voice, value - 12);
