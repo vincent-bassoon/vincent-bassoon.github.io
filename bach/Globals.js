@@ -356,10 +356,11 @@ class KeyGenerator {
 }
 
 class Chord {
-	constructor(roman_num, key, quality, inversion){
+	constructor(roman_num, key, quality, mod, inversion){
 		this.roman_num = roman_num;
 		this.key = key;
 		this.quality = quality;
+		this.mod = mod;
 		this.inversion = inversion;
 		
 		this.pitches = [key.numToPitch(roman_num)];
