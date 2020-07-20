@@ -48,6 +48,7 @@ class HarmonyFunctions {
 				avgs[voice] += options[voice][i].score;
 			}
 			avgs[voice] /= options[voice].length;
+			avgs[voice] += (2 * Math.random() - 1)
 			var added = false;
 			for(var i = 0; i < voice_order.length; i++){
 				if(avgs[voice] > avgs[voice_order[i]]){
