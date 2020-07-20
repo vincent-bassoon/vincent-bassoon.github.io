@@ -319,10 +319,6 @@ class HarmonyFunctions {
 			options.unshift({"values": [value], "score": 0, "motion": this.mf.type.CONSTANT, "degree": degree});
 			return;
 		}
-		/*else if(index + 1 == harmony.length - 1 && voice == 0 && harmony[index + 1].getDegree(voice) == 1 &&
-			value < harmony[index + 1].getValue(voice, 0)){
-			return;
-		}*/
 		var next_key = harmony[index + 1].chord.key;
 		var next_value = harmony[index + 1].getValue(voice, 0);
 		var change = next_value - value;
@@ -340,6 +336,11 @@ class HarmonyFunctions {
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+		}
+		if(harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
+			console.log("leap avoided");
+			// makes sure it never leaps up to mediant chord
+			return;
 		}
 		if(next_motion == this.mf.type.SUSPENSION){
 			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
