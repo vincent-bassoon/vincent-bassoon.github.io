@@ -208,7 +208,7 @@ class ChordFunctions {
 				mods[i].connect_nums.push(...additions);
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
-				chords[chord_index] = this.(mods[i].connect_nums[j], prev_key, null, null);
+				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null, null);
 				this.chord_strings[chord_index] = this.generateNumString(mods[i].connect_nums[j], prev_key, null);
 				chord_index++;
 			}
