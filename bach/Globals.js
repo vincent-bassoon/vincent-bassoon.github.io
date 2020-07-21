@@ -361,20 +361,21 @@ class Chord {
 		this.key = key;
 		this.quality = quality;
 		this.mod = mod;
+		this.seven = seven;
 		this.inversion = inversion;
 		
-		this.pitches = [key.numToPitch(roman_num)];
+		this.pitches = {0: key.numToPitch(roman_num)};
 		var chord_mapping = {"major": {1: 4, 2: 7}, "aug": {1: 4, 2: 8},
 				     "minor": {1: 3, 2: 7}, "dim": {1: 3, 2: 6}};
 		for(var i = 1; i < 3; i++){
-			this.pitches.push((this.pitches[0] + chord_mapping[quality][i]) % 12);
+			this.pitches[i] = (this.pitches[0] + chord_mapping[quality][i]) % 12;
 		}
-		if(seven){
-			this.pitches.push((this.pitches[0] + chord_mapping[quality][2] + 3) % 12);
+		if(roman_num == 5 && quality == "major"){
+			this.pitches[3] = (this.pitches[0] + chord_mapping[quality][2] + 3) % 12;
 		}
 	}
 	equals(chord){
-		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0] && this.pitches.length == chord.pitches.length;
+		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0] && this.seven = chord.seven;
 	}
 }
 
