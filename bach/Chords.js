@@ -173,22 +173,23 @@ class ChordFunctions {
 		}
 		var mod_order = this.getModOrder(mods);
 		var mod_index = 0;
-		var freqs = {2: 3, 3: 50, 4: 40, 5: 6, 6: 1};
+		var freqs = {2: 1, 3: 50, 4: 40, 5: 6, 6: 1};
 		
+		var prev_length = null;
 		while(spaces > 4){
 			var choices = [];
 			for(var i = Math.min(6, spaces); i >= 2; i--){
-				if(i + 1 != spaces){
+				if(i + 1 != spaces && !(prev_length == 2 && i == 2)){
 					choices.push(i);
 				}
 			}
-			var length_temp = chooseIntFromFreqs(freqs, choices);
-			mods[mod_order[mod_index]].additions.push(length_temp);
+			prev_length = chooseIntFromFreqs(freqs, choices);
+			mods[mod_order[mod_index]].additions.push(prev_length);
 			mod_index++;
 			if(mod_index == mod_order.length){
 				mod_index = 0;
 			}
-			spaces -= length_temp;
+			spaces -= prev_length;
 		}
 		if(spaces != 0){
 			mods[mod_order[mod_index]].additions.push(spaces);
