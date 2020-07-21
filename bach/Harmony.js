@@ -266,6 +266,10 @@ class HarmonyFunctions {
 			var values = [next_value];
 			var names = [next_key.valueToName(next_value)];
 			var valid = true;
+			if(degree == 3 && Math.abs(motion) == this.mf.type.PASSING_16){
+				valid = false;
+				num_changes = [];
+			}
 			for(var i = num_changes.length - 1; i >= 0; i--){
 				var num = ((start_num + num_changes[i] + 7 - 1) % 7) + 1;
 				var pitch;
