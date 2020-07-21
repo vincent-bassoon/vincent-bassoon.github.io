@@ -183,6 +183,9 @@ class HarmonyFunctions {
 		if(sus_degree == 1){
 			return (doubling != 1 && bass_degree == 0);
 		}
+		if(sus_degree == 3){
+			return true;
+		}
 		return false;
 	}
 	fillHarmony(harmony, index, options, voice_order, order_index, voicing, doubling, score_sum){
@@ -380,10 +383,9 @@ class HarmonyFunctions {
 		var options = [[], [], [], []];
 		
 		for(var voice = 0; voice < 4; voice++){
-			options[voice] = [];
 			var inversion = chord.inversion;
 			var min_degree = 0;
-			var max_degree = 2;
+			var max_degree = chord.pitches.length;
 			if(voice == 3){
 				if(inversion != null){
 					max_degree = inversion;
@@ -441,6 +443,11 @@ class HarmonyFunctions {
 		var options = this.generateOptions(harmony, index);
 		if(options != null){
 			var voice_order = this.getVoiceOrder(options);
+			if(harmony[index].chord.pitches.length == 4){
+				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(3), null, 0)){
+					return true;
+				}
+			}
 			for(var doubling = 0; doubling < 3; doubling++){
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
 					return true;
