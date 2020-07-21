@@ -257,6 +257,9 @@ class HarmonyFunctions {
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, harmony[index].sixteenths);
+		if(degree == 3 && !harmony[index].end_of_phrase){
+			queue.unshift("SUSPENSION_7");
+		}
 		while(queue.length > 0){
 			var motion = queue.pop();
 			var num_changes = this.mf.getNumChanges(motion);
@@ -350,7 +353,7 @@ class HarmonyFunctions {
 			// makes sure it never leaps up to mediant chord
 			return;
 		}
-		if(next_motion == this.mf.type.SUSPENSION){
+		if(next_motion == this.mf.type.SUSPENSION && ){
 			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
 				return;
 			}
