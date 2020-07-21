@@ -353,7 +353,6 @@ class HarmonyFunctions {
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
 		}
 		if(harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
-			console.log("leap avoided");
 			// makes sure it never leaps up to mediant chord
 			return;
 		}
