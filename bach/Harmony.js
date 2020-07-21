@@ -332,6 +332,10 @@ class HarmonyFunctions {
 			//leading tone check
 			return;
 		}
+		if(degree == 3 && motion != -1 * this.mf.type.STEP){
+			//resolving 7th check
+			return;
+		}
 		if(this.nf.isAugOrDim(change, key.valueToName(value), next_key.valueToName(next_value))){
 			// this check ignores augmented/diminished unison
 			return;
@@ -385,7 +389,10 @@ class HarmonyFunctions {
 		for(var voice = 0; voice < 4; voice++){
 			var inversion = chord.inversion;
 			var min_degree = 0;
-			var max_degree = chord.pitches.length;
+			var max_degree = 2;
+			if(chord.seven){
+				max_degree = 3;
+			}
 			if(voice == 3){
 				if(inversion != null){
 					max_degree = inversion;
@@ -443,7 +450,7 @@ class HarmonyFunctions {
 		var options = this.generateOptions(harmony, index);
 		if(options != null){
 			var voice_order = this.getVoiceOrder(options);
-			if(harmony[index].chord.pitches.length == 4){
+			if(harmony[index].chord.seven){
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(3), null, 0)){
 					return true;
 				}
