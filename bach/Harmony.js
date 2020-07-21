@@ -258,7 +258,7 @@ class HarmonyFunctions {
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
 		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, harmony[index].sixteenths);
 		if(degree == 3 && !harmony[index].end_of_phrase){
-			queue.unshift("SUSPENSION_7");
+			queue.unshift(this.mf.type.SUSPENSION_7);
 		}
 		while(queue.length > 0){
 			var motion = queue.pop();
