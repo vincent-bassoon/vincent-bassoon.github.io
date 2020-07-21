@@ -266,7 +266,7 @@ class HarmonyFunctions {
 			var values = [next_value];
 			var names = [next_key.valueToName(next_value)];
 			var valid = true;
-			if(degree == 3 && Math.abs(motion) == this.mf.type.PASSING_16){
+			if(degree == 3 && Math.abs(motion) == this.mf.type.PASSING_16 || Math.abs(motion) == this.mf.type.TURN){
 				valid = false;
 				num_changes = [];
 			}
