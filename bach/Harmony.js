@@ -353,7 +353,7 @@ class HarmonyFunctions {
 			// makes sure it never leaps up to mediant chord
 			return;
 		}
-		if(next_motion == this.mf.type.SUSPENSION && ){
+		if(next_motion == this.mf.type.SUSPENSION){
 			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
 				return;
 			}
