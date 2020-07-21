@@ -461,6 +461,9 @@ class HarmonyFunctions {
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(3), null, 0)){
 					return true;
 				}
+				if(this.fillHarmony(harmony, index, options, voice_order, 0, {0: 2, 1: 1, 2: 0, 3: 1}, 0, 0)){
+					return true;
+				}
 			}
 			for(var doubling = 0; doubling < 3; doubling++){
 				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
