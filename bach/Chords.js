@@ -223,7 +223,7 @@ class ChordFunctions {
 					}
 					
 					if(cad == "pacm" && j == mods[i].nums.length - 1){
-						chords[chord_index] = this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), null, false 0);
+						chords[chord_index] = this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), null, false, 0);
 						this.chord_strings[chord_index] = this.generateNumString(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
 					}
 					else{
