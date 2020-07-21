@@ -465,8 +465,12 @@ class HarmonyFunctions {
 					return true;
 				}
 			}
-			for(var doubling = 0; doubling < 3; doubling++){
-				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling), doubling, 0)){
+			var doubling_order = [0, 1, 2];
+			if(harmony[index].chord.inversion == 2 && index + 1 < harmony.length && harmony[index + 1].degree.includes(3)){
+				doubling_order = [2, 0, 1];
+			}
+			for(var i = 0; i < 3; i++){
+				if(this.fillHarmony(harmony, index, options, voice_order, 0, this.getVoicing(doubling_order[i]), doubling_order[i], 0)){
 					return true;
 				}
 			}
