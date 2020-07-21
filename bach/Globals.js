@@ -356,7 +356,7 @@ class KeyGenerator {
 }
 
 class Chord {
-	constructor(roman_num, key, quality, mod, inversion){
+	constructor(roman_num, key, quality, mod, seven, inversion){
 		this.roman_num = roman_num;
 		this.key = key;
 		this.quality = quality;
@@ -369,9 +369,12 @@ class Chord {
 		for(var i = 1; i < 3; i++){
 			this.pitches.push((this.pitches[0] + chord_mapping[quality][i]) % 12);
 		}
+		if(seven){
+			this.pitches.push((this.pitches[0] + chord_mapping[quality][2] + 3) % 12);
+		}
 	}
 	equals(chord){
-		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0];
+		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0] && this.pitches.length == chord.pitches.length;
 	}
 }
 
