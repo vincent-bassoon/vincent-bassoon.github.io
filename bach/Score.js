@@ -3,6 +3,7 @@ class Player {
 		this.beat_nums = [1, 1, 1, 1];
 		this.schedule = [];
 		this.samplers = samplers;
+		this.priority_voice_order = [3, 0, 1, 2];
 	}
 	scheduleNote(voice, note, duration){
 		var beat_num = this.beat_nums[voice];
@@ -11,17 +12,27 @@ class Player {
 			index--;
 		}
 		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
-			var notes = {0: null, 1: null, 2: null, 3: null};
-			notes[voice] = note;
-			this.schedule.splice(index, 0, {"notes": notes, "beat_num": beat_num})
+			var notes = {0: [], 1: [], 2: [], 3: []};
+			notes[voice].push(note);
+			this.schedule.splice(index, 0, {"attack": notes, "beat_num": beat_num})
 		}
 		else{
-			this.schedule[index - 1].notes[voice] = note;
+			this.schedule[index - 1].attack[voice].push(note);
 		}
 		this.beat_nums[voice] += duration;
 	}
 	getTimeString(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
+	}
+	getPriorityVoiceOrder(voice1, voice2){
+		var order = [];
+		for(var i = 0; i < 4; i++){
+			var voice = this.priority_voice_order[i];
+			if(voice == voice1 || voice == voice2){
+				order.push(voice);
+			}
+		}
+		return order;
 	}
 	generateAudio(){
 		var transport = Tone.Transport;
@@ -31,6 +42,32 @@ class Player {
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
+		for(var i = 0; i < schedule.length; i++){
+			for(var voice1 = 0; voice1 < 4; voice1++){
+				var note1 = schedule[i].attack[voice1][0];
+				for(var voice2 = voice1 + 1; voice2 < 4; voice2++){
+					if(note1 == schedule[i].attack[voice2][0]){
+						var order = this.getPriorityVoiceOrder(voice1, voice2);
+						schedule[i].attack[order[1]] = [];
+						var index1 = i + 1;
+						while(!schedule[index1].release[order[0]].includes(note1)){
+							index++;
+						}
+						var temp = schedule[index1].release[order[0]]
+						for(var j = temp.length - 1; j >= 0; j--){
+							if(temp[j] == note1){
+								temp.splice(j, 1);
+							}
+						}
+						var index2 = i + 1;
+						while(!schedule[index2].release[order[1]].includes(note1)){
+							index++;
+						}
+						schedule[Math.max(index1, index2)].release[order[0]].push(note1);
+					}
+				}
+			}
+		}
 		console.log(schedule);
 		var samplers = this.samplers;
 		
@@ -46,28 +83,28 @@ class Player {
 		}, this.getTimeString(0));
 		
 		for(var i = 0; i < schedule.length; i++){
-			(function(unit, time_string, rit, last){
+			(function(schedule, index, time_string, rit){
 				transport.schedule(function(time){
 					for(var j = 0; j < 4; j++){
-						if(unit.notes[j] != null){
-							samplers[j].releaseAll();
+						if(schedule[index].release[j].length != 0){
+							samplers[j].triggerRelease(schedule[index].release[j], time);
 						}
 					}
 					for(var j = 0; j < 4; j++){
-						if(unit.notes[j] != null){
-							samplers[j].triggerAttack(unit.notes[j], time);
+						if(schedule[index].attack[j].length != 0){
+							samplers[j].triggerAttack(schedule[index].attack[j], time);
 						}
 					}
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
-					if(last){
+					if(i == schedule.length - 1){
 						for(var j = 0; j < 4; j++){
-							samplers[i].release = 2;
+							samplers[j].release = 2;
 						}
 					}
 				}, time_string);
-			})(schedule[i], this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
+			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 1);
 		}
 		transport.schedule(function(time){
 			for(var i = 0; i < 4; i++){
