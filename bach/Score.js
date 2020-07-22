@@ -113,7 +113,7 @@ class Player {
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
-					if(i == schedule.length - 2){
+					if(index == schedule.length - 2){
 						for(var j = 0; j < 4; j++){
 							samplers[j].release = 2;
 						}
