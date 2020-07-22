@@ -348,7 +348,7 @@ class HarmonyFunctions {
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
 			only_sus = true;
-			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase)){
+			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase && motion == -1 * this.mf.type.THIRD)){
 				return;
 			}
 		}
