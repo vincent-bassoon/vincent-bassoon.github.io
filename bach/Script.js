@@ -70,7 +70,8 @@ function configureSampler(){
 	var channels = {};
 	var pans = [0.3, 0.1, -0.1, -0.3];
 	for(var i = 0; i < 4; i++){
-		channels[i] = new Tone.Channel({pans[i]}).toDestination();
+		var pan = pans[i];
+		channels[i] = new Tone.Channel({pan}).toDestination();
 	}
 	samplers[0] = new Tone.Sampler(sources, function(){
 		var buffers = {};
