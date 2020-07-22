@@ -251,14 +251,23 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion){
+	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion, only_sus){
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
 				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
-		var queue = this.mf.getMotionOptions(voice, simple_motion, suspension, harmony[index].sixteenths);
+		var queue;
+		if(only_sus){
+			queue = [];
+		}
+		else{
+			queue = this.mf.getMotionOptions(voice, simple_motion, harmony[index].sixteenths);
+		}
 		if(degree == 3 && !harmony[index].end_of_phrase){
 			queue.unshift(this.mf.type.SUSPENSION_7);
+		}
+		else if(suspension){
+			queue.unshift(this.mf.type.SUSPENSION);
 		}
 		while(queue.length > 0){
 			var motion = queue.pop();
@@ -335,9 +344,13 @@ class HarmonyFunctions {
 		var change = next_value - value;
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
+		var only_sus = false;
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check
-			return;
+			only_sus = true;
+			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase)){
+				return;
+			}
 		}
 		if(degree == 3 && motion != -1 * this.mf.type.STEP){
 			//resolving 7th check
@@ -350,7 +363,7 @@ class HarmonyFunctions {
 		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
 			//note: this current placement means aug/dim intervals and leading tone violations will not 
 			// be considered with ncts
-			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion);
+			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion, only_sus);
 		}
 		if(harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
 			// makes sure it never leaps up to mediant chord

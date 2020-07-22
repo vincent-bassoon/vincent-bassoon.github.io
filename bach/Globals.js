@@ -510,12 +510,9 @@ class MotionFunctions {
 			return this.type.LEAP * parity;
 		}
 	}
-	getMotionOptions(voice, simple_motion, suspension, sixteenths){
+	getMotionOptions(voice, simple_motion, sixteenths){
 		var direction = this.direction(simple_motion);
 		var options = [];
-		if(suspension){
-			options.push(this.type.SUSPENSION);
-		}
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
 				if(voice != 3){
