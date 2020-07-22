@@ -68,7 +68,7 @@ function configureSampler(){
 	var data = [];
 	var samplers = {};
 	var channels = {};
-	var pans = [0.3, 0.1, -0.1, -0.3];
+	var pans = [0.165, 0.55, -0.55, -0.165];
 	for(var i = 0; i < 4; i++){
 		var pan = pans[i];
 		channels[i] = new Tone.Channel({pan}).toDestination();
@@ -116,7 +116,7 @@ function configureSampler(){
 			}
 		}
 		createSampler(1);
-	}, "samples/").connect(channels[index]);
+	}, "samples/").connect(channels[0]);
 }
 
 window.onload = configureSampler;
