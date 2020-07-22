@@ -67,12 +67,6 @@ function configureSampler(){
 	var staff = document.getElementById("staff");
 	var data = [];
 	var sampler = new Tone.Sampler(sources, function(){
-		var before_time = Date.now();
-		data.unshift({time: null, avg_score: null, attempts: null});
-		generateNewChorale(data, sampler);
-		logData(data, before_time);
-		start.classList.remove("running");
-		start.innerText = "NEW CHORALE";
 		function run(){
 			play.onclick = "";
 			play.innerText = "LOADING...";
@@ -98,7 +92,7 @@ function configureSampler(){
 				start.innerText = "NEW CHORALE";
 			}, 1);
 		}
-		start.onclick = run;
+		run();
 	}, "samples/").toDestination();
 }
 
