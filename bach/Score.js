@@ -11,7 +11,7 @@ class Player {
 		while(index > 0 && this.schedule[index - 1] > beat_num){
 			index--;
 		}
-		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
+		if(index == 0 || index == this.schedule.length || this.schedule[index - 1].beat_num != beat_num){
 			var notes = {0: null, 1: null, 2: null, 3: null};
 			notes[voice] = note;
 			this.schedule.splice(index, 0, {"notes": notes, "beat_num": beat_num})
