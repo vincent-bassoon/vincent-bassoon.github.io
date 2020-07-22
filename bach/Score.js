@@ -65,7 +65,7 @@ class Player {
 							schedule[i].attack[order[1]] = [];
 							var index1 = i + 1;
 							while(!schedule[index1].release[order[0]].includes(note1)){
-								index++;
+								index1++;
 							}
 							var temp = schedule[index1].release[order[0]]
 							for(var j = temp.length - 1; j >= 0; j--){
@@ -75,7 +75,7 @@ class Player {
 							}
 							var index2 = i + 1;
 							while(!schedule[index2].release[order[1]].includes(note1)){
-								index++;
+								index2++;
 							}
 							schedule[Math.max(index1, index2)].release[order[0]].push(note1);
 						}
