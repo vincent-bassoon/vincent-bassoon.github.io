@@ -67,6 +67,11 @@ function configureSampler(){
 	var staff = document.getElementById("staff");
 	var data = [];
 	var samplers = {};
+	var channels = {};
+	var pans = [0.3, 0.1, -0.1, -0.3];
+	for(var i = 0; i < 4; i++){
+		channels[i] = new Tone.Channel({pans[i]}).toDestination();
+	}
 	samplers[0] = new Tone.Sampler(sources, function(){
 		var buffers = {};
 		for(let [key, value] of samplers[0]._buffers._buffers) {
@@ -106,11 +111,11 @@ function configureSampler(){
 			else{
 				samplers[index] = new Tone.Sampler(buffers, function(){
 					createSampler(index + 1);
-				}).toDestination();
+				}).connect(channels[index]);
 			}
 		}
 		createSampler(1);
-	}, "samples/").toDestination();
+	}, "samples/").connect(channels[index]);
 }
 
 window.onload = configureSampler;
