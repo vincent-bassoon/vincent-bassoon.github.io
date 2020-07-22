@@ -68,7 +68,7 @@ function configureSampler(){
 	var data = [];
 	var samplers = {};
 	var channels = {};
-	var pans = [0.165, 0.55, -0.55, -0.165];
+	var pans = [0.09, 0.03, -0.03, -0.09];
 	for(var i = 0; i < 4; i++){
 		var pan = pans[i];
 		channels[i] = new Tone.Channel({pan}).toDestination();
