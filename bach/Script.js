@@ -66,33 +66,47 @@ function configureSampler(){
 	var play = document.getElementById("play_button");
 	var staff = document.getElementById("staff");
 	var data = [];
-	var sampler = new Tone.Sampler(sources, function(){
-		function run(){
-			play.onclick = "";
-			play.innerText = "LOADING...";
-			start.innerText = "GENERATING...";
-			play.classList.add("running");
-			if(transport.state == "started"){
-				transport.stop();
-				sampler.releaseAll();
-				transport.cancel();
-			}
-			start.onclick = "";
-			start.classList.add("running");
-			setTimeout(function(){
-				var before_time = Date.now();
-				while(staff.children.length != 0){
-					staff.removeChild(staff.lastChild);
-				}
-				data.unshift({time: null, avg_score: null, attempts: null});
-				generateNewChorale(data, sampler);
-				logData(data, before_time);
-				start.classList.remove("running");
-				start.onclick = run;
-				start.innerText = "NEW CHORALE";
-			}, 1);
+	var samplers = {};
+	samplers[0] = new Tone.Sampler(sources, function(){
+		var buffers = {};
+		for(let [key, value] of sampler._buffers._buffers) {
+			buffers[key] = value;
 		}
-		run();
+		function createSampler(index){
+			if(index == 4){
+				function run(){
+					play.onclick = "";
+					play.innerText = "LOADING...";
+					start.innerText = "GENERATING...";
+					play.classList.add("running");
+					if(transport.state == "started"){
+						transport.stop();
+						sampler.releaseAll();
+						transport.cancel();
+					}
+					start.onclick = "";
+					start.classList.add("running");
+					setTimeout(function(){
+						var before_time = Date.now();
+						while(staff.children.length != 0){
+							staff.removeChild(staff.lastChild);
+						}
+						data.unshift({time: null, avg_score: null, attempts: null});
+						generateNewChorale(data, samplers);
+						logData(data, before_time);
+						start.classList.remove("running");
+						start.onclick = run;
+						start.innerText = "NEW CHORALE";
+					}, 1);
+				}
+				run();
+			}
+			else{
+				samplers[index] = new Tone.Sampler(buffers, function(){
+					createSampler(index + 1);
+				}).toDestination();
+			}
+		}
 	}, "samples/").toDestination();
 }
 
