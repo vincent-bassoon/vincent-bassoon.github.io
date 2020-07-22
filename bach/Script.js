@@ -1,4 +1,4 @@
-function generateNewChorale(data, sampler){
+function generateNewChorale(data, samplers){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -31,8 +31,8 @@ function generateNewChorale(data, sampler){
 		chords = chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths);
 	}
 	var counter = 0;
-	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
-		generateNewChorale(data, sampler);
+	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, samplers) && counter < 10){
+		generateNewChorale(data, samplers);
 		counter++;
 	}
 	data[0].attempts = counter + 1;
@@ -69,7 +69,7 @@ function configureSampler(){
 	var samplers = {};
 	samplers[0] = new Tone.Sampler(sources, function(){
 		var buffers = {};
-		for(let [key, value] of sampler._buffers._buffers) {
+		for(let [key, value] of samplers[0]._buffers._buffers) {
 			buffers[key] = value;
 		}
 		function createSampler(index){
@@ -81,7 +81,9 @@ function configureSampler(){
 					play.classList.add("running");
 					if(transport.state == "started"){
 						transport.stop();
-						sampler.releaseAll();
+						for(var i = 0; i < 4; i++){
+							samplers[i].releaseAll();
+						}
 						transport.cancel();
 					}
 					start.onclick = "";
