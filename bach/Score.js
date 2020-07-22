@@ -115,7 +115,7 @@ class Player {
 					}
 					if(index == schedule.length - 3){
 						for(var j = 0; j < 4; j++){
-							samplers[j].release = 0.7;
+							samplers[j].release = 0.6;
 						}
 					}
 				}, time_string);
