@@ -113,9 +113,9 @@ class Player {
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
-					if(index == schedule.length - 2){
+					if(index == schedule.length - 3){
 						for(var j = 0; j < 4; j++){
-							samplers[j].release = 2;
+							samplers[j].release = 0.7;
 						}
 					}
 				}, time_string);
@@ -126,7 +126,7 @@ class Player {
 			play.innerText = "STOP";
 			transport.bpm.value = 60;
 			for(var i = 0; i < 4; i++){
-				samplers[i].release = 0.1;
+				samplers[i].release = 0.2;
 			}
 			transport.start("+.3", "0:0:0");
 		}
