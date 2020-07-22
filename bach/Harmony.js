@@ -543,7 +543,7 @@ class HarmonyFunctions {
 		}
 		return avg / harmony.length;
 	}
-	generateHarmony(data, chords, phrase_lengths, sampler){		
+	generateHarmony(data, chords, phrase_lengths, samplers){		
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
 		var max_retrace_attempts = Math.floor(3.5 * (chords.length - 1));
@@ -553,7 +553,7 @@ class HarmonyFunctions {
 			console.log("COMPLETE FAILURE, AFTER ATTEMPTS: ", max_retrace_attempts - this.retrace_attempts);
 			return true;
 		}
-		new Score(harmony, this.nf, phrase_lengths, sampler).renderHarmony();
+		new Score(harmony, this.nf, phrase_lengths, samplers).renderHarmony();
 		console.log(harmony);
 		data[0].avg_score = this.getAvgScore(harmony);
 		return false;
