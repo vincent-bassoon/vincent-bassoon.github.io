@@ -107,6 +107,7 @@ function configureSampler(){
 				}).toDestination();
 			}
 		}
+		createSampler(1);
 	}, "samples/").toDestination();
 }
 
