@@ -14,7 +14,7 @@ class Player {
 		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
 			var notes = {0: [], 1: [], 2: [], 3: []};
 			notes[voice].push(note);
-			this.schedule.splice(index, 0, {"attack": notes, "beat_num": beat_num})
+			this.schedule.splice(index, 0, {"attack": notes, "release": {0: [], 1: [], 2: [], 3: []}, "beat_num": beat_num})
 		}
 		else{
 			this.schedule[index - 1].attack[voice].push(note);
@@ -42,28 +42,43 @@ class Player {
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
+		schedule.push({"attack": {0: [null], 1: [null], 2: [null], 3: [null]}, "release": {0: [], 1: [], 2: [], 3: []}, "beat_num": (schedule[schedule.length - 1].beat_num + 12)});
+		for(var voice = 0; voice < 4; voice++){
+			var prev_attack = null;
+			for(var i = 0; i < schedule.length; i++){
+				if(schedule[i].attack[voice].length > 0){
+					if(prev_attack != null){
+						schedule[i].release[voice].push(prev_attack);
+					}
+					prev_attack = schedule[i].attack[voice][0];
+				}
+			}
+		}
+		schedule[schedule.length - 1].attack = {0: [], 1: [], 2: [], 3: []};
 		for(var i = 0; i < schedule.length; i++){
 			for(var voice1 = 0; voice1 < 4; voice1++){
-				var note1 = schedule[i].attack[voice1][0];
-				for(var voice2 = voice1 + 1; voice2 < 4; voice2++){
-					if(note1 == schedule[i].attack[voice2][0]){
-						var order = this.getPriorityVoiceOrder(voice1, voice2);
-						schedule[i].attack[order[1]] = [];
-						var index1 = i + 1;
-						while(!schedule[index1].release[order[0]].includes(note1)){
-							index++;
-						}
-						var temp = schedule[index1].release[order[0]]
-						for(var j = temp.length - 1; j >= 0; j--){
-							if(temp[j] == note1){
-								temp.splice(j, 1);
+				if(schedule[i].attack[voice1].length > 0){
+					var note1 = schedule[i].attack[voice1][0];
+					for(var voice2 = voice1 + 1; voice2 < 4; voice2++){
+						if(schedule[i].attack[voice2].length > 0 && note1 == schedule[i].attack[voice2][0]){
+							var order = this.getPriorityVoiceOrder(voice1, voice2);
+							schedule[i].attack[order[1]] = [];
+							var index1 = i + 1;
+							while(!schedule[index1].release[order[0]].includes(note1)){
+								index++;
 							}
+							var temp = schedule[index1].release[order[0]]
+							for(var j = temp.length - 1; j >= 0; j--){
+								if(temp[j] == note1){
+									temp.splice(j, 1);
+								}
+							}
+							var index2 = i + 1;
+							while(!schedule[index2].release[order[1]].includes(note1)){
+								index++;
+							}
+							schedule[Math.max(index1, index2)].release[order[0]].push(note1);
 						}
-						var index2 = i + 1;
-						while(!schedule[index2].release[order[1]].includes(note1)){
-							index++;
-						}
-						schedule[Math.max(index1, index2)].release[order[0]].push(note1);
 					}
 				}
 			}
@@ -98,19 +113,14 @@ class Player {
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
-					if(i == schedule.length - 1){
+					if(i == schedule.length - 2){
 						for(var j = 0; j < 4; j++){
 							samplers[j].release = 2;
 						}
 					}
 				}, time_string);
-			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 1);
+			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2);
 		}
-		transport.schedule(function(time){
-			for(var i = 0; i < 4; i++){
-				samplers[i].releaseAll(time);
-			}
-		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 12));
 		
 		function play_start(){
 			play.innerText = "STOP";
@@ -143,7 +153,7 @@ class Player {
 			}
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
-		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 18));
+		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 6));
 		play.classList.remove("running");
 		play.innerText = "PLAY";
 		play.onclick = play_stop;
