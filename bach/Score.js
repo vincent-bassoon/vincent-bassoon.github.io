@@ -5,20 +5,20 @@ class Player {
 		this.samplers = samplers;
 	}
 	scheduleNote(voice, note, duration){
-		this.beat_nums[voice] += duration;
 		var beat_num = this.beat_nums[voice];
 		var index = this.schedule.length;
 		while(index > 0 && this.schedule[index - 1] > beat_num){
 			index--;
 		}
-		if(index == 0 || index == this.schedule.length || this.schedule[index - 1].beat_num != beat_num){
+		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
 			var notes = {0: null, 1: null, 2: null, 3: null};
 			notes[voice] = note;
 			this.schedule.splice(index, 0, {"notes": notes, "beat_num": beat_num})
 		}
 		else{
-			this.schedule[index].notes[voice] = note;
+			this.schedule[index - 1].notes[voice] = note;
 		}
+		this.beat_nums[voice] += duration;
 	}
 	getTimeString(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
@@ -416,8 +416,6 @@ class Score {
 				}
 			}
 			for(var sub_index = 0; sub_index < max; sub_index++){
-				var names = {0: null, 1: null, 2: null, 3: null};
-				var min_duration = null;
 				for(var voice = 0; voice < 4; voice++){
 					if(sub_index < voice_to_max[voice]){
 						var duration;
@@ -427,20 +425,15 @@ class Score {
 						else{
 							duration = this.num_notes_to_durations[voice_to_max[voice]][sub_index];
 						}
-						if(min_duration == null || min_duration > duration){
-							min_duration = duration;
-						}
 						this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
-									this.duration_strings[duration], names,
-									prev_value, accidentals_in_key, needs_ghost_voices);
-					}
-				}
-				if(fermata_index != null && index == fermata_index && min_duration < 8){
-					min_duration = 8;
-				}
-				for(var voice = 0; voice < 4; voice++){
-					if(names[voice] != null){
-						this.player.scheduleNote(voice, names[voice], min_duration);
+									this.duration_strings[duration], prev_value,
+									accidentals_in_key, needs_ghost_voices);
+						if(fermata_index != null && index == fermata_index && duration < 8){
+							duration = 8;
+						}
+						var value = this.harmony[index].getValue(voice, sub_index);
+						var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
+						this.player.scheduleNote(voice, simple_name, duration);
 					}
 				}
 			}
@@ -466,10 +459,8 @@ class Score {
 		}
 		return measure;
 	}
-	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, names, prev_value, accidentals_in_key, needs_ghost_voices){
+	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, prev_value, accidentals_in_key, needs_ghost_voices){
 		var value = this.harmony[index].getValue(voice, sub_index);
-		var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
-		names[voice] = simple_name;
 		var name = this.harmony[index].chord.key.valueToName(value).toLowerCase();
 		var octave = Math.floor(value / 12);
 		if(name.substring(0, 2) == "cb"){
