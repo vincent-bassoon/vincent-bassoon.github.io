@@ -346,7 +346,7 @@ class HarmonyFunctions {
 		var next_motion = harmony[index + 1].getMotion(voice);
 		var only_sus = false;
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
-			//leading tone check
+			//leading tone check, ignores inner voices at penultimate chord
 			only_sus = true;
 			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase && motion == -1 * this.mf.type.THIRD)){
 				return;
