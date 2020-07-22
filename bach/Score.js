@@ -1,88 +1,94 @@
 class Player {
-	constructor(sampler){
+	constructor(samplers){
+		this.beat_nums = [1, 1, 1, 1];
 		this.schedule = [];
-		this.sampler = sampler;
+		this.samplers = samplers;
 	}
-	scheduleNotes(attack_list, release_list, duration){
-		this.schedule.push({"attack": attack_list, "release": release_list, "duration": duration});
+	scheduleNote(voice, note, duration){
+		this.beat_nums[voice] += duration;
+		var beat_num = this.beat_nums[voice];
+		var index = this.schedule.length;
+		while(index > 0 && this.schedule[index - 1] > beat_num){
+			index--;
+		}
+		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
+			var notes = {0: null, 1: null, 2: null, 3: null};
+			notes[voice] = note;
+			this.schedule.splice(index, 0, {"notes": notes, "beat_num": beat_num})
+		}
+		else{
+			this.schedule[index].notes[voice] = note;
+		}
 	}
 	getTimeString(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
 	}
 	generateAudio(){
-		var sources = {};
-		var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
-		var file_end = "v5.mp3";
-		for(var name in names_to_files){
-			for(var i = 2; i <= 5; i++){
-				sources[name + i] = names_to_files[name] + i + file_end;
-			}
-		}
 		var transport = Tone.Transport;
 		transport.cancel();
 		transport.timeSignature = 4;
 		transport.bpm.value = 60;
-		var beat_num = 1;
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
 		console.log(schedule);
-		var sampler = this.sampler;
-		schedule[schedule.length - 1].duration = 12;
+		var samplers = this.samplers;
 		
 		var play = document.getElementById("play_button");
 		
-		var held_notes;
-		
 		transport.schedule(function(time){
-			held_notes = {};
 			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 				transport.stop();
-				sampler.releaseAll();
+				for(var i = 0; i < 4; i++){
+					samplers[i].releaseAll();
+				}
 			}
 		}, this.getTimeString(0));
 		
 		for(var i = 0; i < schedule.length; i++){
 			(function(unit, time_string, rit, last){
 				transport.schedule(function(time){
-					sampler.triggerRelease(unit.release, time);
-					for(var j = 0; j < unit.release.length; j++){
-						if(!held_notes[unit.release[j]]){
-							console.log("release failure: ", unit.release[j]);
+					for(var j = 0; j < 4; j++){
+						if(unit.notes[j] != null){
+							samplers[j].releaseAll();
 						}
-						held_notes[unit.release[j]] = false;
+					}
+					for(var j = 0; j < 4; j++){
+						if(unit.notes[j] != null){
+							samplers[j].triggerAttack(unit.notes[j], time);
+						}
 					}
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
 					if(last){
-						sampler.release = 2;
-					}
-					sampler.triggerAttack(unit.attack, time);
-					for(var j = 0; j < unit.attack.length; j++){
-						if(held_notes[unit.attack[j]]){
-							console.log("attack failure: ", unit.attack[j]);
+						for(var j = 0; j < 4; j++){
+							samplers[i].release = 2;
 						}
-						held_notes[unit.attack[j]] = true;
 					}
 				}, time_string);
-			})(schedule[i], this.getTimeString(beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
-			beat_num += schedule[i].duration;
+			})(schedule[i], this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 1, i == schedule.length - 1);
 		}
 		transport.schedule(function(time){
-			sampler.releaseAll(time);
-		}, this.getTimeString(beat_num));
+			for(var i = 0; i < 4; i++){
+				samplers[i].releaseAll(time);
+			}
+		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 12));
 		
 		function play_start(){
 			play.innerText = "STOP";
 			transport.bpm.value = 60;
-			sampler.release = 0.1;
+			for(var i = 0; i < 4; i++){
+				samplers[i].release = 0.1;
+			}
 			transport.start("+.3", "0:0:0");
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
 				transport.stop();
-				sampler.releaseAll();
+				for(var i = 0; i < 4; i++){
+					samplers[i].releaseAll();
+				}
 				play.innerText = "PLAY";
 			}
 			else if(Tone.getContext().state == "suspended"){
@@ -94,14 +100,13 @@ class Player {
 				play_start();
 			}
 		}
-		beat_num += 6;
 		transport.schedule(function(time){
 			if(transport.state == "started"){
 				transport.stop();
 			}
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
-		}, this.getTimeString(beat_num));
+		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 18));
 		play.classList.remove("running");
 		play.innerText = "PLAY";
 		play.onclick = play_stop;
@@ -198,7 +203,7 @@ class LineData {
 }
 
 class Score {
-	constructor(harmony, note_functions, phrase_lengths, sampler){
+	constructor(harmony, note_functions, phrase_lengths, samplers){
 		this.key = harmony[harmony.length - 2].chord.key;
 		if(this.key.modality == "minor"){
 			this.key_name = this.key.valueToName((this.key.pitch + 3) % 12);
@@ -224,7 +229,7 @@ class Score {
 		
 		this.prev_names = [null, null, null, null];
 		
-		this.player = new Player(sampler);
+		this.player = new Player(samplers);
 	}
 	
 	renderMeasure(measure, staves, is_last, initial_indent){
@@ -430,30 +435,14 @@ class Score {
 									prev_value, accidentals_in_key, needs_ghost_voices);
 					}
 				}
-				var attack_list = [];
-				var release_list = [];
-				for(var voice = 0; voice < 4; voice++){
-					if(names[voice] != null){
-						if(this.prev_names[voice] != null && !release_list.includes(this.prev_names[voice])){
-							release_list.push(this.prev_names[voice]);
-						}
-						if(!attack_list.includes(names[voice])){
-							attack_list.push(names[voice]);
-						}
-						this.prev_names[voice] = names[voice];
-					}
-					else{
-						for(var k = release_list.length; k >= 0; k--){
-							if(release_list[k] == this.prev_names[voice]){
-								release_list.splice(k, 1);
-							}
-						}
-					}
-				}
 				if(fermata_index != null && index == fermata_index && min_duration < 8){
 					min_duration = 8;
 				}
-				this.player.scheduleNotes(attack_list, release_list, min_duration);
+				for(var voice = 0; voice < 4; voice++){
+					if(names[voice] != null){
+						this.player.scheduleNote(voice, names[voice], min_duration);
+					}
+				}
 			}
 			for(var voice = 0; voice < 4; voice++){
 				if(voice_to_max[voice] > 1){
