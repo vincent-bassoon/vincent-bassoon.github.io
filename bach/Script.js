@@ -68,10 +68,10 @@ function configureSampler(){
 	var data = [];
 	var samplers = {};
 	var channels = {};
-	var pans = [0.09, 0.03, -0.03, -0.09];
+	var pans = [0.3, 0.1, -0.1, -0.3];
+	var vols = [1, 0, 0, 1.5];
 	for(var i = 0; i < 4; i++){
-		var pan = pans[i];
-		channels[i] = new Tone.Channel({pan}).toDestination();
+		channels[i] = new Tone.PanVol({channelCount: 2, pan: pans[i], vol: vols[i]}).toDestination();
 	}
 	samplers[0] = new Tone.Sampler(sources, function(){
 		var buffers = {};
@@ -112,11 +112,11 @@ function configureSampler(){
 			else{
 				samplers[index] = new Tone.Sampler(buffers, function(){
 					createSampler(index + 1);
-				}).toDestination();
+				}).connect(channels[index]);
 			}
 		}
 		createSampler(1);
-	}, "samples/").toDestination();
+	}, "samples/").connect(channels[0]);
 }
 
 window.onload = configureSampler;
