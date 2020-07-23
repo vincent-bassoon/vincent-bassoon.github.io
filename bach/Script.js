@@ -112,11 +112,11 @@ function configureSampler(){
 			else{
 				samplers[index] = new Tone.Sampler(buffers, function(){
 					createSampler(index + 1);
-				}).connect(channels[index]);
+				}).toDestination();
 			}
 		}
 		createSampler(1);
-	}, "samples/").connect(channels[0]);
+	}, "samples/").toDestination();
 }
 
 window.onload = configureSampler;
