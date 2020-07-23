@@ -68,7 +68,7 @@ function configureSampler(){
 	var data = [];
 	var samplers = {};
 	var channels = {};
-	var pans = [0.3, 0.1, -0.1, -0.3];
+	var pans = [0.2, 0.1, -0.1, -0.2];
 	var vols = [0.7, 0, 0, 1];
 	const reverb = new Tone.Reverb({channelCount: 2, decay: 1, wet: 0.5}).toDestination();
 	for(var i = 0; i < 4; i++){
