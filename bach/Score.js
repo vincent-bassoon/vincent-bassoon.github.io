@@ -126,7 +126,7 @@ class Player {
 			play.innerText = "STOP";
 			transport.bpm.value = 60;
 			for(var i = 0; i < 4; i++){
-				samplers[i].release = 0.2;
+				samplers[i].release = 0.15;
 			}
 			transport.start("+.3", "0:0:0");
 		}
