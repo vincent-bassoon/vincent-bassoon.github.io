@@ -451,13 +451,13 @@ class Score {
 			       "width": null, "ghost_voices": [[], []], "format_notes": []};
 		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
-		var prev_value = [null];
+		var prev_value = null;
 		var prev_sub_index_max;
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
-			var beat_format_accidentals = {};
+			var beat_format_data = {};
 			for(var j = 0; j < 3; j++){
-				beat_format_accidentals[j] = null;
+				beat_format_data[j] = {accidental: null, adjacent: false};
 			}
 			var sub_index_max = 0;
 			var beam_start_index = {};
@@ -482,13 +482,24 @@ class Score {
             				this.duration_strings[duration], prev_value,
             				accidentals_in_key, needs_ghost_voices);
             			if(accidental != null && (sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max)){
-            				beat_format_accidentals[sub_index] = accidental;
+            				beat_format_data[sub_index].accidental = accidental;
             			}
 
             			if(fermata_index != null && index == fermata_index && duration < 8){
 							duration = 8;
 						}
 						var value = this.harmony[index].getValue(voice, sub_index);
+						if(voice % 2 == 0){
+							prev_value = value;
+						}
+						else{
+							var name1 = this.harmony[index].chord.key.valueToName(prev_value);
+							var name2 = this.harmony[index].chord.key.valueToName(value);
+							if(Math.abs(value - prev_value) < 6 && this.nf.isAdjacent(name1.substring(0, 1), name2.substring(0, 1))){
+								beat_format_data[sub_index].adjacent = true;
+							}
+							prev_value = null;
+						}
 						var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
 						this.player.scheduleNote(voice, simple_name, duration);
             		}
@@ -519,9 +530,13 @@ class Score {
             		duration = this.num_notes_to_durations[sub_index_max][j];
             	}
             	duration = this.duration_strings[duration];
-				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, duration, 0));
-				if(beat_format_accidentals[j] != null){
-					note = note.addAccidental(0, new this.vf.Accidental(beat_format_accidentals[j]));
+            	var note_data = this.createNoteData(11 + 48, "b", 4, duration, 0)
+            	if(beat_format_data[j].adjacent){
+            		note_data.keys.unshift("c/5");
+            	}
+				var note = new this.vf.StaveNote(note_data);
+				if(beat_format_data[j].accidental != null){
+					note = note.addAccidental(0, new this.vf.Accidental(beat_format_data[j].accidental));
 				}
 				if(duration.substring(duration.length - 1) == "d"){
 					note = note.addDotToAll();
@@ -558,7 +573,7 @@ class Score {
 		var note = new this.vf.StaveNote(note_data);
 		note.setLedgerLineStyle({strokeStyle: "black"});
 		var clef_index = Math.floor(voice / 2);
-		if(voice % 2 == 1 && value == prev_value[0]){
+		if(voice % 2 == 1 && value == prev_value){
 			//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
 			measure.notes[voice].push(new this.vf.GhostNote(note_data));
 			measure.ghost_voices[clef_index].push(note);
@@ -586,10 +601,7 @@ class Score {
 				note = note.addArticulation(0, new this.vf.Articulation("a@a").setPosition(3));
 			}
 			measure.notes[voice].push(note);
-			if(voice % 2 == 0){
-				prev_value[0] = value;
-			}
-			else{
+			if(voice % 2 == 1){
 				measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
 			}
 		}

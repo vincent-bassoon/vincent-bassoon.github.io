@@ -689,5 +689,11 @@ class NoteFunctions {
 		}
 		return pitch;
 	}
+	isAdjacent(letter1, letter2){
+		//returns false if the same letter
+		var letter_index1 = this.letter_index[letter1];
+		var letter_index2 = this.letter_index[letter2];
+		return (letter_index1 + 1) % 7 == letter_index2 || (letter_index2 + 1) % 7 == letter_index1;
+	}
 }
 
