@@ -510,14 +510,19 @@ class MotionFunctions {
 			return this.type.LEAP * parity;
 		}
 	}
-	getMotionOptions(voice, simple_motion, sixteenths){
+	getMotionOptions(voice, simple_motion, sixteenths, next_motion){
 		var direction = this.direction(simple_motion);
 		var options = [];
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
 				if(voice != 3){
-					options.push(this.type.MORDENT);
-					options.push(this.type.MORDENT * -1);
+					if(Math.abs(next_motion < 4)){
+						options.push(this.type.MORDENT);
+						options.push(this.type.MORDENT * -1);
+					}
+					else{
+						options.push(this.type.MORDENT * -1 * this.direction(next_motion));
+					}
 				}
 				break;
 			case this.type.STEP:

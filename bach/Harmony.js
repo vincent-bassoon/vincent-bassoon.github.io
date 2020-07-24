@@ -261,7 +261,7 @@ class HarmonyFunctions {
 			queue = [];
 		}
 		else{
-			queue = this.mf.getMotionOptions(voice, simple_motion, harmony[index].sixteenths);
+			queue = this.mf.getMotionOptions(voice, simple_motion, harmony[index].sixteenths, harmony[index + 1].getMotion(voice));
 		}
 		if(degree == 3 && !harmony[index].end_of_phrase){
 			queue.unshift(this.mf.type.SUSPENSION_7);
