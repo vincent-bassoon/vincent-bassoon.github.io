@@ -460,38 +460,45 @@ class Score {
 			for(var j = 0; j < 3; j++){
 				beat_format_accidentals[j] = null;
 			}
-			var beat_sub_index_max = 0;
-            for(var voice = 0; voice < 4; voice++){
-            	var beam_start_index = measure.notes[voice].length;
-            	var sub_index_max = this.harmony[index].getNumNotes(voice);
-            	if(sub_index_max > beat_sub_index_max){
-            		beat_sub_index_max = sub_index_max;
-            	}
-            	for(var sub_index = 0; sub_index < sub_index_max; sub_index++){
-            		var duration;
-            		if(sub_index_max == 1){
-            			duration = 4 * durations[i];
-            		}
-            		else{
-            			duration = this.num_notes_to_durations[sub_index_max][sub_index];
-            		}
-            		var accidental = this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
-            			this.duration_strings[duration], prev_value,
-            			accidentals_in_key, needs_ghost_voices);
-            		if(accidental != null && (sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max)){
-            			beat_format_accidentals[sub_index] = accidental;
-            		}
+			var sub_index_max = 0;
+			var beam_start_index = {};
+			for(var voice = 0; voice < 4; voice++){
+				beam_start_index[voice] = measure.notes[voice].length;
+				if(this.harmony[index].getNumNotes(voice) > sub_index_max){
+					sub_index_max = this.harmony[index].getNumNotes(voice);
+				}
+			}
+			for(var sub_index = 0; sub_index < sub_index_max; sub_index++){
+            	for(var voice = 0; voice < 4; voice++){
+            		var voice_sub_index_max = this.harmony[index].getNumNotes(voice);
+            		if(sub_index < voice_sub_index_max){
+            			var duration;
+            			if(voice_sub_index_max == 1){
+            				duration = 4 * durations[i];
+            			}
+            			else{
+            				duration = this.num_notes_to_durations[voice_sub_index_max][sub_index];
+            			}
+            			var accidental = this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
+            				this.duration_strings[duration], prev_value,
+            				accidentals_in_key, needs_ghost_voices);
+            			if(accidental != null && (sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max)){
+            				beat_format_accidentals[sub_index] = accidental;
+            			}
 
-            		if(fermata_index != null && index == fermata_index && duration < 8){
-						duration = 8;
-					}
-					var value = this.harmony[index].getValue(voice, sub_index);
-					var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
-					this.player.scheduleNote(voice, simple_name, duration);
+            			if(fermata_index != null && index == fermata_index && duration < 8){
+							duration = 8;
+						}
+						var value = this.harmony[index].getValue(voice, sub_index);
+						var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
+						this.player.scheduleNote(voice, simple_name, duration);
+            		}
             	}
-				if(sub_index_max > 1){
+            }
+            for(var voice = 0; voice < 4; voice++){
+				if(harmony[index].getNumNotes(voice) > 1){
 					var beam_notes = [];
-					for(var j = beam_start_index; j < beam_start_index + sub_index_max; j++){
+					for(var j = beam_start_index[voice]; j < beam_start_index + harmony[index].getNumNotes(voice); j++){
 						if(measure.notes[voice][j] instanceof this.vf.StaveNote){
 							beam_notes.push(measure.notes[voice][j]);
 						}
@@ -502,15 +509,15 @@ class Score {
 					measure.beams.push(new this.vf.Beam(beam_notes));
 				}
 			}
-			prev_sub_index_max = beat_sub_index_max;
+			prev_sub_index_max = sub_index_max;
 			var beam_notes = [];
-			for(var j = 0; j < beat_sub_index_max; j++){
+			for(var j = 0; j < sub_index_max; j++){
 				var duration;
-            	if(beat_sub_index_max == 1){
+            	if(sub_index_max == 1){
             		duration = 4 * durations[i];
             	}
             	else{
-            		duration = this.num_notes_to_durations[beat_sub_index_max][j];
+            		duration = this.num_notes_to_durations[sub_index_max][j];
             	}
             	duration = this.duration_strings[duration];
 				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, duration, 0));
@@ -521,11 +528,11 @@ class Score {
 					note = note.addDotToAll();
 				}
 				measure.format_notes.push(note);
-				if(beat_sub_index_max > 1){
+				if(sub_index_max > 1){
 					beam_notes.push(note);
 				}
 			}
-			if(beat_sub_index_max > 1){
+			if(sub_index_max > 1){
 				new this.vf.Beam(beam_notes);
 			}
 		}
