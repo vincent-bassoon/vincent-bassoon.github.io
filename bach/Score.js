@@ -268,7 +268,8 @@ class Score {
 		this.phrase_lengths = phrase_lengths;
 		this.pickup = phrase_lengths[0] % 2 == 0;
 		this.vf = Vex.Flow;
-		this.formatter = new this.vf.Formatter({softmaxFactor: 10});
+		this.softmaxFactor = 10;
+		this.formatter = new this.vf.Formatter({softmaxFactor: this.softmaxFactor});
 		
 		var div = document.getElementById("staff")
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
@@ -296,6 +297,9 @@ class Score {
 				staves[i].setEndBarType(this.vf.Barline.type.NONE);
 			}
 			staves[i].setContext(this.context).draw();
+		}
+		if(measure.max_duration == 3){
+			this.formatter.options.softmaxFactor = 5;
 		}
 		var voices = {};
 		var all_voices = [];
@@ -327,6 +331,9 @@ class Score {
 		}
 		for(var i = 0; i < measure.beams.length; i++){
 			measure.beams[i].setContext(this.context).draw();
+		}
+		if(measure.max_duration == 3){
+			this.formatter.options.softmaxFactor = this.softmaxFactor;
 		}
 	}
 	renderLine(measures, staves, is_last, initial_indent){
@@ -457,11 +464,20 @@ class Score {
 		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
 			       "width": null, "ghost_notes": [[], []], "format_voice": null};
 		measure.weighted_duration = total_duration;
+		if(durations.includes(2)){
+			measure.weighted_duration -= 0.3;
+			measure.max_duration = 2;
+		}
 		if(durations.includes(3)){
-			measure.weighted_duration -= 0.7;
+			measure.weighted_duration -= 1;
+			measure.max_duration = 3;
 		}
 		if(durations.includes(4)){
-			measure.weighted_duration -= 1.5;
+			measure.weighted_duration -= 2;
+			measure.max_duration = 4;
+		}
+		else{
+			measure.max_duration = 1;
 		}
 		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
