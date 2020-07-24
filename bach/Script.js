@@ -70,9 +70,8 @@ function configureSampler(){
 	var channels = {};
 	var pans = [0.2, 0.1, -0.1, -0.2];
 	var vols = [0.7, 0, 0, 1];
-	const reverb = new Tone.Reverb({channelCount: 2, decay: 1, wet: 0.5}).toDestination();
 	for(var i = 0; i < 4; i++){
-		channels[i] = new Tone.PanVol({channelCount: 2, pan: pans[i], vol: vols[i]}).connect(reverb);
+		channels[i] = new Tone.PanVol({channelCount: 2, pan: pans[i], vol: vols[i]}).toDestination();
 	}
 	samplers[0] = new Tone.Sampler(sources, function(){
 		var buffers = {};
