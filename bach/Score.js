@@ -299,7 +299,7 @@ class Score {
 			staves[i].setContext(this.context).draw();
 		}
 		if(measure.max_duration == 3){
-			this.formatter.options.softmaxFactor = 5;
+			this.formatter.options.softmaxFactor = 6;
 		}
 		var voices = {};
 		var all_voices = [];
@@ -469,7 +469,7 @@ class Score {
 			measure.max_duration = 2;
 		}
 		else if(durations.includes(3)){
-			measure.weighted_duration -= 1;
+			measure.weighted_duration -= 1.3;
 			measure.max_duration = 3;
 		}
 		else if(durations.includes(4)){
