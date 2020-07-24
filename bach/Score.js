@@ -504,6 +504,7 @@ class Score {
 			}
 			prev_sub_index_max = beat_sub_index_max;
 			var beam_notes = [];
+			console.log("new");
 			for(var j = 0; j < beat_sub_index_max; j++){
 				var duration;
             	if(beat_sub_index_max == 1){
@@ -512,6 +513,7 @@ class Score {
             	else{
             		duration = this.num_notes_to_durations[beat_sub_index_max][j];
             	}
+            	console.log("duration: " + duration + " " + this.duration_strings[duration]);
 				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, this.duration_strings[duration], 0));
 				if(beat_format_accidentals[j] != null){
 					note = note.addAccidental(0, new this.vf.Accidental(beat_format_accidentals[j]));
