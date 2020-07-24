@@ -295,6 +295,9 @@ class Score {
 		}
 		var voices = {};
 		var all_voices = [];
+		var format_voice = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+		format_voice.addTickables(measure.format_notes).setStave(staves[0]);
+		all_voices.push(format_voice);
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
 			voices[i].addTickables(measure.notes[i]).setStave(staves[Math.floor(i / 2)]);
@@ -316,7 +319,7 @@ class Score {
 			this.formatter.joinVoices([voices[2 * i], voices[2 * i + 1]]);
 		}
 		this.formatter.format(all_voices, staves[0].getNoteEndX() - staves[0].getNoteStartX() - 23);
-		for(var i = 0; i < all_voices.length; i++){
+		for(var i = 1; i < all_voices.length; i++){
 			all_voices[i].setContext(this.context).draw();
 		}
 		for(var i = 0; i < measure.beams.length; i++){
@@ -446,48 +449,49 @@ class Score {
 		
 	generateSingleMeasure(start_index, durations, total_duration, fermata_index){
 		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
-			       "width": null, "ghost_voices": [[], []]};
+			       "width": null, "ghost_voices": [[], []], "format_notes": []};
 		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
 		var prev_value = [null];
+		var prev_sub_index_max;
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
-			var beam_start_index = {};
-			var voice_to_max = {};
-			var max = 1;
-			for(var voice = 0; voice < 4; voice++){
-				beam_start_index[voice] = measure.notes[voice].length;
-				voice_to_max[voice] = this.harmony[index].getNumNotes(voice);
-				if(max < voice_to_max[voice]){
-					max = voice_to_max[voice];
-				}
+			var beat_format_accidentals = {};
+			for(var j = 0; j < 3; j++){
+				beat_format_accidentals[j] = null;
 			}
-			for(var sub_index = 0; sub_index < max; sub_index++){
-				for(var voice = 0; voice < 4; voice++){
-					if(sub_index < voice_to_max[voice]){
-						var duration;
-						if(voice_to_max[voice] == 1){
-							duration = 4 * durations[i];
-						}
-						else{
-							duration = this.num_notes_to_durations[voice_to_max[voice]][sub_index];
-						}
-						this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
-									this.duration_strings[duration], prev_value,
-									accidentals_in_key, needs_ghost_voices);
-						if(fermata_index != null && index == fermata_index && duration < 8){
-							duration = 8;
-						}
-						var value = this.harmony[index].getValue(voice, sub_index);
-						var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
-						this.player.scheduleNote(voice, simple_name, duration);
+			var beat_sub_index_max = 0;
+            for(var voice = 0; voice < 4; voice++){
+            	var beam_start_index = measure.notes[voice].length;
+            	var sub_index_max = this.harmony[index].getNumNotes(voice);
+            	if(sub_index_max > beat_sub_index_max){
+            		beat_sub_index_max = sub_index_max;
+            	}
+            	for(var sub_index = 0; sub_index < sub_index_max; sub_index++){
+            		var duration;
+            		if(sub_index_max == 1){
+            			duration = 4 * durations[i];
+            		}
+            		else{
+            			duration = this.this.num_notes_to_durations[sub_index_max][sub_index];
+            		}
+            		var accidental = this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
+            			this.duration_strings[duration], prev_value,
+            			accidentals_in_key, needs_ghost_voices);
+            		if(accidental != null && (sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max)){
+            			beat_format_accidentals[sub_index] = accidental;
+            		}
+
+            		if(fermata_index != null && index == fermata_index && duration < 8){
+						duration = 8;
 					}
-				}
-			}
-			for(var voice = 0; voice < 4; voice++){
-				if(voice_to_max[voice] > 1){
+					var value = this.harmony[index].getValue(voice, sub_index);
+					var simple_name = this.nf.valueToSimpleName(value) + Math.floor(value / 12);
+					this.player.scheduleNote(voice, simple_name, duration);
+            	}
+				if(sub_index_max > 1){
 					var beam_notes = [];
-					for(var j = beam_start_index[voice]; j < beam_start_index[voice] + voice_to_max[voice]; j++){
+					for(var j = beam_start_index; j < beam_start_index + sub_index_max; j++){
 						if(measure.notes[voice][j] instanceof this.vf.StaveNote){
 							beam_notes.push(measure.notes[voice][j]);
 						}
@@ -498,6 +502,27 @@ class Score {
 					measure.beams.push(new this.vf.Beam(beam_notes));
 				}
 			}
+			prev_sub_index_max = beat_sub_index_max;
+			var beam_notes = [];
+			for(var j = 0; j < beat_sub_index_max; j++){
+				var duration;
+            	if(beat_sub_index_max == 1){
+            		duration = 4 * durations[i];
+            	}
+            	else{
+            		duration = this.this.num_notes_to_durations[sub_index_max][sub_index];
+            	}
+				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, duration, 0));
+				if(beat_format_accidentals[j] != null){
+					note = note.addAccidental(0, new this.vf.Accidental(beat_format_accidentals[j]));
+				}
+				if(beat_sub_index_max > 1){
+					beam_notes.push(note);
+				}
+			}
+			if(beat_sub_index_max > 1){
+				new this.vf.Beam(beam_notes);
+			}
 		}
 		for(var i = 0; i < 2; i++){
 			if(!needs_ghost_voices[i]){
@@ -507,6 +532,8 @@ class Score {
 		return measure;
 	}
 	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, prev_value, accidentals_in_key, needs_ghost_voices){
+		var accidental = null;
+
 		var value = this.harmony[index].getValue(voice, sub_index);
 		var name = this.harmony[index].chord.key.valueToName(value).toLowerCase();
 		var octave = Math.floor(value / 12);
@@ -533,9 +560,11 @@ class Score {
 			if(accidentals_in_key[clef_index][octave][name.substring(0, 1)] != name.substring(1)){
 				accidentals_in_key[clef_index][octave][name.substring(0, 1)] = name.substring(1);
 				if(name.substring(1) == ""){
+					accidental = "n";
 					note = note.addAccidental(0, new this.vf.Accidental("n"));
 				}
 				else{
+					accidental = name.substring(1);
 					note = note.addAccidental(0, new this.vf.Accidental(name.substring(1)));
 				}
 			}
@@ -553,5 +582,6 @@ class Score {
 				measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
 			}
 		}
+		return accidental;
 	}
 }
