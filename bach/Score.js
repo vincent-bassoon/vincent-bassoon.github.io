@@ -227,17 +227,16 @@ class LineData {
 			return this.note_indent;
 		}
 	}
-	generateLine(measures, beats, is_last){
-		var measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
-		if(is_last && beats <= this.score.measures_per_line * 4 - 4 && this.max_beat_size < measure_beat_size){
+	generateLine(measures, weighted_beats, is_last){
+		var measure_beat_size = (this.stave_width - this.getNoteIndent()) / weighted_beats;
+		if(is_last && weighted_beats <= this.score.measures_per_line * 4 - 4 && this.max_beat_size < measure_beat_size){
 			measure_beat_size = this.max_beat_size;
 		}
 		else if(measure_beat_size > this.max_beat_size){
 			this.max_beat_size = measure_beat_size;
 		}
 		for(var i = 0; i < measures.length; i++){
-			var duration = measures[i].duration;
-			measures[i].width = measure_beat_size * duration;
+			measures[i].width = measure_beat_size * measures[i].weighted_duration;
 		}
 		var staves = {};
 		for(var i = 0; i < 2; i++){
@@ -300,18 +299,17 @@ class Score {
 		}
 		var voices = {};
 		var all_voices = [];
-		var format_voice = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-		format_voice.addTickables(measure.format_notes).setStave(staves[0]);
-		all_voices.push(format_voice);
+		measure.format_voice.setStave(staves[0]);
+		all_voices.push(measure.format_voice);
 		for(var i = 0; i < 4; i++){
 			voices[i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
 			voices[i].addTickables(measure.notes[i]).setStave(staves[Math.floor(i / 2)]);
 			all_voices.push(voices[i]);
 		}
 		for(var i = 0; i < 2; i++){
-			if(measure.ghost_voices[i] != null){
+			if(measure.ghost_notes[i] != null){
 				voices[4 + i] = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
-				voices[4 + i].addTickables(measure.ghost_voices[i]).setStave(staves[i]);
+				voices[4 + i].addTickables(measure.ghost_notes[i]).setStave(staves[i]);
 				all_voices.push(voices[4 + i]);
 			}
 		}
@@ -371,6 +369,7 @@ class Score {
 		var fermata_lengths = {7: 2, 8: 1, 9: 2, 10: 3};
 		
 		var num_beats = 0;
+		var weighted_num_beats = 0;
 		var index = 0;
 		var phrase_index = 0;
 		var needs_pickup = this.pickup;
@@ -421,10 +420,12 @@ class Score {
 				measures.push(this.generateSingleMeasure(index, durations, num_beats_change, fermata_index));
 				index += index_change;
 			}
-			if(num_beats >= 4 * this.measures_per_line - 1){
-				line_data.generateLine(measures, num_beats, index >= this.harmony.length);
+			weighted_num_beats += measures[measures.length - 1].weighted_duration;
+			if(weighted_num_beats >= 4 * this.measures_per_line - 1){
+				line_data.generateLine(measures, weighted_num_beats, index >= this.harmony.length);
 				measures = [];
 				num_beats = 0;
+				weighted_num_beats = 0;
 			}
 			if(phrase_done_indices.length > 0 && index >= phrase_done_indices[phrase_index]){
 				phrase_index++;
@@ -454,11 +455,19 @@ class Score {
 		
 	generateSingleMeasure(start_index, durations, total_duration, fermata_index){
 		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
-			       "width": null, "ghost_voices": [[], []], "format_notes": []};
+			       "width": null, "ghost_notes": [[], []], "format_voice": null};
+		measure.weighted_duration = total_duration;
+		if(durations.includes(3)){
+			measure.weighted_duration -= 0.7;
+		}
+		if(durations.includes(4)){
+			measure.weighted_duration -= 1.5;
+		}
 		var accidentals_in_key = {0: {}, 1: {}};
 		var needs_ghost_voices = {0: false, 1: false};
 		var prev_value = null;
 		var prev_sub_index_max;
+		var format_notes = [];
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
 			var beat_format_data = {};
@@ -534,7 +543,7 @@ class Score {
 							beam_notes.push(measure.notes[voice][j]);
 						}
 						else{
-							beam_notes.push(measure.ghost_voices[Math.floor(voice / 2)][j]);
+							beam_notes.push(measure.ghost_notes[Math.floor(voice / 2)][j]);
 						}
 					}
 					measure.beams.push(new this.vf.Beam(beam_notes));
@@ -562,7 +571,7 @@ class Score {
 				if(duration.substring(duration.length - 1) == "d"){
 					note = note.addDotToAll();
 				}
-				measure.format_notes.push(note);
+				format_notes.push(note);
 				if(sub_index_max > 1){
 					beam_notes.push(note);
 				}
@@ -573,9 +582,11 @@ class Score {
 		}
 		for(var i = 0; i < 2; i++){
 			if(!needs_ghost_voices[i]){
-				measure.ghost_voices[i] = null;
+				measure.ghost_notes[i] = null;
 			}
 		}
+		measure.format_voice = new this.vf.Voice({num_beats: measure.duration, beat_value: 4});
+		measure.format_voice.addTickables(format_notes);
 		return measure;
 	}
 	generateSingleBeat(measure, index, fermata_index, voice, sub_index, duration, prev_value, accidentals_in_key, needs_ghost_voices){
@@ -597,7 +608,7 @@ class Score {
 		if(voice % 2 == 1 && value == prev_value){
 			//note: if one of the intersecting notes is a half note and the other is not, new strategy needed
 			measure.notes[voice].push(new this.vf.GhostNote(note_data));
-			measure.ghost_voices[clef_index].push(note);
+			measure.ghost_notes[clef_index].push(note);
 			needs_ghost_voices[clef_index] = true;
 		}
 		else{
@@ -623,7 +634,7 @@ class Score {
 			}
 			measure.notes[voice].push(note);
 			if(voice % 2 == 1){
-				measure.ghost_voices[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
+				measure.ghost_notes[Math.floor(voice / 2)].push(new this.vf.GhostNote(note_data));
 			}
 		}
 		return accidental;
