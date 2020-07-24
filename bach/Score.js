@@ -481,14 +481,29 @@ class Score {
             			var accidental = this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
             				this.duration_strings[duration], prev_value,
             				accidentals_in_key, needs_ghost_voices);
-            			if(accidental != null && (sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max)){
-            				beat_format_data[sub_index].accidental = accidental;
-            			}
 
             			if(fermata_index != null && index == fermata_index && duration < 8){
 							duration = 8;
 						}
 						var value = this.harmony[index].getValue(voice, sub_index);
+            			if(accidental != null){
+            				if(sub_index > 0 || i == 0 || this.harmony[index - 1].getNumNotes(voice) == prev_sub_index_max){
+            					beat_format_data[sub_index].accidental = accidental;
+            				}
+            				else{
+            					var other_voice = voice;
+            					if(voice % 2 == 0){
+            						other_voice++;
+            					}
+            					else{
+            						other_voice--;
+            					}
+            					if(this.harmony[index - 1].getNumNotes(other_voice) == prev_sub_index_max &&
+            						Math.abs(this.harmony[index - 1].getValue(other_voice, prev_sub_index_max - 1) - value) < 5){
+            						beat_format_data[sub_index].accidental = accidental;
+            					}
+            				}
+            			}
 						if(voice % 2 == 0){
 							prev_value = value;
 						}
