@@ -469,7 +469,7 @@ class Score {
 			measure.max_duration = 2;
 		}
 		else if(durations.includes(3)){
-			measure.weighted_duration -= 1.3;
+			measure.weighted_duration -= 1;
 			measure.max_duration = 3;
 		}
 		else if(durations.includes(4)){
