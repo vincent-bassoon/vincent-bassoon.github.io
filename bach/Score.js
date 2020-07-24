@@ -318,7 +318,7 @@ class Score {
 			staves[i].setNoteStartX(indent);
 			this.formatter.joinVoices([voices[2 * i], voices[2 * i + 1]]);
 		}
-		this.formatter.format(all_voices, staves[0].getNoteEndX() - staves[0].getNoteStartX() - 23);
+		this.formatter.format(all_voices, staves[0].getNoteEndX() - staves[0].getNoteStartX());
 		for(var i = 1; i < all_voices.length; i++){
 			all_voices[i].setContext(this.context).draw();
 		}
