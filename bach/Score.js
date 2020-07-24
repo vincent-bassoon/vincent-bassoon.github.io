@@ -470,7 +470,7 @@ class Score {
 		}
 		else if(durations.includes(3)){
 			if(durations.length == 1){
-				measure.weighted_duration -= 2;
+				measure.weighted_duration -= 1.3;
 			}
 			else{
 				measure.weighted_duration -= 1;
