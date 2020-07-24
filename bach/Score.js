@@ -180,7 +180,7 @@ class LineData {
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 60;
-		this.beat_size_list = [];
+		this.max_beat_size = 0;;
 		
 		var max_initial_note_indent = 192;
 		
@@ -223,13 +223,12 @@ class LineData {
 	}
 	generateLine(measures, beats, is_last){
 		var measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
-		/*if(beats <= this.score.measures_per_line * 4 - 3){
-			measure_beat_size = this.avg(this.beat_size_list);
+		if(is_last && beats <= this.score.measures_per_line * 4 - 4 && this.max_beat_size < measure_beat_size){
+			measure_beat_size = this.max_beat_size;
 		}
-		else{
-			measure_beat_size = (this.stave_width - this.getNoteIndent()) / beats;
-			this.beat_size_list.push(measure_beat_size);
-		}*/
+		else if(measure_beat_size > this.max_beat_size){
+			this.max_beat_size = measure_beat_size;
+		}
 		for(var i = 0; i < measures.length; i++){
 			var duration = measures[i].duration;
 			measures[i].width = measure_beat_size * duration;
