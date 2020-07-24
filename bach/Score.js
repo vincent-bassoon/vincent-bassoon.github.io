@@ -413,7 +413,7 @@ class Score {
 				num_beats += num_beats_change;
 				if(phrase_index != phrase_done_indices.length - 1){
 					var max = 4;
-					if(this.pickup && weighted_num_beats + num_beats_change >= 4 * this.measures_per_line - 2){
+					if(this.pickup && num_beats >= 4 * this.measures_per_line - 2){
 						max = 3;
 						needs_pickup = true;
 					}
