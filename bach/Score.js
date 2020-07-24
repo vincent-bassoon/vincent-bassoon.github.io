@@ -113,6 +113,12 @@ class Player {
 					if(rit){
 						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
 					}
+					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
+						transport.stop();
+						for(var i = 0; i < 4; i++){
+							samplers[i].releaseAll();
+						}
+					}
 					if(index == schedule.length - 3){
 						for(var j = 0; j < 4; j++){
 							samplers[j].release = 0.6;
