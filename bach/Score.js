@@ -473,7 +473,7 @@ class Score {
             			duration = 4 * durations[i];
             		}
             		else{
-            			duration = this.this.num_notes_to_durations[sub_index_max][sub_index];
+            			duration = this.num_notes_to_durations[sub_index_max][sub_index];
             		}
             		var accidental = this.generateSingleBeat(measure, index, fermata_index, voice, sub_index,
             			this.duration_strings[duration], prev_value,
