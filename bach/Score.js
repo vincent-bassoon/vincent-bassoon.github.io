@@ -448,7 +448,6 @@ class Score {
 	}
 		
 	generateSingleMeasure(start_index, durations, total_duration, fermata_index){
-		console.log("new measure with duration " + total_duration);
 		var measure = {"notes": [[], [], [], []], "beams": [], "duration": total_duration,
 			       "width": null, "ghost_voices": [[], []], "format_notes": []};
 		var accidentals_in_key = {0: {}, 1: {}};
@@ -513,11 +512,15 @@ class Score {
             	else{
             		duration = this.num_notes_to_durations[beat_sub_index_max][j];
             	}
-            	console.log(this.duration_strings[duration]);
-				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, this.duration_strings[duration], 0));
+            	duration = this.duration_strings[duration];
+				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, duration, 0));
 				if(beat_format_accidentals[j] != null){
 					note = note.addAccidental(0, new this.vf.Accidental(beat_format_accidentals[j]));
 				}
+				if(duration.substring(duration.length - 1) == "d"){
+					note = note.addDotToAll();
+				}
+				measure.format_notes.push(note);
 				if(beat_sub_index_max > 1){
 					beam_notes.push(note);
 				}
