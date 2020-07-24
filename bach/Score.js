@@ -428,7 +428,7 @@ class Score {
 				index += index_change;
 			}
 			weighted_num_beats += measures[measures.length - 1].weighted_duration;
-			if(weighted_num_beats >= 4 * this.measures_per_line - 1){
+			if(num_beats >= 4 * this.measures_per_line - 1){
 				line_data.generateLine(measures, weighted_num_beats, index >= this.harmony.length);
 				measures = [];
 				num_beats = 0;
