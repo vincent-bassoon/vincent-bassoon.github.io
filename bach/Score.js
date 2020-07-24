@@ -468,11 +468,11 @@ class Score {
 			measure.weighted_duration -= 0.3;
 			measure.max_duration = 2;
 		}
-		if(durations.includes(3)){
+		else if(durations.includes(3)){
 			measure.weighted_duration -= 1;
 			measure.max_duration = 3;
 		}
-		if(durations.includes(4)){
+		else if(durations.includes(4)){
 			measure.weighted_duration -= 2;
 			measure.max_duration = 4;
 		}
@@ -578,7 +578,7 @@ class Score {
             	duration = this.duration_strings[duration];
             	var note_data = this.createNoteData(11 + 48, "b", 4, duration, 0)
             	if(beat_format_data[j].adjacent){
-            		note_data.keys.unshift("c/5");
+            		note_data.keys.push("c/5");
             	}
 				var note = new this.vf.StaveNote(note_data);
 				if(beat_format_data[j].accidental != null){
