@@ -516,7 +516,7 @@ class MotionFunctions {
 		switch(Math.abs(simple_motion)){
 			case this.type.CONSTANT:
 				if(voice != 3){
-					if(Math.abs(next_motion < 4)){
+					if(Math.abs(next_motion) < 4){
 						options.push(this.type.MORDENT);
 						options.push(this.type.MORDENT * -1);
 					}
