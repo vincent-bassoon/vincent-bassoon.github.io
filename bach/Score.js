@@ -495,9 +495,9 @@ class Score {
             	}
             }
             for(var voice = 0; voice < 4; voice++){
-				if(harmony[index].getNumNotes(voice) > 1){
+				if(this.harmony[index].getNumNotes(voice) > 1){
 					var beam_notes = [];
-					for(var j = beam_start_index[voice]; j < beam_start_index + harmony[index].getNumNotes(voice); j++){
+					for(var j = beam_start_index[voice]; j < beam_start_index[voice] + this.harmony[index].getNumNotes(voice); j++){
 						if(measure.notes[voice][j] instanceof this.vf.StaveNote){
 							beam_notes.push(measure.notes[voice][j]);
 						}
