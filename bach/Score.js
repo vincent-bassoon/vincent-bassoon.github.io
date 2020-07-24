@@ -512,7 +512,7 @@ class Score {
             	else{
             		duration = this.this.num_notes_to_durations[sub_index_max][sub_index];
             	}
-				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, duration, 0));
+				var note = new this.vf.StaveNote(this.createNoteData(11 + 48, "b", 4, this.duration_strings[duration], 0));
 				if(beat_format_accidentals[j] != null){
 					note = note.addAccidental(0, new this.vf.Accidental(beat_format_accidentals[j]));
 				}
