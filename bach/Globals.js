@@ -556,7 +556,7 @@ class MotionFunctions {
 				return this.max_score + 1;
 			}
 			else{
-				score += 30;
+				score += 20;
 			}
 		}
 		
@@ -569,6 +569,11 @@ class MotionFunctions {
 		}
 		if(next_motion == this.type.MORDENT && next_direction != direction){
 			return this.max_score + 1;
+		}
+		if(next_motion == this.type.MORDENT){
+			if(index + 2 >= harmony.length || (Math.abs(harmony[index + 2].getMotion(voice)) < 4 && motion < 4)){
+				return this.max_score + 1;
+			}
 		}
 		//no two consecutive leaps if one of them is a fourth
 		if(motion == this.type.LEAP && next_motion == this.type.LEAP){
