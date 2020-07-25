@@ -485,7 +485,7 @@ class MotionFunctions {
 		if(motion == this.type.CONSTANT){
 			return 0;
 		}
-		if(motion == this.type.SUSPENSION || motion < 0){
+		if(motion == this.type.SUSPENSION || motion == this.type.SUSPENSION_7 || motion < 0){
 			return -1;
 		}
 		else{
