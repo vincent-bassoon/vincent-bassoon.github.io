@@ -129,7 +129,26 @@ class HarmonyFunctions {
 		return false;
 	}
 	hasNctError(harmony, index, voice_order, order_index){
-		if(index == harmony.length - 1 || order_index == 0 || harmony[index].getNumNotes(voice_order[order_index]) == 1){
+		if(index == harmony.length - 1 || harmony[index].getNumNotes(voice_order[order_index]) == 1){
+			return false;
+		}
+		if(harmony[index].getNumNotes(voice_order[order_index]) == 2){
+			var start = Math.max(voice_order[order_index] - 1 , 0);
+			var end = Math.min(voice_order[order_index] + 1, 3);
+			var value1 = harmony[index].getValue(voice_order[order_index], 0);
+			var value2 = harmony[index].getValue(voice_order[order_index], 1);
+			for(var voice = start; voice <= end; voice++){
+				if(harmony[index + 1].getNumNotes(voice) == 2 && harmony[index + 1].getValue(voice, 1) == value2){
+					for(var i = 0; i < 4; i++){
+						if(harmony[index + 1].getValue(i, 0) == value1){
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		if(order_index == 0){
 			return false;
 		}
 		var doubling_valid;
@@ -138,6 +157,9 @@ class HarmonyFunctions {
 				doubling_valid = true;
 				break;
 			case this.mf.type.PASSING_16:
+				doubling_valid = true;
+				break;
+			case this.mf.type.MORDENT:
 				doubling_valid = true;
 				break;
 			default:
