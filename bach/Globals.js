@@ -555,6 +555,9 @@ class MotionFunctions {
 			if(harmony[index + 1].end_of_phrase){
 				return this.max_score + 1;
 			}
+			else{
+				score += 10;
+			}
 		}
 		if(motion == this.type.MORDENT && index == 0){
 			return this.max_score + 1;
