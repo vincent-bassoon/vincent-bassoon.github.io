@@ -202,7 +202,8 @@ class ChordFunctions {
 		}
 		return true;
 	}
-	addToChords(mods, chords, chord_index, prev_key, cad){
+	addToChords(mods, chords, chord_index, phrase_length, prev_key, cad){
+		var start_chord_index = chord_index;
 		var new_key = false;
 		for(var i = 0; i < mods.length; i++){
 			var additions = [];
@@ -217,7 +218,7 @@ class ChordFunctions {
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				var seven = false;
-				if(mods[i].connect_nums[j] == 5 && new_key){
+				if(mods[i].connect_nums[j] == 5 && new_key && start_chord_index + length > chord_index + 2){
 					seven = this.chooseSeven();
 					new_key = false;
 				}
@@ -384,7 +385,7 @@ class ChordFunctions {
 			}
 		}
 		if(valid){
-			this.addToChords(mods, chords, phrase_data[index].chord_index, prev_key, phrase_data[index].cadence);
+			this.addToChords(mods, chords, phrase_data[index].chord_index, phrase_data[index].length, prev_key, phrase_data[index].cadence);
 			for(var i = 0; i < this.phrase_attempts; i++){
 				if(this.generatePhrase(key, chords, phrase_data, index + 1)){
 					return true;
