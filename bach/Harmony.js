@@ -417,7 +417,7 @@ class HarmonyFunctions {
 					max_degree = inversion;
 					min_degree = inversion;
 				}
-				else{
+				else if(!chord.seven){
 					max_degree = 1;
 					if(chord.quality == "dim"){
 						min_degree = 1;
