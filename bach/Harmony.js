@@ -556,7 +556,7 @@ class HarmonyFunctions {
 		new Score(harmony, this.nf, phrase_lengths, samplers).renderHarmony();
 		console.log(harmony);
 		data[0].avg_score = this.getAvgScore(harmony);
-		data[0].retrace_attempts = this.getAvgScore(harmony);
+		data[0].retrace_attempts = this.retrace_attempts;
 		return false;
 	}
 }
