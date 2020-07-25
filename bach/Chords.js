@@ -291,8 +291,14 @@ class ChordFunctions {
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
-		if(length > this.cadence_lengths[cadence] && nums[0] == 5 && chooseInt({0: 60, 1: 40}) == 0){
-			nums.unshift(1);
+		if(length > this.cadence_lengths[cadence] && nums[0] == 5){
+			var probs = {0: 60, 1: 40};
+			if(cadence == "pac" || cadence == "pacm"){
+				probs = {0: 80, 1: 20};
+			}
+			if(chooseInt(probs) == 0){
+				nums.unshift(1);
+			}
 		}
 		for(var i = nums.length; i < length; i++){
 			next_class++;
