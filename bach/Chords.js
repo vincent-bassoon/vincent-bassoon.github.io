@@ -13,7 +13,7 @@ class ChordFunctions {
 		
 		this.phrase_attempts = 5;
 	}
-	generateNumString(num, key, inversion){
+	generateNumString(num, key, seven, inversion){
 		var string = this.num_to_string[num];
 		switch(this.key_generator.qualities[key.modality][num]){
 			case "minor":
@@ -25,6 +25,9 @@ class ChordFunctions {
 			case "dim":
 				string = string.toLowerCase() + "°";
 				break;
+		}
+		if(seven){
+			string += "7";
 		}
 		if(key.pitch != this.key.pitch){
 			string += " / ";
@@ -40,7 +43,7 @@ class ChordFunctions {
 		return string;
 	}
 	generatePivotNumString(nums, keys){
-		return this.generateNumString(nums[0], keys[0], null) + " -> " + this.generateNumString(nums[1], keys[1], null) + " (pivot)";
+		return this.generateNumString(nums[0], keys[0], false, null) + " -> " + this.generateNumString(nums[1], keys[1], false, null) + " (pivot)";
 	}
 	generateChord(num, key, mod, seven, inversion){
 		return new Chord(num, key, this.key_generator.qualities[key.modality][num], mod, seven, inversion);
@@ -197,6 +200,7 @@ class ChordFunctions {
 		return true;
 	}
 	addToChords(mods, chords, chord_index, prev_key, cad){
+		var new_key = false;
 		for(var i = 0; i < mods.length; i++){
 			var additions = [];
 			for(var j = 0; j < mods[i].additions.length; j++){
@@ -209,8 +213,13 @@ class ChordFunctions {
 				mods[i].connect_nums.push(...additions);
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
-				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null, false, null);
-				this.chord_strings[chord_index] = this.generateNumString(mods[i].connect_nums[j], prev_key, null);
+				var seven = false;
+				if(mods[i].connect_nums[j] == 5 && new_key){
+					seven = true;
+					new_key = false;
+				}
+				chords[chord_index] = this.generateChord(mods[i].connect_nums[j], prev_key, null, seven, null);
+				this.chord_strings[chord_index] = this.generateNumString(mods[i].connect_nums[j], prev_key, seven, null);
 				chord_index++;
 			}
 			if(mods[i].type == "cadence"){
@@ -225,7 +234,7 @@ class ChordFunctions {
 					
 					if(cad == "pacm" && j == mods[i].nums.length - 1){
 						chords[chord_index] = this.generateChord(1, this.key_generator.getKey(prev_key.pitch, "major"), null, false, 0);
-						this.chord_strings[chord_index] = this.generateNumString(1, this.key_generator.getKey(prev_key.pitch, "major"), 0);
+						this.chord_strings[chord_index] = this.generateNumString(1, this.key_generator.getKey(prev_key.pitch, "major"), false, 0);
 					}
 					else{
 						var seven = false;
@@ -233,7 +242,7 @@ class ChordFunctions {
 							seven = true;
 						}
 						chords[chord_index] = this.generateChord(mods[i].nums[j], prev_key, null, seven, inversion);
-						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], prev_key, inversion);
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], prev_key, seven, inversion);
 					}
 					chord_index++;
 				}
@@ -243,7 +252,7 @@ class ChordFunctions {
 				if(mods[i].type == "pivot"){
 					start = 1;
 					if(mods[i].nums[0] == null){
-						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[1], mods[i].keys[1], null) + " pivot";
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[1], mods[i].keys[1], false, null) + " starting modulation";
 					}
 					else{
 						this.chord_strings[chord_index] = this.generatePivotNumString(mods[i].nums, mods[i].keys);
@@ -259,9 +268,12 @@ class ChordFunctions {
 					}
 					chords[chord_index] = this.generateChord(mods[i].nums[j], mods[i].keys[j], mod_string, false, null);
 					if(mods[i].type != "pivot"){
-						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], null) + " mod";
+						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], false, null) + " mod";
 					}
 					chord_index++;
+				}
+				if(mods[i].keys[1] != prev_key){
+					new_key = true;
 				}
 				prev_key = mods[i].keys[1];
 			}
