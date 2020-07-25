@@ -287,7 +287,7 @@ class ChordFunctions {
 			}
 		}
 	}
-	generateCadence(cadence, length){
+	generateCadence(cadence, length, is_last){
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
@@ -296,7 +296,7 @@ class ChordFunctions {
 			if(cadence == "pac" || cadence == "pacm"){
 				probs = {0: 80, 1: 20};
 			}
-			if(chooseInt(probs) == 0){
+			if(is_last || chooseInt(probs) == 0){
 				nums.unshift(1);
 			}
 		}
@@ -366,7 +366,7 @@ class ChordFunctions {
 				return false;
 			}
 		}
-		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length));
+		mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, index == phrase_data.length - 1));
 		min_modulations += 2;
 		//one for cadence, one for first modulation
 		
@@ -494,7 +494,11 @@ class ChordFunctions {
 			var cadence_length = this.cadence_lengths[cadence];
 			// 4 beat cadence includes a 64 tonic
 			if(cadence != "pc"){
-				cadence_length += chooseInt({0: 60, 1: 35, 2: 5});
+				var addition = chooseInt({0: 60, 1: 35, 2: 5});
+				if(i == phrase_lengths.length - 1 && addition == 0){
+					addition += 1;
+				}
+				cadence_length += addition;
 			}
 			
 			phrase_data.push({"length": phrase_lengths[i], "chord_index": sum, "cadence": cadence, "cadence_length": cadence_length});
