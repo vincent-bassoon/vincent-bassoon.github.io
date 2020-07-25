@@ -355,7 +355,7 @@ class HarmonyFunctions {
 				}
 			}
 			if(valid){
-				valid = checkNctOption(harmony, index, voice, values);
+				valid = this.checkNctOption(harmony, index, voice, values);
 			}
 			if(valid){
 				var score = this.mf.getMotionScore(harmony, index, voice, motion);
