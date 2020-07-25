@@ -132,42 +132,6 @@ class HarmonyFunctions {
 		if(index == harmony.length - 1 || harmony[index].getNumNotes(voice_order[order_index]) == 1){
 			return false;
 		}
-
-		var voice = voice_order[order_index];
-		if(voice == 0 || voice == 3){
-			var max = harmony[index].getNumNotes(voice);
-			if(index + 2 < harmony.length && harmony[index + 2].getNumNotes(voice) == max){
-				var diff = false;
-				for(var i = 0; i < max; i++){
-					if(harmony[index].getValue(voice, i) != harmony[index + 2].getValue(voice, i)){
-						diff = true;
-					}
-				}
-				if(!diff){
-					return true;
-				}
-			}
-		}
-
-		if(harmony[index].getNumNotes(voice_order[order_index]) == 2){
-			var start = Math.max(voice_order[order_index] - 1 , 0);
-			var end = Math.min(voice_order[order_index] + 1, 3);
-			var value1 = harmony[index].getValue(voice_order[order_index], 0);
-			var value2 = harmony[index].getValue(voice_order[order_index], 1);
-			for(var voice = start; voice <= end; voice++){
-				if(harmony[index + 1].getNumNotes(voice) == 2 && harmony[index + 1].getValue(voice, 1) == value2){
-					for(var i = 0; i < 4; i++){
-						if(harmony[index + 1].getValue(i, 0) == value1){
-							return true;
-						}
-					}
-				}
-			}
-		}
-
-		if(order_index == 0){
-			return false;
-		}
 		var doubling_valid;
 		switch(Math.abs(harmony[index].getMotion(voice_order[order_index]))){
 			case this.mf.type.PASSING_8:
@@ -256,6 +220,23 @@ class HarmonyFunctions {
 			}
 		}
 		if(order_index == 4){
+			for(var voice1 = 0; voice1 < 4; voice1++){
+				if(harmony[index].getNumNotes(voice1) == 2){
+					var start = Math.max(voice1 - 1 , 0);
+					var end = Math.min(voice1 + 1, 3);
+					var end_value = harmony[index].getValue(voice1, 1);
+					for(var voice2 = start; voice2 <= end; voice2++){
+						if(harmony[index + 1].getNumNotes(voice2) == 2 && harmony[index + 1].getValue(voice2, 1) == end_value){
+							var start_value = harmony[index + 1].getValue(voice2, 0);
+							for(var i = 0; i < 4; i++){
+								if(start_value == harmony[index].getValue(i, 0)){
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
 			return this.generateSingleHarmony(harmony, index - 1);
 		}
 		var voice = voice_order[order_index];
@@ -289,6 +270,37 @@ class HarmonyFunctions {
 			}
 		}
 		return false;
+	}
+	checkNctOption(harmony, index, voice, values){
+		if(voice == 0 || voice == 3){
+			var max = values.length;
+			if(index + 2 < harmony.length && harmony[index + 2].getNumNotes(voice) == max){
+				var diff = false;
+				for(var i = 0; i < max; i++){
+					if(values[i] != harmony[index + 2].getValue(voice, i)){
+						diff = true;
+					}
+				}
+				if(!diff){
+					return false;
+				}
+			}
+		}
+
+		if(values.length == 2){
+			var start = Math.max(voice - 1 , 0);
+			var end = Math.min(voice + 1, 3);
+			for(var voice = start; voice <= end; voice++){
+				if(harmony[index + 1].getNumNotes(voice) == 2 && harmony[index + 1].getValue(voice, 1) == values[1]){
+					for(var i = 0; i < 4; i++){
+						if(harmony[index + 1].getValue(i, 0) == values[0]){
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 	addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, simple_motion, next_motion, only_sus){
 		var start_num = key.valueToNum(value);
@@ -341,6 +353,9 @@ class HarmonyFunctions {
 				   next_key.valueToName(next_value) != key.valueToName(value[value.length - 1])){
 					valid = false;
 				}
+			}
+			if(valid){
+				valid = checkNctOption(harmony, index, voice, values);
 			}
 			if(valid){
 				var score = this.mf.getMotionScore(harmony, index, voice, motion);
