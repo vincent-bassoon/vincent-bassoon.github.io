@@ -132,6 +132,15 @@ class HarmonyFunctions {
 		if(index == harmony.length - 1 || harmony[index].getNumNotes(voice_order[order_index]) == 1){
 			return false;
 		}
+
+		var voice = voice_order[order_index];
+		if(voice == 0 || voice == 3){
+			if(index + 2 < harmony.length && harmony[index + 2].getMotion(voice) == harmony[index].getMotion(voice) && 
+				harmony[index + 2].getValue(voice, 0) == harmony[index].getValue(voice, 0)){
+				return true;
+			}
+		}
+
 		if(harmony[index].getNumNotes(voice_order[order_index]) == 2){
 			var start = Math.max(voice_order[order_index] - 1 , 0);
 			var end = Math.min(voice_order[order_index] + 1, 3);
