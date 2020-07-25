@@ -5,7 +5,7 @@ class ChordFunctions {
 		//{2: 0.65, 4: 0.35}
 		// 3-6-4/2-5-1
 		
-		this.cadence_lengths = {"pac": 3, "pac/iac": 2, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
+		this.cadence_lengths = {"pac": 3, "pac/iac": 3, "hc": 2, "dc": 3, "pc": 2, "pacm": 3};
 		this.cadences = {"pac": [5, 1], "pac/iac": [1], "hc": [5], "dc": [5, 6], "pc": [4, 1], "pacm": [5, 1]};
 		
 		this.num_to_string = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII"};
@@ -291,7 +291,7 @@ class ChordFunctions {
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
-		if(length == 4){
+		if(length > this.cadence_lengths[cadence] && nums[0] == 5 && chooseInt({0: 60, 1: 40}) == 0){
 			nums.unshift(1);
 		}
 		for(var i = nums.length; i < length; i++){
@@ -479,8 +479,8 @@ class ChordFunctions {
 			
 			var cadence_length = this.cadence_lengths[cadence];
 			// 4 beat cadence includes a 64 tonic
-			if(cadence != "pac/iac" && cadence_length == 3 && chooseInt({0: 80, 1: 20}) == 0){
-				cadence_length++;
+			if(cadence != "pc"){
+				cadence_length += chooseInt({0: 60, 1: 35, 2: 5});
 			}
 			
 			phrase_data.push({"length": phrase_lengths[i], "chord_index": sum, "cadence": cadence, "cadence_length": cadence_length});
