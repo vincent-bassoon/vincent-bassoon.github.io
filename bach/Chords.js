@@ -218,7 +218,7 @@ class ChordFunctions {
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				var seven = false;
-				if(mods[i].connect_nums[j] == 5 && new_key && start_chord_index + length > chord_index + 2){
+				if(mods[i].connect_nums[j] == 5 && new_key && (start_chord_index + length > chord_index + 3 || cad == "hc")){
 					seven = this.chooseSeven();
 					new_key = false;
 				}
@@ -280,7 +280,7 @@ class ChordFunctions {
 						chord_index++;
 					}
 				}
-				if(mods[i].keys[1] != prev_key && !seven){
+				if(!mods[i].keys[1].equals(prev_key) && !seven){
 					new_key = true;
 				}
 				prev_key = mods[i].keys[1];
