@@ -135,9 +135,17 @@ class HarmonyFunctions {
 
 		var voice = voice_order[order_index];
 		if(voice == 0 || voice == 3){
-			if(index + 2 < harmony.length && harmony[index + 2].getMotion(voice) == harmony[index].getMotion(voice) && 
-				harmony[index + 2].getValue(voice, 0) == harmony[index].getValue(voice, 0)){
-				return true;
+			var max = harmony[index].getNumNotes(voice);
+			if(index + 2 < harmony.length && harmony[index + 2].getNumNotes(voice) == max){
+				var diff = false;
+				for(var i = 0; i < max; i++){
+					if(harmony[index].getValue(voice, i) != harmony[index + 2].getValue(voice, i)){
+						diff = true;
+					}
+				}
+				if(!diff){
+					return true;
+				}
 			}
 		}
 
