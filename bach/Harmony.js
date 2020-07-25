@@ -462,7 +462,7 @@ class HarmonyFunctions {
 			this.current_state = this.state.success;
 			return true;
 		}
-		if(this.retrace_attempts <= 0 || index > harmony.length - 1){
+		if(this.retrace_attempts > this.max_retrace_attempts || index > harmony.length - 1){
 			this.current_state = this.state.failure;
 			return true;
 		}
@@ -489,7 +489,7 @@ class HarmonyFunctions {
 		}
 		if(index + 1 < harmony.length){
 			harmony[index + 1].addToHistory();
-			this.retrace_attempts -= 1;
+			this.retrace_attempts += 1;
 		}
 		return false;
 	}
@@ -546,16 +546,17 @@ class HarmonyFunctions {
 	generateHarmony(data, chords, phrase_lengths, samplers){		
 		var harmony = this.createEmptyHarmony(phrase_lengths, chords);
 		
-		var max_retrace_attempts = Math.floor(3.5 * (chords.length - 1));
-		this.retrace_attempts = max_retrace_attempts;
+		this.max_retrace_attempts = Math.floor(3.5 * (chords.length - 1));
+		this.retrace_attempts = 0;
 		this.generateSingleHarmony(harmony, harmony.length - 1);
 		if(this.current_state != this.state.success){
-			console.log("COMPLETE FAILURE, AFTER ATTEMPTS: ", max_retrace_attempts - this.retrace_attempts);
+			console.log("COMPLETE FAILURE, AFTER ATTEMPTS: ", this.retrace_attempts);
 			return true;
 		}
 		new Score(harmony, this.nf, phrase_lengths, samplers).renderHarmony();
 		console.log(harmony);
 		data[0].avg_score = this.getAvgScore(harmony);
+		data[0].retrace_attempts = this.getAvgScore(harmony);
 		return false;
 	}
 }

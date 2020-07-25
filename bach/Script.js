@@ -99,7 +99,7 @@ function configureSampler(){
 						while(staff.children.length != 0){
 							staff.removeChild(staff.lastChild);
 						}
-						data.unshift({time: null, avg_score: null, attempts: null});
+						data.unshift({time: null, avg_score: null, attempts: null, retrace_attempts: null});
 						generateNewChorale(data, samplers);
 						logData(data, before_time);
 						start.classList.remove("running");
