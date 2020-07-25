@@ -555,9 +555,9 @@ class MotionFunctions {
 			if(harmony[index + 1].end_of_phrase){
 				return this.max_score + 1;
 			}
-			else{
-				score += 20;
-			}
+		}
+		if(motion == this.type.MORDENT && index == 0){
+			return this.max_score + 1;
 		}
 		
 		if(index + 1 == harmony.length - 1){
@@ -567,11 +567,22 @@ class MotionFunctions {
 		if(motion == this.type.MORDENT && next_direction != direction * -1){
 			return this.max_score + 1;
 		}
-		if(next_motion == this.type.MORDENT && next_direction != direction){
-			return this.max_score + 1;
-		}
 		if(next_motion == this.type.MORDENT){
-			if(index + 2 >= harmony.length || (Math.abs(harmony[index + 2].getMotion(voice)) < 4 && motion < 4)){
+			if(next_direction != direction || index + 2 >= harmony.length){
+				return this.max_score + 1;
+			}
+			var works = false;
+			for(var i = 0; i < 2; i++){
+				var unit = harmony[index + 2 * i];
+				if(Math.abs(unit.getMotion(voice)) >= 4){
+					var motion_temp = this.getSimpleMotion(unit.getValue(voice, unit.getNumNotes(voice) - 1) - harmony[index + 1].getValue(voice, i));
+					if(motion_temp == this.type.STEP * -1 * direction){
+						i = 2;
+						works = true;
+					}
+				}
+			}
+			if(!works){
 				return this.max_score + 1;
 			}
 		}
