@@ -421,6 +421,7 @@ class ChordFunctions {
 		if(prev_num == null && first_num == 7){
 			first_num = 5;
 		}
+		var type = null;
 		var done = false;
 		var mods = [];
 		if(!key.equals(prev_key)){
@@ -432,6 +433,7 @@ class ChordFunctions {
 				var mod = key.getStartModulation(prev_key, prev_num, first_num, order[i]);
 				if(mod != null){
 					mods.unshift(new Modulation("pivot", [null, mod.nums[1]], [null, mod.keys[1]]));
+					type = mod.type;
 					prev_key = mod.keys[1];
 					i = 2;
 					done = true;
@@ -445,7 +447,13 @@ class ChordFunctions {
 			num_mods = 1;
 		}
 		for(var i = 0; i < num_mods; i++){
-			var mod = key.getModulation(prev_key, choose({"mediant": 35, "pivot": 65}), (is_last && i == num_mods - 1));
+			if(type == "mediant"){
+				type = "pivot";
+			}
+			else{
+				type = choose({"mediant": 35, "pivot": 65});
+			}
+			var mod = key.getModulation(prev_key, type, (is_last && i == num_mods - 1));
 			if(mod == null){
 				return null;
 			}
