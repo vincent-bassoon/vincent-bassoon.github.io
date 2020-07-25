@@ -575,7 +575,11 @@ class MotionFunctions {
 			for(var i = 0; i < 2; i++){
 				var unit = harmony[index + 2 * i];
 				if(Math.abs(unit.getMotion(voice)) >= 4){
-					var motion_temp = this.getSimpleMotion(unit.getValue(voice, unit.getNumNotes(voice) - 1) - harmony[index + 1].getValue(voice, i));
+					var sub_index = 0;
+					if(i == 0){
+						sub_index = unit.getNumNotes(voice) - 1
+					}
+					var motion_temp = this.getSimpleMotion(unit.getValue(voice, sub_index) - harmony[index + 1].getValue(voice, i));
 					if(motion_temp == this.type.STEP * -1 * direction){
 						i = 2;
 						works = true;
