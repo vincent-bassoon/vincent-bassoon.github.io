@@ -88,7 +88,7 @@ class ChordFunctions {
 	getModOrder(mods, phrase_length){
 		var cad_last = false;
 		var max = mods.length;
-		if(this.getLength(mods.slice(mods.length - 1)) > Math.ceil(phrase_length / 2)){
+		if(this.getLength(mods.slice(mods.length - 1)) > 3){
 			cad_last = true;
 			max = mods.length - 1;
 		}
