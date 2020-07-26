@@ -8,7 +8,12 @@ class Player {
 		this.phrase_indices = [];
 	}
 	addPhraseIndex(){
-		this.phrase_indices.push(this.schedule[this.schedule.length - 1].beat_num);
+		if(this.schedule.length == 0){
+			this.phrase_indices.push(1);
+		}
+		else{
+			this.phrase_indices.push(this.schedule[this.schedule.length - 1].beat_num);
+		}
 	}
 	scheduleNote(voice, note, duration){
 		var beat_num = this.beat_nums[voice];
