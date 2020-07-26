@@ -374,7 +374,7 @@ class ChordFunctions {
 			while(mods == null){
 				mods = this.generateModulations(key, prev_key, prev_num, num_mods, index == phrase_data.length - 1);
 				temp_counter++;
-				if(temp_counter > 10){
+				if(temp_counter > 20){
 					console.log("mod failure");
 					return false;
 				}
