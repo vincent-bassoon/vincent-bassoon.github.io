@@ -364,7 +364,6 @@ class ChordFunctions {
 					freqs.push(i);
 				}
 			}
-			console.log("freqs: ", freqs.join(", "));
 			num_mods = chooseIntFromFreqs({0: 1, 1: 10, 2: 49, 3: 40}, freqs);
 		}
 		
@@ -400,7 +399,7 @@ class ChordFunctions {
 				this.addToChords(mods, chords, phrase_data[index].chord_index, phrase_data[index].length, prev_key, phrase_data[index].cadence);
 				for(var i = 0; i < this.phrase_attempts; i++){
 					if(this.generatePhrase(key, chords, phrase_data, index + 1)){
-						console.log("successfully generated phrase at index " + index + " with length " + phrase_data[index].length + " and cadence length " + phrase_data[index].cadence_length + " and " + num_mods + " additional mods after " + counter + " attempts");
+						console.log("successfully generated phrase at index " + index + " with " + (phrase_data[index].length - phrase_data[index].cadence_length - 1) + " spaces and " + num_mods + " additional mods after " + counter + " attempts");
 						return true;
 					}
 				}
@@ -411,7 +410,7 @@ class ChordFunctions {
 				num_mods--;
 			}
 		} while(counter < 11);
-		console.log("failed to generate phrase at index " + index + " with length " + phrase_data[index].length + " and cadence length " + phrase_data[index].cadence_length + " and " + num_mods + " additional mods");
+		console.log("failed to generate phrase at index " + index + " with " + (phrase_data[index].length - phrase_data[index].cadence_length - 1) + " spaces and " + num_mods + " additional mods");
 		return false;
 	}
 	generateModulations(key, prev_key, prev_num, num_mods, is_last){
