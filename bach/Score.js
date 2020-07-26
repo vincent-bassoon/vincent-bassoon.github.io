@@ -137,13 +137,14 @@ class Player {
 			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2);
 		}
 		
+		var player = this;
 		function play_start(){
 			play.innerText = "STOP";
 			transport.bpm.value = 60;
 			for(var i = 0; i < 4; i++){
 				samplers[i].release = 0.15;
 			}
-			transport.start("+.3", this.getTimeString(this.phrase_indices[document.start]));
+			transport.start("+.3", player.getTimeString(player.phrase_indices[document.start]));
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
