@@ -221,7 +221,7 @@ class ChordFunctions {
 		while(spaces > 4){
 			var choices = [];
 			for(var i = Math.min(6, spaces); i >= 2; i--){
-				if(i + 1 != spaces && !(prev_length == 2 && i == 2) && !(mod_order[mod_index] == mods.length - 1 && invalidCadenceAddition(mods, i))){
+				if(i + 1 != spaces && !(prev_length == 2 && i == 2) && !(mod_order[mod_index] == mods.length - 1 && this.invalidCadenceAddition(mods, i))){
 					choices.push(i);
 				}
 			}
