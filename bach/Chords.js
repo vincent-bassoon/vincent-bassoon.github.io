@@ -14,7 +14,7 @@ class ChordFunctions {
 		this.phrase_attempts = 5;
 	}
 	chooseSeven(){
-		return (chooseInt({0: 70, 1: 30}) == 0);
+		return (Math.random() < 0.7);
 	}
 	generateNumString(num, key, seven, inversion){
 		var string = this.num_to_string[num];
@@ -146,7 +146,7 @@ class ChordFunctions {
 		}
 		return nums;
 	}
-	connectNums(prev_num, mod_num){
+	connectNums(prev_num, mod_num, is_cad){
 		var nums = [];
 		
 		var prev_class = this.numToClass(prev_num);
@@ -156,15 +156,18 @@ class ChordFunctions {
 			mod_class = 0;
 			end_class = 1;
 		}
+		else if(is_cad && prev_class > mod_class){
+			end_class = mod_class + 1;
+		}
 		else{
 			end_class = 0;
 		}
 		if(prev_class == 0 && mod_class == 0){
-			prev_class = 1;
+			prev_class = 2;
 		}
 		
 		var omit_class;
-		if(chooseInt({0: 90, 1: 10}) == 1){
+		if(Math.random < 0.1){
 			omit_class = null;
 		}
 		else if(prev_class == 3){
@@ -307,11 +310,11 @@ class ChordFunctions {
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
 		if(length > this.cadence_lengths[cadence] && nums[0] == 5 && cadence != "hc"){
-			var probs = {0: 60, 1: 40};
+			var prob = 0.6
 			if(cadence == "pac" || cadence == "pacm"){
-				probs = {0: 80, 1: 20};
+				prob = 0.8
 			}
-			if(is_last || chooseInt(probs) == 0){
+			if(is_last || Math.random() < prob){
 				nums.unshift(1);
 			}
 		}
@@ -390,7 +393,7 @@ class ChordFunctions {
 			mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, index == phrase_data.length - 1));
 		
 			for(var i = 1; i < mods.length; i++){
-				mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0]);
+				mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], mods[i].type == "cadence");
 			}
 
 			var valid = false;
@@ -445,7 +448,7 @@ class ChordFunctions {
 		var mods = [];
 		if(!key.equals(prev_key)){
 			var order = ["mediant", "pivot"];
-			if(chooseInt({0: 35, 1: 65}) == 1){
+			if(Math.random() < 0.65){
 				order.unshift(order.pop());
 			}
 			for(var i = 0; i < 2; i++){
