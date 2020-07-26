@@ -127,18 +127,21 @@ class ChordFunctions {
 		else{
 			var choices = [];
 			for(var i = 2; i <= 3; i++){
-				if(i < length && i < start_class){
+				if(i < length && i <= start_class){
 					choices.push(i);
 				}
 			}
-			if(length >= 4 && length < start_class){
+			if(length >= 4 && length <= start_class){
 				choices.push(length);
 			}
 			// choices should be a subset of [2, 3, (4 or 5)]
 			
 			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
 			var removed = null;
-			if(choices.length > 0){
+			if(choices.includes(start_class)){
+				removed = start_class;
+			}
+			else if(choices.length > 0){
 				removed = chooseIntFromFreqs(freqs, choices);
 			}
 			for(var i = 0; i < length + 1; i++){
