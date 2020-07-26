@@ -359,7 +359,7 @@ class ChordFunctions {
 				}
 			}
 			console.log("freqs: ", freqs.join(", "));
-			num_mods = chooseIntFromFreqs({0: 5, 1: 10, 2: 45, 3: 40}, freqs);
+			num_mods = chooseIntFromFreqs({0: 1, 1: 10, 2: 49, 3: 40}, freqs);
 		}
 		
 		var counter = 0;
