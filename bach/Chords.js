@@ -86,7 +86,7 @@ class ChordFunctions {
 		}
 	}
 	getModOrder(mods, phrase_length){
-		if(mods[mods.length - 1].additions_valid && mods.length > 2 && mods[2].additions_valid && this.getLength(mods.slice(mods.length - 1)) > 3){
+		if(mods[mods.length - 1].additions_valid && mods.length > 2 && mods[1].additions_valid && this.getLength(mods.slice(mods.length - 1)) > 3){
 			mods[mods.length - 1].additions_valid = false;
 		}
 		var order = [];
