@@ -172,12 +172,18 @@ class ChordFunctions {
 		}
 		return nums;
 	}
-	finalizeModulations(mods, phrase_length){
+	finalizeModulations(mods, phrase_length, is_last){
 		var spaces = phrase_length - this.getLength(mods);
 		if(spaces == 1){
 			return false;
 		}
-		var mod_order = this.getModOrder(mods);
+		var mod_order;
+		if(is_last){
+			mod_order = [mods.length - 1];
+		}
+		else{
+			mod_order = this.getModOrder(mods);
+		}
 		var mod_index = 0;
 		var freqs = {2: 1, 3: 50, 4: 40, 5: 6, 6: 1};
 		
@@ -387,7 +393,7 @@ class ChordFunctions {
 			else if(this.getLength(mods) == phrase_data[index].length){
 				valid = true;
 			}
-			else if(this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length)){
+			else if(this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length, index == phrase_data.length - 1)){
 				valid = true;
 			}
 			if(valid){
