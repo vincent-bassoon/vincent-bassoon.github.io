@@ -81,16 +81,17 @@ function configureSampler(){
 		function createSampler(index){
 			if(index == 4){
 				function run(){
+					document.start = 0;
 					play.onclick = "";
 					play.innerText = "LOADING...";
 					start.innerText = "GENERATING...";
 					play.classList.add("running");
 					if(transport.state == "started"){
 						transport.stop();
+						transport.cancel();
 						for(var i = 0; i < 4; i++){
 							samplers[i].releaseAll();
 						}
-						transport.cancel();
 					}
 					start.onclick = "";
 					start.classList.add("running");

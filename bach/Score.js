@@ -4,6 +4,11 @@ class Player {
 		this.schedule = [];
 		this.samplers = samplers;
 		this.priority_voice_order = [3, 0, 1, 2];
+
+		this.phrase_indices = [];
+	}
+	addPhraseIndex(){
+		this.phrase_indices.push(this.schedule[this.schedule.length - 1].beat_num);
 	}
 	scheduleNote(voice, note, duration){
 		var beat_num = this.beat_nums[voice];
@@ -88,18 +93,16 @@ class Player {
 		
 		var play = document.getElementById("play_button");
 		
-		transport.schedule(function(time){
-			if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
-				transport.stop();
-				for(var i = 0; i < 4; i++){
-					samplers[i].releaseAll();
-				}
-			}
-		}, this.getTimeString(0));
-		
 		for(var i = 0; i < schedule.length; i++){
 			(function(schedule, index, time_string, rit){
 				transport.schedule(function(time){
+					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
+						transport.stop();
+						for(var i = 0; i < 4; i++){
+							samplers[i].releaseAll();
+						}
+						return;
+					}
 					for(var j = 0; j < 4; j++){
 						if(schedule[index].release[j].length != 0){
 							samplers[j].triggerRelease(schedule[index].release[j], time);
@@ -118,6 +121,7 @@ class Player {
 						for(var i = 0; i < 4; i++){
 							samplers[i].releaseAll();
 						}
+						return;
 					}
 					if(index == schedule.length - 3){
 						for(var j = 0; j < 4; j++){
@@ -134,7 +138,7 @@ class Player {
 			for(var i = 0; i < 4; i++){
 				samplers[i].release = 0.15;
 			}
-			transport.start("+.3", "0:0:0");
+			transport.start("+.3", this.getTimeString(this.phrase_indices[document.start]));
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
@@ -491,6 +495,9 @@ class Score {
 		var format_notes = [];
 		for(var i = 0; i < durations.length; i++){
 			var index = start_index + i;
+			if(index == 0 || this.harmony[index - 1].end_of_phrase){
+				this.player.addPhraseIndex();
+			}
 			var beat_format_data = {};
 			for(var j = 0; j < 3; j++){
 				beat_format_data[j] = {accidental: null, adjacent: false};
