@@ -148,7 +148,7 @@ class ChordFunctions {
 		var prev_class = this.numToClass(mods[index - 1].nums[1]);
 		var mod_class = this.numToClass(mods[index].nums[0]);
 		var end_class;
-		if(mod_class == 0 || mod_num == 6){
+		if(mod_class == 0 || mods[index].nums[0] == 6){
 			mod_class = 0;
 			end_class = 1;
 		}
