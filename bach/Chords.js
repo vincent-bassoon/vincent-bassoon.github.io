@@ -383,12 +383,10 @@ class ChordFunctions {
 			while(mods == null){
 				mods = this.generateModulations(key, prev_key, prev_num, num_mods, index == phrase_data.length - 1);
 				temp_counter++;
-				if(temp_counter > 20){
-					console.log("mod failure");
+				if(temp_counter > 10){
 					return false;
 				}
 			}
-			console.log("mod success after " + temp_counter + " attempts");
 			mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, index == phrase_data.length - 1));
 		
 			for(var i = 1; i < mods.length; i++){
