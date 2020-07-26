@@ -1,1 +1,72 @@
-
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+  		<title>Bach Generator</title>
+		<link href = "https://fonts.googleapis.com/css?family=Roboto:500" rel = "stylesheet" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://unpkg.com/vexflow/releases/vexflow-min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.3/Tone.js"></script>
+		<style>
+			* {box-sizing: border-box}
+			body, html {
+				height: 100%;
+				margin: 0;
+			}
+			.flex-container {
+				justify-content: center;
+				display: flex;
+				flex-wrap: nowrap;
+				min-width: 837px;
+			}
+			a {
+				border-radius: 7px;
+				padding: 10px 20px;
+				box-sizing: border-box;
+				border: none;
+				outline: none;
+				margin: 10px;
+				color: white;
+				box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+				background-color: #696f78;
+				text-align: center;
+				line-height: 1.5;
+				text-transform: uppercase;
+				font-family: "Roboto", sans-serif;
+				font-weight: 500;
+				font-size: 18px;
+				cursor: pointer;
+				transition: all 0.25s;
+			}
+			.startButton{
+				width: 165px;
+			}
+			.playButton{
+				width: 132px;
+			}
+			body.hasHover a:hover{
+				background-color: #878c94;
+			}
+			.running{
+				background-color: #878c94;
+				color:#b2b8c2;
+			}
+			div {
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="flex-container">
+			<a id="start_button" class="startButton running">Generating...</a>
+			<a id="play_button" class="playButton running">Loading...</a>
+		</div>
+		
+		<div id="staff"></div>
+		
+		<script src = "Globals.js" defer = "defer"></script>
+		<script src = "Chords.js" defer = "defer"></script>
+		<script src = "Harmony.js" defer = "defer"></script>
+		<script src = "Score.js" defer = "defer"></script>
+		<script src = "Script.js" defer = "defer"></script>
+	</body>
+</html>
