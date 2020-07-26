@@ -85,9 +85,15 @@ class ChordFunctions {
 				return 3;
 		}
 	}
-	getModOrder(mods){
+	getModOrder(mods, phrase_length){
+		var cad_last = false;
+		var max = mods.length;
+		if(this.getLength(mods.slice(mods.length - 1)) > Math.ceil(phrase_length / 2)){
+			cad_last = true;
+			max = mods.length - 1;
+		}
 		var order = [];
-		for(var i = 1; i < mods.length; i++){
+		for(var i = 1; i < max; i++){
 			order.push(i);
 		}
 		var current_index = order.length, temp_value, random_index;
@@ -97,6 +103,9 @@ class ChordFunctions {
 			temp_value = order[current_index];
 			order[current_index] = order[random_index];
 			order[random_index] = temp_value;
+		}
+		if(cad_last){
+			order.push(mods.length - 1);
 		}
 		return order;
 	}
@@ -182,7 +191,7 @@ class ChordFunctions {
 			mod_order = [mods.length - 1];
 		}
 		else{
-			mod_order = this.getModOrder(mods);
+			mod_order = this.getModOrder(mods, phrase_length);
 		}
 		var mod_index = 0;
 		var freqs = {2: 1, 3: 50, 4: 40, 5: 6, 6: 1};
