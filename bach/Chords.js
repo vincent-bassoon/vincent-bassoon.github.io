@@ -379,6 +379,7 @@ class ChordFunctions {
 					return false;
 				}
 			}
+			console.log("mod success after " + temp_counter + " attempts");
 			mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, index == phrase_data.length - 1));
 		
 			for(var i = 1; i < mods.length; i++){
