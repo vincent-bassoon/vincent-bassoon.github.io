@@ -560,7 +560,7 @@ class ChordFunctions {
 				var phrase_index = 0;
 				for(var j = 0; j < this.chord_strings.length; j++){
 					if(phrase_index < phrase_data.length && j == phrase_data[phrase_index].chord_index){
-						console.log("New phrase:");
+						console.log("  NEW PHRASE: index ", phrase_index);
 						phrase_index++;
 					}
 					var num = "" + j;
