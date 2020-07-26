@@ -467,9 +467,11 @@ class ChordFunctions {
 			num_mods = 1;
 		}
 		var first_mod_invalid = false;
-		if(type == "mediant" && num_mods = 1){
-			num_mods = 2;
+		if(type == "mediant" && !prev_key.equals(key) && num_mods > 0){
 			first_mod_invalid = true;
+			if(num_mods == 1){
+				num_mods = 2;
+			}
 		}
 		for(var i = 0; i < num_mods; i++){
 			if(i == num_mods - 1){
