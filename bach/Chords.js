@@ -86,15 +86,14 @@ class ChordFunctions {
 		}
 	}
 	getModOrder(mods, phrase_length){
-		var cad_last = false;
-		var max = mods.length;
-		if(this.getLength(mods.slice(mods.length - 1)) > 3){
-			cad_last = true;
-			max = mods.length - 1;
+		if(mods[mods.length - 1].additions_valid && this.getLength(mods.slice(mods.length - 1)) > 3){
+			mods[mods.length - 1].additions_valid = false;
 		}
 		var order = [];
-		for(var i = 1; i < max; i++){
-			order.push(i);
+		for(var i = 1; i < mods.length; i++){
+			if(mods[i].additions_valid){
+				order.push(i);
+			}
 		}
 		var current_index = order.length, temp_value, random_index;
 		while (current_index != 0) {
@@ -104,15 +103,9 @@ class ChordFunctions {
 			order[current_index] = order[random_index];
 			order[random_index] = temp_value;
 		}
-		if(cad_last){
-			order.push(mods.length - 1);
-		}
 		return order;
 	}
-	generateSubPhraseNums(length, start_class){
-		if(start_class == null){
-			start_class = 6;
-		}
+	generateSubPhraseNums(length){
 		var nums = [];
 		if(length == 6){
 			for(var i = 0; i < length; i++){
@@ -127,21 +120,18 @@ class ChordFunctions {
 		else{
 			var choices = [];
 			for(var i = 2; i <= 3; i++){
-				if(i < length && i <= start_class){
+				if(i < length){
 					choices.push(i);
 				}
 			}
-			if(length >= 4 && length <= start_class){
+			if(length >= 4){
 				choices.push(length);
 			}
 			// choices should be a subset of [2, 3, (4 or 5)]
 			
 			var freqs = {2: 20, 3: 30, 4: 30, 5: 200};
 			var removed = null;
-			if(choices.includes(start_class)){
-				removed = start_class;
-			}
-			else if(choices.length > 0){
+			if(choices.length > 0){
 				removed = chooseIntFromFreqs(freqs, choices);
 			}
 			for(var i = 0; i < length + 1; i++){
@@ -152,18 +142,19 @@ class ChordFunctions {
 		}
 		return nums;
 	}
-	connectNums(prev_num, mod_num, is_cad){
+	connectNums(mods, index, is_last){
 		var nums = [];
 		
-		var prev_class = this.numToClass(prev_num);
-		var mod_class = this.numToClass(mod_num);
+		var prev_class = this.numToClass(mods[index - 1].nums[1]);
+		var mod_class = this.numToClass(mods[index].nums[0]);
 		var end_class;
 		if(mod_class == 0 || mod_num == 6){
 			mod_class = 0;
 			end_class = 1;
 		}
-		else if(is_cad && prev_class > mod_class){
+		else if(mods[index].type == "cadence" && !is_last && mods.length > 2 && prev_class > mod_class){
 			end_class = mod_class + 1;
+			mods[index].additions_valid = false;
 		}
 		else{
 			end_class = 0;
@@ -188,35 +179,14 @@ class ChordFunctions {
 				nums.push(this.classToNum(i));
 			}
 		}
-		return nums;
+		mods[index].connect_nums = nums;
 	}
-	invalidCadenceAddition(mods, addition){
-		if(!mods[mods.length - 1].connect_nums.includes(1)){
-			var prev_class = this.numToClass(mods[mods.length - 2].nums[1]);
-			if(prev_class == addition){
-				return false;
-			}
-			else if(prev_class == 3 && addition == 2){
-				return false;
-			}
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	finalizeModulations(mods, phrase_length, is_last){
+	finalizeModulations(mods, phrase_length){
 		var spaces = phrase_length - this.getLength(mods);
 		if(spaces == 1){
 			return false;
 		}
-		var mod_order;
-		if(is_last){
-			mod_order = [mods.length - 1];
-		}
-		else{
-			mod_order = this.getModOrder(mods, phrase_length);
-		}
+		var mod_order = this.getModOrder(mods, phrase_length);
 		var mod_index = 0;
 		var freqs = {2: 1, 3: 50, 4: 40, 5: 6, 6: 1};
 		
@@ -250,11 +220,7 @@ class ChordFunctions {
 		for(var i = 0; i < mods.length; i++){
 			var additions = [];
 			for(var j = 0; j < mods[i].additions.length; j++){
-				var start_num = null;
-				if(i == mods.length - 1 && !mods[i].connect_nums.includes(1)){
-					start_num = this.numToClass(mods[i - 1].nums[1]);
-				}
-				additions.push(...this.generateSubPhraseNums(mods[i].additions[j], start_num));
+				additions.push(...this.generateSubPhraseNums(mods[i].additions[j]));
 			}
 			if(additions.length > 0){
 				if(mods[i].nums[0] == 6 || mods[i].nums[0] == 1){
@@ -372,7 +338,7 @@ class ChordFunctions {
 		if(index == phrase_data.length){
 			return true;
 		}
-		
+		var is_last = (index == phrase_data.length - 1);
 		var prev_num;
 		var prev_key;
 		if(index == 0){
@@ -386,7 +352,7 @@ class ChordFunctions {
 		}
 		
 		var num_mods;
-		if(index == phrase_data.length - 1){
+		if(is_last){
 			if(prev_key.equals(key)){
 				num_mods = 0;
 			}
@@ -412,26 +378,27 @@ class ChordFunctions {
 			var mods = null;
 			var temp_counter = 0;
 			while(mods == null){
-				mods = this.generateModulations(key, prev_key, prev_num, num_mods, index == phrase_data.length - 1);
+				mods = this.generateModulations(key, prev_key, prev_num, num_mods, is_last);
 				temp_counter++;
 				if(temp_counter > 10){
 					return false;
 				}
 			}
-			mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, index == phrase_data.length - 1));
+			mods.push(this.generateCadence(phrase_data[index].cadence, phrase_data[index].cadence_length, is_last));
+			mods[mods.length - 1].additions_valid = true;
 		
 			for(var i = 1; i < mods.length; i++){
-				mods[i].connect_nums = this.connectNums(mods[i - 1].nums[1], mods[i].nums[0], mods[i].type == "cadence");
+				this.connectNums(mods, i, is_last);
 			}
 
 			var valid = false;
-			if(index == phrase_data.length - 1 && !mods[mods.length - 2].keys[1].equals(key)){
+			if(is_last && !mods[mods.length - 2].keys[1].equals(key)){
 				valid = false;
 			}
 			else if(this.getLength(mods) == phrase_data[index].length){
 				valid = true;
 			}
-			else if(this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length, index == phrase_data.length - 1)){
+			else if(this.getLength(mods) < phrase_data[index].length && this.finalizeModulations(mods, phrase_data[index].length)){
 				valid = true;
 			}
 			if(valid){
@@ -517,6 +484,10 @@ class ChordFunctions {
 			}
 			mods.push(mod);
 			prev_key = mods[mods.length - 1].keys[1];
+		}
+		mods[0].additions_valid = false;
+		for(var i = 1; i < mods.length; i++){
+			mods[i].additions_valid = !is_last;
 		}
 		return mods;
 	}
