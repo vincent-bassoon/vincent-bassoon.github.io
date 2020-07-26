@@ -230,7 +230,7 @@ class ChordFunctions {
 			}
 			for(var j = 0; j < mods[i].connect_nums.length; j++){
 				var seven = false;
-				if(mods[i].connect_nums[j] == 5 && new_key && (start_chord_index + length > chord_index + 3 || cad == "hc")){
+				if(mods[i].connect_nums[j] == 5 && new_key && (start_chord_index + phrase_length > chord_index + 3 || cad == "hc")){
 					seven = this.chooseSeven();
 					new_key = false;
 				}
