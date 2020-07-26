@@ -304,11 +304,14 @@ class ChordFunctions {
 		nums.push(...this.cadences[cadence]);
 		var next_class = this.numToClass(nums[0]);
 		if(length > this.cadence_lengths[cadence] && nums[0] == 5 && cadence != "hc"){
-			var prob = 0.6
-			if(cadence == "pac" || cadence == "pacm"){
-				prob = 0.8
+			var prob = 0.6;
+			if(is_last){
+				prob = 0.98;
 			}
-			if(is_last || Math.random() < prob){
+			else if(cadence == "pac" || cadence == "pacm"){
+				prob = 0.8;
+			}
+			if(Math.random() < prob){
 				nums.unshift(1);
 			}
 		}
@@ -463,6 +466,11 @@ class ChordFunctions {
 		if(!prev_key.equals(key) && num_mods == 0){
 			num_mods = 1;
 		}
+		var first_mod_invalid = false;
+		if(type == "mediant" && num_mods = 1){
+			num_mods = 2;
+			first_mod_invalid = true;
+		}
 		for(var i = 0; i < num_mods; i++){
 			if(i == num_mods - 1){
 				if(is_last){
@@ -486,7 +494,12 @@ class ChordFunctions {
 			prev_key = mods[mods.length - 1].keys[1];
 		}
 		mods[0].additions_valid = false;
-		for(var i = 1; i < mods.length; i++){
+		var start = 1;
+		if(first_mod_invalid){
+			start = 2;
+			mods[1].additions_valid = false;
+		}
+		for(var i = start; i < mods.length; i++){
 			mods[i].additions_valid = !is_last;
 		}
 		return mods;
