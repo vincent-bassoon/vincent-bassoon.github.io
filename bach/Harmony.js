@@ -399,6 +399,10 @@ class HarmonyFunctions {
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
 		var only_sus = false;
+		if(voice == 0 && Math.abs(motion) == this.mf.type.LEAP && (harmony[index + 1].end_of_phrase || !key.equals(next_key))){
+			//no leaps right before cadence
+			return;
+		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check, ignores inner voices at penultimate chord
 			only_sus = true;
