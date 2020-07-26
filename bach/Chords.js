@@ -109,7 +109,10 @@ class ChordFunctions {
 		}
 		return order;
 	}
-	generateSubPhraseNums(length){
+	generateSubPhraseNums(length, start_class){
+		if(start_class == null){
+			start_class = 6;
+		}
 		var nums = [];
 		if(length == 6){
 			for(var i = 0; i < length; i++){
@@ -124,11 +127,11 @@ class ChordFunctions {
 		else{
 			var choices = [];
 			for(var i = 2; i <= 3; i++){
-				if(i < length){
+				if(i < length && i < start_class){
 					choices.push(i);
 				}
 			}
-			if(length >= 4){
+			if(length >= 4 && length < start_class){
 				choices.push(length);
 			}
 			// choices should be a subset of [2, 3, (4 or 5)]
@@ -184,6 +187,21 @@ class ChordFunctions {
 		}
 		return nums;
 	}
+	invalidCadenceAddition(mods, addition){
+		if(!mods[mods.length - 1].connect_nums.includes(1)){
+			var prev_class = this.numToClass(mods[mods.length - 2].nums[1]);
+			if(prev_class == addition){
+				return false;
+			}
+			else if(prev_class == 3 && addition == 2){
+				return false;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 	finalizeModulations(mods, phrase_length, is_last){
 		var spaces = phrase_length - this.getLength(mods);
 		if(spaces == 1){
@@ -203,9 +221,12 @@ class ChordFunctions {
 		while(spaces > 4){
 			var choices = [];
 			for(var i = Math.min(6, spaces); i >= 2; i--){
-				if(i + 1 != spaces && !(prev_length == 2 && i == 2)){
+				if(i + 1 != spaces && !(prev_length == 2 && i == 2) && !(mod_order[mod_index] == mods.length - 1 && invalidCadenceAddition(mods, i))){
 					choices.push(i);
 				}
+			}
+			if(choices.length == 0){
+				return false;
 			}
 			prev_length = chooseIntFromFreqs(freqs, choices);
 			mods[mod_order[mod_index]].additions.push(prev_length);
@@ -226,7 +247,11 @@ class ChordFunctions {
 		for(var i = 0; i < mods.length; i++){
 			var additions = [];
 			for(var j = 0; j < mods[i].additions.length; j++){
-				additions.push(...this.generateSubPhraseNums(mods[i].additions[j]));
+				var start_num = null;
+				if(i == mods.length - 1 && !mods[i].connect_nums.includes(1)){
+					start_num = this.numToClass(mods[i - 1].nums[1]);
+				}
+				additions.push(...this.generateSubPhraseNums(mods[i].additions[j], start_num));
 			}
 			if(additions.length > 0){
 				if(mods[i].nums[0] == 6 || mods[i].nums[0] == 1){
