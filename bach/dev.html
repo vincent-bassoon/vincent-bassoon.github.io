@@ -56,6 +56,9 @@
 				background-color: #f1f1f1;
 				z-index: 1;
 			}
+			.dropdown:hover .dropdownContent {
+				display: block;
+			}
 			body.hasHover a:hover{
 				background-color: #878c94;
 			}
@@ -63,13 +66,13 @@
 				background-color: #878c94;
 				color:#b2b8c2;
 			}
-			div {
+			.full {
 				width: 100%;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="flex-container">
+		<div class="flex-container full">
 			<a id="start_button" class="startButton mainButton running">Generating...</a>
 			<a id="play_button" class="playButton mainButton running">Loading...</a>
 			<a id="phrase_button" class="phraseButton mainButton running">Loading...</a>
@@ -80,7 +83,7 @@
 			</div>
 		</div>
 		
-		<div id="staff"></div>
+		<div id="staff" class="full"></div>
 		
 		<script src = "Globals.js" defer = "defer"></script>
 		<script src = "Chords.js" defer = "defer"></script>
