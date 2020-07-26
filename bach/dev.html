@@ -18,7 +18,7 @@
 				flex-wrap: nowrap;
 				min-width: 837px;
 			}
-			a {
+			.mainButton {
 				border-radius: 7px;
 				padding: 10px 20px;
 				box-sizing: border-box;
@@ -43,6 +43,19 @@
 			.playButton{
 				width: 132px;
 			}
+			.phraseButton{
+
+			}
+			.dropdown{
+				position: relative;
+				display: inline-block;
+			}
+			.dropdownContent{
+				display: none;
+				position: absolute;
+				background-color: #f1f1f1;
+				z-index: 1;
+			}
 			body.hasHover a:hover{
 				background-color: #878c94;
 			}
@@ -57,8 +70,14 @@
 	</head>
 	<body>
 		<div class="flex-container">
-			<a id="start_button" class="startButton running">Generating...</a>
-			<a id="play_button" class="playButton running">Loading...</a>
+			<a id="start_button" class="startButton mainButton running">Generating...</a>
+			<a id="play_button" class="playButton mainButton running">Loading...</a>
+			<a id="phrase_button" class="phraseButton mainButton running">Loading...</a>
+			<div class="dropdownContent">
+				<a href="#">Link 1</a>
+				<a href="#">Link 2</a>
+				<a href="#">Link 3</a>
+			</div>
 		</div>
 		
 		<div id="staff"></div>
