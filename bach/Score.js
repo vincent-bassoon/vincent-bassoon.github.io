@@ -1,8 +1,8 @@
 class Player {
-	constructor(samplers){
-		this.beat_nums = [1, 1, 1, 1];
+	constructor(sampler){
+		this.beat_nums = [0, 0, 0, 0];
 		this.schedule = [];
-		this.samplers = samplers;
+		this.sampler = sampler;
 		this.priority_voice_order = [3, 0, 1, 2];
 
 		this.phrase_indices = [];
@@ -17,27 +17,25 @@ class Player {
 			index--;
 		}
 		if(index == 0 || this.schedule[index - 1].beat_num != beat_num){
-			var notes = {0: [], 1: [], 2: [], 3: []};
-			notes[voice].push(note);
-			this.schedule.splice(index, 0, {"attack": notes, "release": {0: [], 1: [], 2: [], 3: []}, "beat_num": beat_num})
+			var notes = {0: null, 1: null, 2: null, 3: null};
+			notes[voice] = note;
+			this.schedule.splice(index, 0, {"attack": notes, "beat_num": beat_num})
 		}
 		else{
-			this.schedule[index - 1].attack[voice].push(note);
+			this.schedule[index - 1].attack[voice] = note;
 		}
 		this.beat_nums[voice] += duration;
 	}
 	getTimeString(beat_num){
 		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
 	}
-	getPriorityVoiceOrder(voice1, voice2){
-		var order = [];
-		for(var i = 0; i < 4; i++){
-			var voice = this.priority_voice_order[i];
-			if(voice == voice1 || voice == voice2){
-				order.push(voice);
-			}
+	voiceToIndex(voice){
+		if(voice % 3 == 0){
+			return 0;
 		}
-		return order;
+		else{
+			return 1;
+		}
 	}
 	generateAudio(){
 		var transport = Tone.Transport;
@@ -46,49 +44,64 @@ class Player {
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
-		schedule.push({"attack": {0: [null], 1: [null], 2: [null], 3: [null]}, "release": {0: [], 1: [], 2: [], 3: []}, "beat_num": (schedule[schedule.length - 1].beat_num + 12)});
-		for(var voice = 0; voice < 4; voice++){
-			var prev_attack = null;
-			for(var i = 0; i < schedule.length; i++){
-				if(schedule[i].attack[voice].length > 0){
-					if(prev_attack != null){
-						schedule[i].release[voice].push(prev_attack);
-					}
-					prev_attack = schedule[i].attack[voice][0];
+		var final_schedule = [];
+		var prev_note = {0: null, 1: null, 2: null, 3: null};
+		var new_note = {0: null, 1: null, 2: null, 3: null};
+		var current_note = {0: null, 1: null, 2: null, 3: null};
+		for(var i = 0; i < schedule.length; i++){
+			for(var voice = 0; voice < 4; voice++){
+				prev_note[voice] = current_note[voice];
+				if(schedule[i].attack[voice] != null){
+					current_note[voice] = schedule[i].attack[voice];
+					new_note[voice] = true;
+				}
+				else{
+					new_note[voice] = false;
 				}
 			}
-		}
-		schedule[schedule.length - 1].attack = {0: [], 1: [], 2: [], 3: []};
-		for(var i = 0; i < schedule.length; i++){
+			var unit = {"beat_num": schedule[i].beat_num, "attack": {0: [], 1: []}, "release": []};
 			for(var voice1 = 0; voice1 < 4; voice1++){
-				if(schedule[i].attack[voice1].length > 0){
-					var note1 = schedule[i].attack[voice1][0];
-					for(var voice2 = voice1 + 1; voice2 < 4; voice2++){
-						if(schedule[i].attack[voice2].length > 0 && note1 == schedule[i].attack[voice2][0]){
-							var order = this.getPriorityVoiceOrder(voice1, voice2);
-							schedule[i].attack[order[1]] = [];
-							var index1 = i + 1;
-							while(!schedule[index1].release[order[0]].includes(note1)){
-								index1++;
-							}
-							var temp = schedule[index1].release[order[0]]
-							for(var j = temp.length - 1; j >= 0; j--){
-								if(temp[j] == note1){
-									temp.splice(j, 1);
-								}
-							}
-							var index2 = i + 1;
-							while(!schedule[index2].release[order[1]].includes(note1)){
-								index2++;
-							}
-							schedule[Math.max(index1, index2)].release[order[0]].push(note1);
+				if(new_note[voice1]){
+					var valid = true;
+					for(var voice2 = 0; voice2 < 4; voice2++){
+						if(voice2 != voice1 && new_note[voice2] && current_note[voice2] == current_note[voice1]){
+							valid = (voice1 % 3 == 0 || (voice1 == 1 && voice2 == 2));
+							voice2 = 4;
 						}
 					}
+					if(valid){
+						unit.attack[this.voiceToIndex(voice1)].push(current_note[voice1]);
+					}
+					var valid = true;
+					for(var voice2 = 0; voice2 < 4; voice2++){
+						if(voice2 != voice1 && prev_note[voice2] == prev_note[voice1]){
+							if(new_note[voice2]){
+								valid = (voice1 % 3 == 0 || (voice1 == 1 && voice2 == 2));
+							}
+							else{
+								valid = false;
+							}
+							voice2 = 4;
+						}
+					}
+					if(valid){
+						unit.release.push(prev_note[voice1]);
+					}
 				}
 			}
+			final_schedule.push(unit);
 		}
+		var release = [];
+		for(var voice = 0; voice < 4; voice++){
+			var note = current_note[voice];
+			if(!release.include(note)){
+				release.push(note);
+			}
+		}
+		final_schedule.push({"attack": {0: [], 1: []}, "release": release, "beat_num": (schedule[schedule.length - 1].beat_num + 12)});
+		schedule = final_schedule;
 		console.log(schedule);
-		var samplers = this.samplers;
+		var sampler = this.sampler;
 		
 		var play = document.getElementById("play_button");
 		
@@ -97,19 +110,15 @@ class Player {
 				transport.schedule(function(time){
 					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 						transport.stop();
-						for(var i = 0; i < 4; i++){
-							samplers[i].releaseAll();
-						}
+						sampler.releaseAll();
 						return;
 					}
-					for(var j = 0; j < 4; j++){
-						if(schedule[index].release[j].length != 0){
-							samplers[j].triggerRelease(schedule[index].release[j], time);
-						}
+					if(schedule[index].release.length != 0){
+						sampler.triggerRelease(schedule[index].release, time);
 					}
-					for(var j = 0; j < 4; j++){
+					for(var j = 0; j < 2; j++){
 						if(schedule[index].attack[j].length != 0){
-							samplers[j].triggerAttack(schedule[index].attack[j], time);
+							sampler.triggerAttack(schedule[index].attack[j], time, 1 - 0.3 * j);
 						}
 					}
 					if(rit){
@@ -117,15 +126,11 @@ class Player {
 					}
 					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 						transport.stop();
-						for(var i = 0; i < 4; i++){
-							samplers[i].releaseAll();
-						}
+						sampler.releaseAll();
 						return;
 					}
 					if(index == schedule.length - 3){
-						for(var j = 0; j < 4; j++){
-							samplers[j].release = 0.6;
-						}
+						sampler.release = 0.6;
 					}
 				}, time_string);
 			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2);
@@ -135,17 +140,13 @@ class Player {
 		function play_start(){
 			play.innerText = "STOP";
 			transport.bpm.value = document.bpm;
-			for(var i = 0; i < 4; i++){
-				samplers[i].release = 0.15;
-			}
+			sampler.release = 0.15;
 			transport.start("+.3", player.getTimeString(player.phrase_indices[document.start]));
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
 				transport.stop();
-				for(var i = 0; i < 4; i++){
-					samplers[i].releaseAll();
-				}
+				sampler.releaseAll();
 				play.innerText = "PLAY";
 			}
 			else if(Tone.getContext().state == "suspended"){
@@ -258,7 +259,7 @@ class LineData {
 }
 
 class Score {
-	constructor(harmony, note_functions, phrase_lengths, samplers){
+	constructor(harmony, note_functions, phrase_lengths, sampler){
 		this.key = harmony[harmony.length - 2].chord.key;
 		if(this.key.modality == "minor"){
 			this.key_name = this.key.valueToName((this.key.pitch + 3) % 12);
@@ -285,7 +286,7 @@ class Score {
 		
 		this.prev_names = [null, null, null, null];
 		
-		this.player = new Player(samplers);
+		this.player = new Player(sampler);
 	}
 	
 	renderMeasure(measure, staves, is_last, initial_indent){

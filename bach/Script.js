@@ -1,4 +1,4 @@
-function generateNewChorale(data, samplers){
+function generateNewChorale(data, sampler){
 	// Decide basic structure
 	
 	// 50% major, 50% minor
@@ -31,8 +31,8 @@ function generateNewChorale(data, samplers){
 		chords = chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths);
 	}
 	var counter = 0;
-	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, samplers) && counter < 10){
-		generateNewChorale(data, samplers);
+	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
+		generateNewChorale(data, sampler);
 		counter++;
 	}
 	data[0].attempts = counter + 1;
@@ -67,57 +67,35 @@ function configureSampler(){
 	var play = document.getElementById("play_button");
 	var staff = document.getElementById("staff");
 	var data = [];
-	var samplers = {};
-	var channels = {};
-	var pans = [0.2, 0.1, -0.1, -0.2];
-	var vols = [0.7, 0, 0, 1];
-	for(var i = 0; i < 4; i++){
-		channels[i] = new Tone.PanVol({channelCount: 2, pan: pans[i], vol: vols[i]}).toDestination();
-	}
-	samplers[0] = new Tone.Sampler(sources, function(){
-		var buffers = {};
-		for(let [key, value] of samplers[0]._buffers._buffers) {
-			buffers[key] = value;
-		}
-		function createSampler(index){
-			if(index == 4){
-				function run(){
-					document.start = 0;
-					play.onclick = "";
-					play.innerText = "LOADING...";
-					start.innerText = "GENERATING...";
-					play.classList.add("running");
-					if(transport.state == "started"){
-						transport.stop();
-						transport.cancel();
-						for(var i = 0; i < 4; i++){
-							samplers[i].releaseAll();
-						}
-					}
-					start.onclick = "";
-					start.classList.add("running");
-					setTimeout(function(){
-						var before_time = Date.now();
-						while(staff.children.length != 0){
-							staff.removeChild(staff.lastChild);
-						}
-						data.unshift({time: null, avg_score: null, attempts: null, retrace_attempts: null});
-						generateNewChorale(data, samplers);
-						logData(data, before_time);
-						start.classList.remove("running");
-						start.onclick = run;
-						start.innerText = "NEW CHORALE";
-					}, 1);
+	var sampler;
+	sampler = new Tone.Sampler(sources, function(){
+		function run(){
+			document.start = 0;
+			play.onclick = "";
+			play.innerText = "LOADING...";
+			start.innerText = "GENERATING...";
+			play.classList.add("running");
+			if(transport.state == "started"){
+				transport.stop();
+				transport.cancel();
+				sampler.releaseAll();
+			}
+			start.onclick = "";
+			start.classList.add("running");
+			setTimeout(function(){
+				var before_time = Date.now();
+				while(staff.children.length != 0){
+					staff.removeChild(staff.lastChild);
 				}
-				run();
-			}
-			else{
-				samplers[index] = new Tone.Sampler(buffers, function(){
-					createSampler(index + 1);
-				}).connect(channels[index]);
-			}
+				data.unshift({time: null, avg_score: null, attempts: null, retrace_attempts: null});
+				generateNewChorale(data, sampler);
+				logData(data, before_time);
+				start.classList.remove("running");
+				start.onclick = run;
+				start.innerText = "NEW CHORALE";
+			}, 3;
 		}
-		createSampler(1);
+		run();
 	}, "samples/").connect(channels[0]);
 }
 
