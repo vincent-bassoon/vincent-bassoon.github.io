@@ -82,12 +82,15 @@ class HarmonyFunctions {
 						upper_value = temp;
 					}
 					if(lower_value > upper_value || (sus && lower_value == upper_value)){
+						//checks range, also makes sure suspension doesnt start with a 2nd resolving to unison
 						return true;
 					}
 					if(lower_value == upper_value && index + 1 < harmony.length && harmony[index + 1].getValue(voice, 0) == harmony[index + 1].getValue(voice2, 0)){
+						//voices can't be unison on the downbeat twice in a row
 						return true;
 					}
 					if(lower_value + max_dist < upper_value){
+						//distance must be within reasonable range
 						return true;
 					}
 				}
