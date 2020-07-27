@@ -190,7 +190,7 @@ class LineData {
 		this.x_margin = 30;
 		this.y_margin = 40;
 		
-		this.min_measure_beat_size = 60;
+		this.min_measure_beat_size = 65;
 		this.max_beat_size = 0;;
 		
 		var max_initial_note_indent = 192;
