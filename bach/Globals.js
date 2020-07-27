@@ -390,6 +390,8 @@ class HarmonyUnit {
 		this.chord = chord;
 		
 		this.end_of_phrase = end_of_phrase;
+
+		this.has_nct = null;
 		
 		this.scores = [null, null, null, null];
 		

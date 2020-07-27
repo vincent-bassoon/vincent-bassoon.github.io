@@ -220,6 +220,7 @@ class HarmonyFunctions {
 			}
 		}
 		if(order_index == 4){
+			//this check is for anything that could sound like "C-B-C-B" constant eights (including other ncts)
 			for(var voice1 = 0; voice1 < 4; voice1++){
 				if(harmony[index].getNumNotes(voice1) == 2){
 					var start = Math.max(voice1 - 1 , 0);
@@ -234,6 +235,30 @@ class HarmonyFunctions {
 								}
 							}
 						}
+					}
+				}
+			}
+			harmony[index].has_nct = false;
+			for(var voice1 = 0; voice1 < 4; voice1++){
+				if(harmony[index].getNumNotes(voice1) > 1){
+					harmony[index].has_nct = true;
+					voice1 = 4;
+				}
+			}
+			var consecutive = 0;
+			var total = 0;
+			for(var i = 0; i < 5; i++){
+				if(index + i == harmony.length){
+					i = 5;
+				}
+				else if(harmony[index + i].has_nct){
+					consecutive = 0;
+				}
+				else{
+					consecutive++;
+					total++;
+					if(consecutive >= 3 || total >= 4){
+						return false;
 					}
 				}
 			}
