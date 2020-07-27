@@ -96,7 +96,7 @@ function configureSampler(){
 			}, 3);
 		}
 		run();
-	}, "samples/").connect(channels[0]);
+	}, "samples/").toDestination();
 }
 
 window.onload = configureSampler;
