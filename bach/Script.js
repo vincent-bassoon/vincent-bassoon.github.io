@@ -93,7 +93,7 @@ function configureSampler(){
 				start.classList.remove("running");
 				start.onclick = run;
 				start.innerText = "NEW CHORALE";
-			}, 3;
+			}, 3);
 		}
 		run();
 	}, "samples/").connect(channels[0]);
