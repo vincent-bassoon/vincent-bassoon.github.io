@@ -376,7 +376,11 @@ class ChordFunctions {
 		else{
 			var choices = [];
 			var spaces = phrase_data[index].length - phrase_data[index].cadence_length - 1;
-			for(var i = Math.floor(spaces / 2); i < 4; i++){
+			var min = Math.floor(spaces / 2);
+			if(spaces == 2){
+				min = 0;
+			}
+			for(var i = min; i < 4; i++){
 				if(i < spaces){
 					choices.push(i);
 				}
