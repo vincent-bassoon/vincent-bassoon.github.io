@@ -24,7 +24,7 @@ function generateNewChorale(data, sampler){
 	for(var i = 0; i < cadence_num; i++){
 		// 75% 7-8 note segment length, 25% 9-10 note length
 		var probs = {7: 50, 9: 50};
-		if(i == 0){
+		if(i == 0 || i == cadence_num - 1){
 			probs = {7: 90, 9: 10};
 		}
 		phrase_lengths.push(pickup + chooseInt(probs));
