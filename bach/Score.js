@@ -105,9 +105,16 @@ class Player {
 		
 		var play = document.getElementById("play_button");
 		
+		var done = {"index": null}
+
 		for(var i = 0; i < schedule.length; i++){
-			(function(schedule, index, time_string, rit){
+			(function(schedule, index, time_string, rit, done){
 				transport.schedule(function(time){
+					if(index == done.index){
+						console.log("repeat transport trigger caught at index " + index);
+						return;
+					}
+					done.index = index;
 					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 						transport.stop();
 						sampler.releaseAll();
@@ -133,13 +140,14 @@ class Player {
 						sampler.release = 0.6;
 					}
 				}, time_string);
-			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2);
+			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2, done);
 		}
 		
 		var player = this;
 		function play_start(){
 			play.innerText = "STOP";
 			transport.bpm.value = document.bpm;
+			done.index = null;
 			sampler.release = 0.15;
 			transport.start("+.3", player.getTimeString(player.phrase_indices[document.start]));
 		}
