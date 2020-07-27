@@ -375,10 +375,14 @@ class ChordFunctions {
 		}
 		else{
 			var freqs = [];
+			var spaces = phrase_data[index].length - phrase_data[index].cadence_length - 1;
 			for(var i = 0; i < 4; i++){
-				if(i < phrase_data[index].length - phrase_data[index].cadence_length - 1){
+				if(i < spaces){
 					freqs.push(i);
 				}
+			}
+			if(spaces > 3){
+				freqs.unshift();
 			}
 			num_mods = chooseIntFromFreqs({0: 1, 1: 10, 2: 49, 3: 40}, freqs);
 		}
