@@ -12,6 +12,7 @@ class ChordFunctions {
 		this.inversion_to_string = {0: ", root position", 1: ", 1st inversion", 2: ", 2nd inversion"};
 		
 		this.phrase_attempts = 5;
+		this.prev_mods = {};
 	}
 	chooseSeven(){
 		return (Math.random() < 0.7);
@@ -299,6 +300,12 @@ class ChordFunctions {
 			}
 		}
 	}
+	addToPrevMods(mods, index){
+		this.prev_mods[index] = [];
+		for(var i = 1; i < mods.length - 1; i++){
+			this.prev_mods[index].push(mods[i].copy());
+		}
+	}
 	generateCadence(cadence, length, is_last){
 		var nums = [];
 		nums.push(...this.cadences[cadence]);
@@ -379,9 +386,13 @@ class ChordFunctions {
 		var counter = 0;
 		do{
 			var mods = null;
+			var prev_mods = [];
+			if(index > 0){
+				prev_mods = this.prev_mods[index - 1];
+			}
 			var temp_counter = 0;
 			while(mods == null){
-				mods = this.generateModulations(key, prev_key, prev_num, num_mods, is_last);
+				mods = this.generateModulations(key, prev_key, prev_mods, prev_num, num_mods, is_last);
 				temp_counter++;
 				if(temp_counter > 10){
 					return false;
@@ -406,6 +417,7 @@ class ChordFunctions {
 			}
 			if(valid){
 				this.addToChords(mods, chords, phrase_data[index].chord_index, phrase_data[index].length, prev_key, phrase_data[index].cadence);
+				this.addToPrevMods(mods, index);
 				for(var i = 0; i < this.phrase_attempts; i++){
 					if(this.generatePhrase(key, chords, phrase_data, index + 1)){
 						console.log("successfully generated phrase at index " + index + " with " + (phrase_data[index].length - phrase_data[index].cadence_length - 1) + " spaces and " + num_mods + " additional mods after " + counter + " attempts");
@@ -422,7 +434,7 @@ class ChordFunctions {
 		console.log("failed to generate phrase at index " + index + " with " + (phrase_data[index].length - phrase_data[index].cadence_length - 1) + " spaces and " + num_mods + " additional mods");
 		return false;
 	}
-	generateModulations(key, prev_key, prev_num, num_mods, is_last){
+	generateModulations(key, prev_key, prev_mods, prev_num, num_mods, is_last){
 		var probs;
 		switch(prev_num){
 			case 1:
@@ -488,7 +500,7 @@ class ChordFunctions {
 			else{
 				type = choose({"mediant": 35, "pivot": 65});
 			}
-			var mod = key.getModulation(prev_key, type, (is_last && i == num_mods - 1));
+			var mod = key.getModulation(prev_key, type, prev_mods, (is_last && i == num_mods - 1));
 			if(mod == null){
 				return null;
 			}

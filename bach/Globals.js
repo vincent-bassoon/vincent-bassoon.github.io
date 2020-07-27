@@ -111,6 +111,25 @@ class Modulation {
 		this.connect_nums = [];
 		this.additions = [];
 	}
+	copy(){
+		return new Modulation(this.type, this.nums, this.keys);
+	}
+	equals(mod){
+		if(this.type != mod.type || this.nums.length !- mod.nums.length || this.keys.length != mod.keys.length){
+			return false;
+		}
+		for(var i = 0; i < this.nums.length; i++){
+			if(mod.nums[i] != this.nums[i]){
+				return false;
+			}
+		}
+		for(var i = 0; i < this.keys.length; i++){
+			if(mod.keys[i] != this.keys[i]){
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
 class Key {
@@ -245,7 +264,7 @@ class Key {
 			return this.generateTypeModulation(current_key, nums, type);
 		}
 	}
-	getModulation(current_key, type, is_last){
+	getModulation(current_key, type, prev_mods, is_last){
 		var choices = [];
 		for(var choice in current_key.mod_freqs[type]){
 			choices.push(choice);
@@ -254,7 +273,16 @@ class Key {
 			var nums = this.kg.modStringToNums(chooseFromFreqsRemove(current_key.mod_freqs[type], choices), type);
 			var mod = this.generateTypeModulation(current_key, nums, type);
 			if(mod != null && !(is_last && !mod.keys[1].equals(this))){
-				return mod;
+				var repeat = false;
+				for(var i = 0; i < prev_mods.length; i++){
+					if(mod.equals(prev_mods[i])){
+						repeat = true;
+						i = prev_mods.length;
+					}
+				}
+				if(!repeat){
+					return mod;
+				}
 			}
 		}
 		return null;
