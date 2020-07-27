@@ -331,7 +331,7 @@ class HarmonyFunctions {
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
-				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch));
+				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch) && !(degree == 0 && harmony[index].chord.roman_num == 5));
 		var queue;
 		if(only_sus){
 			queue = [];
