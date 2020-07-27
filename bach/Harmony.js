@@ -399,9 +399,22 @@ class HarmonyFunctions {
 		var motion = this.mf.getSimpleMotion(change);
 		var next_motion = harmony[index + 1].getMotion(voice);
 		var only_sus = false;
-		if(voice == 0 && Math.abs(motion) == this.mf.type.LEAP && (harmony[index + 1].end_of_phrase || !key.equals(next_key))){
-			//no leaps right before cadence
-			return;
+		if(voice == 0 && Math.abs(motion) == this.mf.type.LEAP){
+			//no soprano leaps right before cadence or within 5 beats of another soprano leap
+			if(!key.equals(next_key)){
+				return;
+			}
+			for(var i = 1; i < 5; i++){
+				if(harmony[index + i].end_of_phrase){
+					if(i <= 2){
+						return;
+					}
+					i = 5;
+				}
+				else if(Math.abs(harmony[index + i].getMotion(voice)) == this.mf.type.LEAP){
+					return;
+				}
+			}
 		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check, ignores inner voices at penultimate chord
