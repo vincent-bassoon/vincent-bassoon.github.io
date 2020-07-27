@@ -39,6 +39,7 @@ function generateNewChorale(data, samplers){
 }
 
 function configureSampler(){
+	document.bpm = 60;
 	function logData(data, before_time){
 		data[0].time = Date.now() - before_time;
 		console.log("Current data:    " + JSON.stringify(data[0]));

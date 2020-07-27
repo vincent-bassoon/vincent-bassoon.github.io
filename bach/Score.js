@@ -43,7 +43,6 @@ class Player {
 		var transport = Tone.Transport;
 		transport.cancel();
 		transport.timeSignature = 4;
-		transport.bpm.value = 60;
 		var rit_time_string;
 		var rit_length = 3;
 		var schedule = this.schedule;
@@ -114,7 +113,7 @@ class Player {
 						}
 					}
 					if(rit){
-						transport.bpm.linearRampTo(42, "0:" + rit_length + ":0");
+						transport.bpm.linearRampTo(Math.round(document.bpm * 0.77), "0:" + rit_length + ":0");
 					}
 					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 						transport.stop();
@@ -135,7 +134,7 @@ class Player {
 		var player = this;
 		function play_start(){
 			play.innerText = "STOP";
-			transport.bpm.value = 60;
+			transport.bpm.value = document.bpm;
 			for(var i = 0; i < 4; i++){
 				samplers[i].release = 0.15;
 			}
