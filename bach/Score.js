@@ -94,7 +94,7 @@ class Player {
 		var release = [];
 		for(var voice = 0; voice < 4; voice++){
 			var note = current_note[voice];
-			if(!release.include(note)){
+			if(!release.includes(note)){
 				release.push(note);
 			}
 		}
