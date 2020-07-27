@@ -118,7 +118,7 @@ class Player {
 					}
 					for(var j = 0; j < 2; j++){
 						if(schedule[index].attack[j].length != 0){
-							sampler.triggerAttack(schedule[index].attack[j], time, 1 - 0.3 * j);
+							sampler.triggerAttack(schedule[index].attack[j], time, 1 - 0.1 * j);
 						}
 					}
 					if(rit){
