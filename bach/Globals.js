@@ -291,9 +291,9 @@ class KeyGenerator {
 				       "minor": {0: "minor", 3: "major", 5: "minor", 7: "minor", 8: "major", 10: "major"}};
 		
 		//mediant should always go to V
-		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-V": 65},
+		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-IV": 30, "I-V": 35},
 					    "mediant": {"I+": 50, "IV-": 50}},
-				  "minor": {"pivot": {"VII-V": 10, "III-V": 10, "i-iv": 10},
+				  "minor": {"pivot": {"VII-V": 33, "III-V": 33, "i-iv": 34},
 					    "mediant": {"III-": 50, "VI+": 50}}};
 		
 		this.qualities = {"major": {1: "major", 2: "minor", 3: "minor", 4: "major", 5: "major", 6: "minor", 7: "dim"},
