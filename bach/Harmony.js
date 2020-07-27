@@ -84,6 +84,9 @@ class HarmonyFunctions {
 					if(lower_value > upper_value || (sus && lower_value == upper_value)){
 						return true;
 					}
+					if(lower_value == upper_value && index + 1 < harmony.length && harmony[index + 1].getValue(voice, 0) == harmony[index + 1].getValue(voice2, 0)){
+						return true;
+					}
 					if(lower_value + max_dist < upper_value){
 						return true;
 					}
