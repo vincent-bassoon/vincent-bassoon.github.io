@@ -115,7 +115,7 @@ class Modulation {
 		return new Modulation(this.type, this.nums, this.keys);
 	}
 	equals(mod){
-		if(this.type != mod.type || this.nums.length !- mod.nums.length || this.keys.length != mod.keys.length){
+		if(this.type != mod.type || this.nums.length != mod.nums.length || this.keys.length != mod.keys.length){
 			return false;
 		}
 		for(var i = 0; i < this.nums.length; i++){
