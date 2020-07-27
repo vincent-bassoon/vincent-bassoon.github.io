@@ -441,6 +441,11 @@ class HarmonyFunctions {
 				}
 			}
 		}
+		if(harmony[index].chord.inversion == 2 && harmony[index].chord.roman_num == 1 && (degree == 0 || degree == 1)){
+			if(!(motion == -1 * this.mf.type.STEP || (motion == this.mf.type.CONSTANT && next_motion == this.mf.type.SUSPENSION))){
+				return;
+			}
+		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check, ignores inner voices at penultimate chord
 			only_sus = true;
