@@ -554,7 +554,7 @@ class ChordFunctions {
 			var cadence_length = this.cadence_lengths[cadence];
 			// 4 beat cadence includes a 64 tonic
 			if(cadence != "pc"){
-				var addition = chooseInt({0: 60, 1: 40});
+				var addition = chooseInt({0: 80, 1: 20});
 				if(i == phrase_lengths.length - 1 && addition == 0){
 					addition += 1;
 				}
