@@ -525,6 +525,8 @@ class ChordFunctions {
 	generatePhraseData(key, phrase_lengths){
 		var phrase_data = [];
 		var sum = 0;
+		var dc_valid = true;
+		var pc_valid = true;
 		for(var i = 0; i < phrase_lengths.length; i++){
 			var cadence;
 			if(i == phrase_lengths.length - 1){
@@ -540,6 +542,12 @@ class ChordFunctions {
 			}
 			else{
 				var probs = {"pac": 37, "pac/iac": 34, "hc": 21, "dc": 7, "pc": 1};
+				if(!pc_valid){
+					probs.pc = 0;
+				}
+				if(!dc_valid){
+					probs.dc = 0;
+				}
 				if(i == 0){
 					cadence = chooseFromFreqs(probs, ["pac", "pac/iac", "hc"]);
 				}
@@ -549,6 +557,15 @@ class ChordFunctions {
 				else{
 					cadence = choose(probs);
 				}
+			}
+			if(cadence == "pc"){
+				pc_valid = false;
+			}
+			else if(cadence == "dc"){
+				dc_valid = false;
+			}
+			else{
+				dc_valid = true;
 			}
 			
 			var cadence_length = this.cadence_lengths[cadence];
