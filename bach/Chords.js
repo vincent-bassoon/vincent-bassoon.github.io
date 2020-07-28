@@ -70,12 +70,17 @@ class ChordFunctions {
 				return 1;
 		}
 	}
-	classToNum(chord_class){
+	classToNum(chord_class, seven_valid){
 		switch(chord_class){
 			case 0:
 				return 1;
 			case 1:
-				return chooseInt({5: 90, 7: 10});
+				if(seven_valid){
+					return chooseInt({5: 94, 7: 6});
+				}
+				else{
+					return 5;
+				}
 			case 2:
 				return 2;
 			case 3:
@@ -110,12 +115,12 @@ class ChordFunctions {
 		var nums = [];
 		if(length == 6){
 			for(var i = 0; i < length; i++){
-				nums.unshift(this.classToNum(i));
+				nums.unshift(this.classToNum(i, true));
 			}
 		}
 		else if(length <= 2){
 			for(var i = 0; i < length; i++){
-				nums.unshift(this.classToNum(i));
+				nums.unshift(this.classToNum(i, true));
 			}
 		}
 		else{
@@ -137,7 +142,7 @@ class ChordFunctions {
 			}
 			for(var i = 0; i < length + 1; i++){
 				if(i != removed){
-					nums.unshift(this.classToNum(i));
+					nums.unshift(this.classToNum(i, true));
 				}
 			}
 		}
@@ -177,7 +182,7 @@ class ChordFunctions {
 		
 		for(var i = prev_class - 1; i >= end_class; i--){
 			if(i != omit_class){
-				nums.push(this.classToNum(i));
+				nums.push(this.classToNum(i, false));
 			}
 		}
 		mods[index].connect_nums = nums;
@@ -324,7 +329,7 @@ class ChordFunctions {
 		}
 		for(var i = nums.length; i < length; i++){
 			next_class++;
-			nums.unshift(this.classToNum(next_class));
+			nums.unshift(this.classToNum(next_class, false));
 		}
 		return new Modulation("cadence", nums, null);
 	}
@@ -454,10 +459,7 @@ class ChordFunctions {
 			default:
 				probs = {1: 40, 2: 60};
 		}
-		var first_num = this.classToNum(chooseInt(probs) - 1);
-		if(prev_num == null && first_num == 7){
-			first_num = 5;
-		}
+		var first_num = this.classToNum(chooseInt(probs) - 1, prev_num != null);
 		var type = null;
 		var done = false;
 		var mods = [];
