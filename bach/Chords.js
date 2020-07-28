@@ -505,7 +505,7 @@ class ChordFunctions {
 				type = "pivot";
 			}
 			else{
-				type = choose({"mediant": 35, "pivot": 65});
+				type = choose({"mediant": 40, "pivot": 60});
 			}
 			var mod = key.getModulation(prev_key, type, prev_mods, (is_last && i == num_mods - 1));
 			if(mod == null){
