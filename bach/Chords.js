@@ -402,7 +402,7 @@ class ChordFunctions {
 			}
 			var temp_counter = 0;
 			while(mods == null){
-				mods = this.generateModulations(key, prev_key, prev_mods, prev_num, num_mods, is_last);
+				mods = this.generateModulations(key, prev_key, prev_mods, prev_num, num_mods, phrase_data[index].cadence, is_last);
 				temp_counter++;
 				if(temp_counter > 10){
 					return false;
@@ -444,7 +444,7 @@ class ChordFunctions {
 		console.log("failed to generate phrase at index " + index + " with " + (phrase_data[index].length - phrase_data[index].cadence_length - 1) + " spaces and " + num_mods + " additional mods");
 		return false;
 	}
-	generateModulations(key, prev_key, prev_mods, prev_num, num_mods, is_last){
+	generateModulations(key, prev_key, prev_mods, prev_num, num_mods, cadence, is_last){
 		var probs;
 		switch(prev_num){
 			case 1:
@@ -522,6 +522,9 @@ class ChordFunctions {
 		}
 		for(var i = start; i < mods.length; i++){
 			mods[i].additions_valid = !is_last;
+		}
+		if(Math.random() < 0.9 && cadence == "hc" && !key.equals(mods[mods.length - 1].keys[1])){
+			return null;
 		}
 		return mods;
 	}
