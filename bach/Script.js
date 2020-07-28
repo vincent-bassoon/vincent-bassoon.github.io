@@ -64,7 +64,7 @@ function configureSampler(){
 	}
 	var sources = {};
 	var names_to_files = {"A" : "A", "C": "C", "D#": "Ds", "F#": "Fs"};
-	var file_end = "v5.mp3";
+	var file_end = "v4.mp3";
 	for(var name in names_to_files){
 		for(var i = 2; i <= 5; i++){
 			sources[name + i] = names_to_files[name] + i + file_end;
@@ -105,7 +105,7 @@ function configureSampler(){
 			}, 3);
 		}
 		run();
-	}, "samples/").toDestination();
+	}, "samplesV4/").toDestination();
 }
 
 window.onload = configureSampler;
