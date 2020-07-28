@@ -530,6 +530,7 @@ class ChordFunctions {
 		var sum = 0;
 		var dc_valid = true;
 		var pc_valid = true;
+		var hc_valid = true;
 		for(var i = 0; i < phrase_lengths.length; i++){
 			var cadence;
 			if(i == phrase_lengths.length - 1){
@@ -551,6 +552,9 @@ class ChordFunctions {
 				if(!dc_valid){
 					probs.dc = 0;
 				}
+				if(!hc_valid){
+					probs.hc = 1;
+				}
 				if(i == 0){
 					cadence = chooseFromFreqs(probs, ["pac", "pac/iac", "hc"]);
 				}
@@ -564,11 +568,17 @@ class ChordFunctions {
 			if(cadence == "pc"){
 				pc_valid = false;
 			}
-			else if(cadence == "dc"){
+			if(cadence == "dc"){
 				dc_valid = false;
 			}
 			else{
 				dc_valid = true;
+			}
+			if(cadence == "hc"){
+				hc_valid = false;
+			}
+			else{
+				hc_valid = true;
 			}
 			
 			var cadence_length = this.cadence_lengths[cadence];
