@@ -565,7 +565,11 @@ class ChordFunctions {
 					cadence = chooseFromFreqs(probs, ["hc", "dc", "pc"]);
 				}
 				else{
-					cadence = choose(probs);
+					var choices = [];
+					for(var cadence in probs){
+						choices.push(probs);
+					}
+					cadence = chooseFromFreqs(probs, choices);
 				}
 			}
 			if(cadence == "pc"){
