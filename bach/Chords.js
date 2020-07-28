@@ -567,7 +567,7 @@ class ChordFunctions {
 				else{
 					var choices = [];
 					for(var cadence in probs){
-						choices.push(probs);
+						choices.push(cadence);
 					}
 					cadence = chooseFromFreqs(probs, choices);
 				}
