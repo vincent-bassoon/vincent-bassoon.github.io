@@ -403,7 +403,7 @@ class Chord {
 		}
 	}
 	equals(chord){
-		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0] && this.seven == chord.seven;
+		return this.quality == chord.quality && this.pitches[0] == chord.pitches[0];
 	}
 }
 
