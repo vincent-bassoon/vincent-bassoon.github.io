@@ -46,13 +46,18 @@ function configureSampler(){
 	document.bpm = 60;
 	function logData(data, before_time){
 		data[0].time = Date.now() - before_time;
-		console.log("Current data:    " + JSON.stringify(data[0]));
+		var output_data = {};
+		for(var key in data[0]){
+			output_data[key] = Math.round(data[0][key] * 1000) / 1000;
+		}
+		console.log("Current data:    " + JSON.stringify(output_data));
 		var avg = {time: 0, avg_score: 0, attempts: 0, retrace_attempts: 0};
 		for(var key in avg){
 			for(var i = 0; i < data.length; i++){
 				avg[key] += data[i][key];
 			}
 			avg[key] /= data.length;
+			avg[key] = Math.round(avg[key] * 1000) / 1000;
 		}
 		console.log("Cumulative data: " + JSON.stringify(avg));
 		
