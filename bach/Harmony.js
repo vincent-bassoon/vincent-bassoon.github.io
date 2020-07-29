@@ -185,11 +185,11 @@ class HarmonyFunctions {
 		}
 		return false;
 	}
-	checkSus(sus_degree, bass_degree, doubling, is_seven){
+	checkSus(sus_degree, bass_degree, doubling, is_seven, is_in_cadence){
 		if(sus_degree == 0 && !is_seven){
 			return (bass_degree == 0 || (bass_degree == 1 && doubling != 0));
 		}
-		if(sus_degree == 1){
+		if(sus_degree == 1 && !(is_seven && !is_in_cadence)){
 			return (doubling != 1 && bass_degree == 0);
 		}
 		if(sus_degree == 3){
@@ -276,13 +276,14 @@ class HarmonyFunctions {
 			var option = options[voice][i];
 			if(voicing[option.degree] > 0){
 				var valid = true;
+				var is_in_cadence = index + 1 < harmony.length && harmony[index + 1].end_of_phrase;
 				if(option.motion == this.mf.type.SUSPENSION && past.includes(3)){
-					valid = this.checkSus(option.degree, harmony[index].getDegree(3), doubling, is_seven);
+					valid = this.checkSus(option.degree, harmony[index].getDegree(3), doubling, is_seven, is_in_cadence);
 				}
 				else if(voice == 3){
 					for(var j = 1; j <= 2; j++){
 						if(valid && past.includes(j) && harmony[index].getMotion(j) == this.mf.type.SUSPENSION){
-							valid = this.checkSus(harmony[index].getDegree(j), option.degree, doubling, is_seven);
+							valid = this.checkSus(harmony[index].getDegree(j), option.degree, doubling, is_seven, is_in_cadence);
 						}
 					}
 				}
