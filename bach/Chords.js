@@ -493,16 +493,16 @@ class ChordFunctions {
 			}
 		}
 		for(var i = 0; i < num_mods; i++){
-			if(i == num_mods - 1){
+			if(type == "mediant"){
+				type = "pivot";
+			}
+			else if(i == num_mods - 1){
 				if(is_last){
 					type = "pivot";
 				}
 				else{
 					type = choose({"mediant": 10, "pivot": 90});
 				}
-			}
-			else if(type == "mediant"){
-				type = "pivot";
 			}
 			else{
 				type = choose({"mediant": 40, "pivot": 60});
