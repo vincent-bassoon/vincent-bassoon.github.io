@@ -6,8 +6,8 @@ class Player {
 		this.priority_voice_order = [3, 0, 1, 2];
 
 		this.tempo = 60 / 60;
-		this.rit_tempo = 56 / 60;
-		this.rit_length = 3;
+		this.rit_tempo = 58 / 60;
+		this.rit_length = 2;
 		this.final_rit_tempo = 48 / 60;
 		this.final_rit_length = 3;
 
@@ -65,7 +65,7 @@ class Player {
 			var progress = schedule[index].beat_num - schedule[start_index].beat_num;
 			progress = progress / 4;
 
-			var a = (this.tempo - rit_tempo) / rit_length;
+			var a = (this.tempo - rit_tempo) / (2 * rit_length);
 			var b = this.tempo;
 			var c = progress;
 			var time = (b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
