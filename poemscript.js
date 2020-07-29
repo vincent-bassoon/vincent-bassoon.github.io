@@ -187,7 +187,7 @@ function buildTreePost(data, lines, word_dict, queue){
 				}
 			}
 		}
-		if(new_counter > 4){
+		if(new_counter > 2){
 			//this is an arbitrary number***************************************
 			i = data.length;
 		}
