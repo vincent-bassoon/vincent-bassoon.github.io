@@ -34,12 +34,10 @@ function generateNewChorale(data, sampler){
 	while(chords == null){
 		chords = chord_functions.generateChords(key_generator.getKey(pitch, modality), phrase_lengths);
 	}
-	var counter = 0;
-	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler) && counter < 10){
+	data[0].attempts++;
+	if(harmony_functions.generateHarmony(data, chords, phrase_lengths, sampler)){
 		generateNewChorale(data, sampler);
-		counter++;
 	}
-	data[0].attempts = counter + 1;
 }
 
 function configureSampler(){
@@ -95,7 +93,7 @@ function configureSampler(){
 				while(staff.children.length != 0){
 					staff.removeChild(staff.lastChild);
 				}
-				data.unshift({time: null, avg_score: null, attempts: null, retrace_attempts: null});
+				data.unshift({time: null, avg_score: null, attempts: 0, retrace_attempts: null});
 				generateNewChorale(data, sampler);
 				logData(data, before_time);
 				start.classList.remove("running");
