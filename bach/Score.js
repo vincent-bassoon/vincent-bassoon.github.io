@@ -140,6 +140,12 @@ class Player {
 				release.push(note);
 			}
 		}
+		var phrase_times = [];
+		for(var i = 0; i < schedule.length; i++){
+			if(this.phrase_beat_nums.includes(schedule[i].beat_num)){
+				phrase_times.push(schedule[i].time);
+			}
+		}
 		schedule = final_schedule;
 		schedule.push({"attack": {0: [], 1: []}, "release": release, "time": (schedule[schedule.length - 1].time + 3 * this.final_rit_tempo)});
 		console.log(schedule);
@@ -187,7 +193,7 @@ class Player {
 			play.innerText = "STOP";
 			done.index = null;
 			sampler.release = 0.15;
-			transport.start("+.3", schedule[this.schedule_indices[document.start]].time);
+			transport.start("+.3", phrase_times[document.start]);
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
