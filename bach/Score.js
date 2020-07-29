@@ -64,7 +64,7 @@ class Player {
 			}
 			var progress = schedule[index].beat_num - schedule[start_index].beat_num;
 			progress = progress / 4;
-			return schedule[start_index].time + (this.tempo * progress) + (progress * progress * (rit_tempo - 1) / (rit_length * 2));
+			return schedule[start_index].time + (this.tempo * progress) - (progress * progress * (rit_tempo - 1) / (rit_length * 2));
 		}
 		else{
 			return schedule[index - 1].time + this.tempo * (schedule[index].beat_num - schedule[index - 1].beat_num) / 4;
@@ -147,7 +147,7 @@ class Player {
 			}
 		}
 		schedule = final_schedule;
-		schedule.push({"attack": {0: [], 1: []}, "release": release, "time": (schedule[schedule.length - 1].time + 3 * this.final_rit_tempo)});
+		schedule.push({"attack": {0: [], 1: []}, "release": release, "time": (schedule[schedule.length - 1].time + 4 * this.final_rit_tempo)});
 		console.log(schedule);
 		var sampler = this.sampler;
 		
