@@ -5,10 +5,16 @@ class Player {
 		this.sampler = sampler;
 		this.priority_voice_order = [3, 0, 1, 2];
 
-		this.phrase_indices = [];
+		this.tempo = 60 / 60;
+		this.rit_tempo = 56 / 60;
+		this.rit_length = 3;
+		this.final_rit_tempo = 48 / 60;
+		this.final_rit_length = 3;
+
+		this.phrase_beat_nums = [];
 	}
 	addPhraseIndex(){
-		this.phrase_indices.push(this.beat_nums[0]);
+		this.phrase_beat_nums.push(this.beat_nums[0]);
 	}
 	scheduleNote(voice, note, duration){
 		var beat_num = this.beat_nums[voice];
@@ -26,8 +32,43 @@ class Player {
 		}
 		this.beat_nums[voice] += duration;
 	}
-	getTimeString(beat_num){
-		return "" + Math.floor(beat_num / 16) + ":" + Math.floor((beat_num % 16) / 4) + ":" + (beat_num % 4);
+	getTime(index){
+		if(index == 0){
+			return 0;
+		}
+		var schedule = this.schedule;
+		var beat_num = schedule[index].beat_num;
+		if(this.phrase_beat_nums.includes(beat_num)){
+			var beats = beat_num - schedule[index - 1].beat_num;
+			return schedule[index - 1].time + this.rit_tempo * beats / 4;
+		}
+
+		var end_index = 0;
+		while(end_index < schedule.length - 1 && (beat_num > schedule[end_index].beat_num || !this.phrase_beat_nums.includes(schedule[end_index + 1].beat_num))){
+			end_index++;
+		}
+		var rit_length;
+		var rit_tempo;
+		if(end_index == schedule.length - 1){
+			rit_tempo = this.final_rit_tempo;
+			rit_length = this.final_rit_length;
+		}
+		else{
+			rit_tempo = this.rit_tempo;
+			rit_length = this.rit_length;
+		}
+		if(beat_num + 4 * rit_length > schedule[end_index].beat_num){
+			var start_index = index;
+			while(schedule[start_index].beat_num + 4 * rit_length != schedule[end_index].beat_num){
+				start_index--;
+			}
+			var progress = schedule[index].beat_num - schedule[start_index].beat_num;
+			progress = progress / 4;
+			return schedule[start_index].time + (this.tempo * progress) + (progress * progress * (rit_tempo - 1) / (rit_length * 2));
+		}
+		else{
+			return schedule[index - 1].time + this.tempo * (schedule[index].beat_num - schedule[index - 1].beat_num) / 4;
+		}
 	}
 	voiceToIndex(voice){
 		if(voice % 3 == 0){
@@ -59,7 +100,8 @@ class Player {
 					new_note[voice] = false;
 				}
 			}
-			var unit = {"beat_num": schedule[i].beat_num, "attack": {0: [], 1: []}, "release": []};
+			schedule[i].time = this.getTime(i);
+			var unit = {"time": schedule[i].time, "attack": {0: [], 1: []}, "release": []};
 			for(var voice1 = 0; voice1 < 4; voice1++){
 				if(new_note[voice1]){
 					var valid = true;
@@ -98,8 +140,8 @@ class Player {
 				release.push(note);
 			}
 		}
-		final_schedule.push({"attack": {0: [], 1: []}, "release": release, "beat_num": (schedule[schedule.length - 1].beat_num + 12)});
 		schedule = final_schedule;
+		schedule.push({"attack": {0: [], 1: []}, "release": release, "time": (schedule[schedule.length - 1].time + 3 * this.final_rit_tempo)});
 		console.log(schedule);
 		var sampler = this.sampler;
 		
@@ -108,7 +150,7 @@ class Player {
 		var done = {"index": null}
 
 		for(var i = 0; i < schedule.length; i++){
-			(function(schedule, index, time_string, rit, done){
+			(function(schedule, index, done){
 				transport.schedule(function(time){
 					if(index == done.index){
 						console.log("repeat transport trigger caught at index " + index);
@@ -128,9 +170,6 @@ class Player {
 							sampler.triggerAttack(schedule[index].attack[j], time, 1 - 0.1 * j);
 						}
 					}
-					if(rit){
-						transport.bpm.linearRampTo(Math.round(document.bpm * 0.77), "0:" + rit_length + ":0");
-					}
 					if(play.innerText == "PLAY" || play.innerText == "LOADING..."){
 						transport.stop();
 						sampler.releaseAll();
@@ -139,17 +178,16 @@ class Player {
 					if(index == schedule.length - 3){
 						sampler.release = 0.6;
 					}
-				}, time_string);
-			})(schedule, i, this.getTimeString(schedule[i].beat_num), i + rit_length == schedule.length - 2, done);
+				}, schedule[index].time);
+			})(schedule, i, done);
 		}
 		
 		var player = this;
 		function play_start(){
 			play.innerText = "STOP";
-			transport.bpm.value = document.bpm;
 			done.index = null;
 			sampler.release = 0.15;
-			transport.start("+.3", player.getTimeString(player.phrase_indices[document.start]));
+			transport.start("+.3", schedule[this.schedule_indices[document.start]].time);
 		}
 		function play_stop(){
 			if(play.innerText == "STOP"){
@@ -172,7 +210,7 @@ class Player {
 			}
 			play.innerText = "PLAY";
 			play.onclick = play_stop;
-		}, this.getTimeString(schedule[schedule.length - 1].beat_num + 6));
+		}, schedule[schedule.length - 1].time + 1);
 		play.classList.remove("running");
 		play.innerText = "PLAY";
 		play.onclick = play_stop;

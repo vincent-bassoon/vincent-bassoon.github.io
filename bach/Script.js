@@ -43,7 +43,6 @@ function generateNewChorale(data, sampler){
 }
 
 function configureSampler(){
-	document.bpm = 60;
 	function logData(data, before_time){
 		data[0].time = Date.now() - before_time;
 		var output_data = {};
@@ -70,7 +69,7 @@ function configureSampler(){
 			sources[name + i] = names_to_files[name] + i + file_end;
 		}
 	}
-	Tone.getContext().latencyHint = 0.3;
+	Tone.getContext().latencyHint = 0.35;
 	var transport = Tone.Transport;
 	var start = document.getElementById("start_button");
 	var play = document.getElementById("play_button");
