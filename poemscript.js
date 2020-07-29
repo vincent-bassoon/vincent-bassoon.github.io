@@ -232,10 +232,10 @@ function generateRandom(){
 }
 
 function generateRandomPost(data){
-	var word = data[Math.floor(Math.random() * data.length)];
-	while(!isIambicEnd(word.tags[0])){
+	var word;
+	do{
 		word = data[Math.floor(Math.random() * data.length)];
-	}
+	}while(!isIambicEnd(word.tags[0]));
 	findRhymes(word.word);
 }
 
