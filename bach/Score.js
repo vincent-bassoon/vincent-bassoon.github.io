@@ -64,7 +64,12 @@ class Player {
 			}
 			var progress = schedule[index].beat_num - schedule[start_index].beat_num;
 			progress = progress / 4;
-			return schedule[start_index].time + (this.tempo * progress) - (progress * progress * (this.tempo - rit_tempo) / (rit_length * 2));
+
+			var a = (this.tempo - rit_tempo) / rit_length;
+			var b = this.tempo;
+			var c = progress;
+			var time = (b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+			return schedule[start_index].time + time;
 		}
 		else{
 			return schedule[index - 1].time + this.tempo * (schedule[index].beat_num - schedule[index - 1].beat_num) / 4;
