@@ -12,11 +12,32 @@
 				height: 100%;
 				margin: 0;
 			}
-			.flex-container {
+			/*small phones*/
+			@media only screen and (max-width: 600px) {
+            	
+            }
+            /*portrait tablets and large phones*/
+			@media only screen and (min-width: 600px) {
+
+			}
+            /*landscape tablets*/
+			@media only screen and (min-width: 768px) {
+
+			}
+            /*desktops*/
+			@media only screen and (min-width: 992px) {
+
+			}
+			/*large desktops*/
+			@media only screen and (min-width: 1280px) {
+
+			}
+			.flexContainer {
+				margin: center;
 				justify-content: center;
 				display: flex;
 				flex-wrap: nowrap;
-				min-width: 837px;
+				width: 60%;
 			}
 			.mainButton {
 				border-radius: 7px;
@@ -43,25 +64,6 @@
 			.playButton{
 				width: 132px;
 			}
-			.phraseButton{
-
-			}
-			.dropdown{
-				float: left;
-			}
-			.dropdownContent{
-				display: none;
-				background-color: #f1f1f1;
-				z-index: 1;
-			}
-			.dropdownContent a{
-				float: none;
-				color: black;
-				display: block;
-			}
-			.dropdown:hover .dropdownContent{
-				display: block;
-			}
 			body.hasHover .mainButton:hover{
 				background-color: #878c94;
 			}
@@ -69,26 +71,18 @@
 				background-color: #878c94;
 				color:#b2b8c2;
 			}
-			.full {
+			.staff {
 				width: 100%;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="flex-container full">
+		<div class="flexContainer">
 			<a id="start_button" class="startButton mainButton running">Generating...</a>
 			<a id="play_button" class="playButton mainButton running">Loading...</a>
-			<div class="dropdown">
-				<a id="phrase_button" class="phraseButton dropdown mainButton running">Loading...</a>
-				<div class="dropdownContent">
-					<a href="#">Link 1</a>
-					<a href="#">Link 2</a>
-					<a href="#">Link 3</a>
-				</div>
-			</div>
 		</div>
 		
-		<div id="staff" class="full"></div>
+		<div id="staff" class="staff"></div>
 		
 		<script src = "Globals.js" defer = "defer"></script>
 		<script src = "Chords.js" defer = "defer"></script>
