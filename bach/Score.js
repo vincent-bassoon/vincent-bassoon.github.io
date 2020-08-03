@@ -256,7 +256,7 @@ class LineData {
 			this.stave_width = this.min_measure_beat_size * 13 + max_initial_note_indent;
 		}
 		else{
-			var width = document.body.children[0].offsetWidth;
+			var width = document.getElementById("flex_container").offsetWidth;
 			this.stave_width = Math.max((width - 1.5 * this.x_margin), (this.min_measure_beat_size * 13 + max_initial_note_indent));
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
@@ -276,7 +276,15 @@ class LineData {
 		return sum / list.length;
 	}
 	getRendererWidth(){
-		return this.stave_width + (this.x_margin * 1.5);
+		var width = this.stave_width + (this.x_margin * 1.5);
+		var staff = document.getElementById("staff");
+		if(Math.abs(width - document.getElementById("flex_container").offsetWidth) <= 1){
+			staff.classList.add("overflowXHidden");
+		}
+		else{
+			staff.classList.remove("overflowXHidden");
+		}
+		return width;
 	}
 	getRendererHeight(){
 		return this.line_height * (this.line_num + 0.3);
