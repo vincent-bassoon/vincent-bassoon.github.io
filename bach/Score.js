@@ -276,15 +276,7 @@ class LineData {
 		return sum / list.length;
 	}
 	getRendererWidth(){
-		var width = this.stave_width + (this.x_margin * 1.5);
-		var staff = document.getElementById("staff");
-		if(Math.abs(width - document.getElementById("flex_container").offsetWidth) <= 1){
-			staff.classList.add("overflowXHidden");
-		}
-		else{
-			staff.classList.remove("overflowXHidden");
-		}
-		return width;
+		return this.stave_width + (this.x_margin * 1.5);
 	}
 	getRendererHeight(){
 		return this.line_height * (this.line_num + 0.3);
