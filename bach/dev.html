@@ -14,7 +14,9 @@
 				margin: 0;
 			}
 			.flexContainer {
-				margin: auto;
+				margin-top: 0px;
+				margin-left: auto;
+				margin-right: auto;
 				justify-content: center;
 				display: flex;
 				flex-wrap: nowrap;
@@ -58,12 +60,17 @@
 		</style>
 	</head>
 	<body>
-		<div class="flexContainer">
+		<div id="flex_container"class="flexContainer">
 			<a id="start_button" class="startButton mainButton running">Generating...</a>
 			<a id="play_button" class="playButton mainButton running">Loading...</a>
 		</div>
 		<div id="staff" class="staff"></div>
 		
+		<script>
+			$(window).scroll(function(event) {
+				$("#flex_container").css("margin-top", 0-$(document).scrollTop());
+			});
+		</script>
 		<script src = "Globals.js" defer = "defer"></script>
 		<script src = "Chords.js" defer = "defer"></script>
 		<script src = "Harmony.js" defer = "defer"></script>
