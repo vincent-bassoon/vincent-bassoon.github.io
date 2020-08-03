@@ -257,7 +257,7 @@ class LineData {
 		}
 		else{
 			var width = document.body.children[0].offsetWidth;
-			this.stave_width = Math.max((width - (2 * this.x_margin) - 2), (this.min_measure_beat_size * 13 + max_initial_note_indent));
+			this.stave_width = Math.max((width - 1.5 * this.x_margin), (this.min_measure_beat_size * 13 + max_initial_note_indent));
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
 		this.score.measures_per_line = Math.floor(possible_beats / 4);
@@ -276,7 +276,7 @@ class LineData {
 		return sum / list.length;
 	}
 	getRendererWidth(){
-		return this.stave_width + (this.x_margin * 2);
+		return this.stave_width + (this.x_margin * 1.5);
 	}
 	getRendererHeight(){
 		return this.line_height * (this.line_num + 0.3);
