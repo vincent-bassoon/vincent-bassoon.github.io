@@ -256,7 +256,7 @@ class LineData {
 			this.stave_width = this.min_measure_beat_size * 13 + max_initial_note_indent;
 		}
 		else{
-			var width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+			var width = document.body.children[0].offsetWidth;
 			this.stave_width = Math.max((width - (2 * this.x_margin) - 2), (this.min_measure_beat_size * 13 + max_initial_note_indent));
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
