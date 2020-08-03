@@ -12,36 +12,36 @@
 				height: 100%;
 				margin: 0;
 			}
-			.flex-container {
+			.flexContainer {
 				justify-content: center;
 				display: flex;
 				flex-wrap: nowrap;
-				min-width: 837px;
+				margin: auto;
 			}
 			a {
 				border-radius: 7px;
-				padding: 10px 20px;
-				box-sizing: border-box;
+				padding: 10px 15px;
 				border: none;
 				outline: none;
-				margin: 10px;
+				margin-top: 10px;
+				margin-left: 8px;
+				margin-right: 8px;
+				margin-bottom: 10px;
 				color: white;
 				box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
 				background-color: #696f78;
 				text-align: center;
-				line-height: 1.5;
 				text-transform: uppercase;
 				font-family: "Roboto", sans-serif;
-				font-weight: 500;
-				font-size: 18px;
+				font-size: 16px;
 				cursor: pointer;
 				transition: all 0.25s;
 			}
 			.startButton{
-				width: 165px;
+				width: 140px;
 			}
 			.playButton{
-				width: 132px;
+				width: 111px;
 			}
 			body.hasHover a:hover{
 				background-color: #878c94;
@@ -59,7 +59,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="flex-container">
+		<div id="flex_container" class="flexContainer">
 			<a id="start_button" class="startButton running">Generating...</a>
 			<a id="play_button" class="playButton running">Loading...</a>
 		</div>
