@@ -503,13 +503,10 @@ class Score {
 		if(num_beats > 0){
 			line_data.generateLine(measures, num_beats, true);
 		}
-		/*
-
         var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
 		this.renderer.resize(line_data.getRendererWidth() / factor, line_data.getRendererHeight() / factor);
         this.context.setViewBox(0, 0, line_data.getRendererWidth(), line_data.getRendererHeight());
-		*/
-		this.renderer.resize(line_data.getRendererWidth(), line_data.getRendererHeight());
+		//this.renderer.resize(line_data.getRendererWidth(), line_data.getRendererHeight());
 		this.player.generateAudio();
 	}
 	
