@@ -51,9 +51,12 @@
 				background-color: #878c94;
 				color:#b2b8c2;
 			}
-			.staff {
+			.outerStaff {
 				width: 100%;
 				overflow: auto;
+			}
+			.staff{
+				
 			}
 		</style>
 	</head>
@@ -62,7 +65,9 @@
 			<a id="start_button" class="startButton mainButton running">Generating...</a>
 			<a id="play_button" class="playButton mainButton running">Loading...</a>
 		</div>
-		<div id="staff" class="staff"></div>
+		<div class="outerStaff">
+			<div id="staff" class="staff"></div>
+		</div>
 		
 		<script src = "Globals.js" defer = "defer"></script>
 		<script src = "Chords.js" defer = "defer"></script>
