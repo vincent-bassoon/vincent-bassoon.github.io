@@ -248,7 +248,7 @@ class LineData {
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 65;
-		this.max_beat_size = 0;;
+		this.max_beat_size = this.min_measure_beat_size;
 		
 		var max_initial_note_indent = 192;
 		
