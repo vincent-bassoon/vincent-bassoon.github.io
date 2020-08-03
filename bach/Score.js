@@ -333,7 +333,8 @@ class Score {
 		this.softmaxFactor = 10;
 		this.formatter = new this.vf.Formatter({softmaxFactor: this.softmaxFactor});
 		
-		var div = document.getElementById("staff")
+		var div = document.getElementById("staff");
+		div.style.width = document.getElementById("flex_container").offsetWidth + "px";
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
 		
 		this.context = this.renderer.getContext();
