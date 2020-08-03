@@ -244,7 +244,7 @@ class LineData {
 		
 		this.line_height = 280;
 		this.stave_y_indents = [0, 140];
-		this.x_margin = 30;
+		this.x_margin = 40;
 		this.y_margin = 40;
 		
 		this.min_measure_beat_size = 65;
@@ -257,7 +257,7 @@ class LineData {
 		}
 		else{
 			var width = document.getElementById("flex_container").offsetWidth;
-			this.stave_width = Math.max((width - 1.5 * this.x_margin), (this.min_measure_beat_size * 13 + max_initial_note_indent));
+			this.stave_width = Math.max((width - this.x_margin), (this.min_measure_beat_size * 13 + max_initial_note_indent));
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
 		this.score.measures_per_line = Math.floor(possible_beats / 4);
@@ -276,7 +276,7 @@ class LineData {
 		return sum / list.length;
 	}
 	getRendererWidth(){
-		return this.stave_width + (this.x_margin * 1.5);
+		return this.stave_width + this.x_margin;
 	}
 	getRendererHeight(){
 		return this.line_height * (this.line_num + 0.3);
