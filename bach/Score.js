@@ -252,7 +252,9 @@ class LineData {
 		
 		var max_initial_note_indent = 192;
 		
-		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent)){
+		this.is_mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini|Mobile/i.test(navigator.userAgent);
+
+		if(this.is_mobile){
 			this.stave_width = this.min_measure_beat_size * 13 + max_initial_note_indent;
 		}
 		else{
@@ -504,9 +506,16 @@ class Score {
 		if(num_beats > 0){
 			line_data.generateLine(measures, num_beats, true);
 		}
-        var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
-		this.renderer.resize(line_data.getRendererWidth() / factor, line_data.getRendererHeight() / factor);
         this.context.setViewBox(0, 0, line_data.getRendererWidth(), line_data.getRendererHeight());
+		var buttons = document.getElementById("flex_container");
+        var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
+        var height = line_data.getRendererHeight() / factor;
+		if(!line_data.is_mobile && height + buttons.offsetWidth > window.innerHeight){
+        	factor = line_data.getRendererWidth() / (document.body.children[0].offsetWidth - 16);
+        	height = line_data.getRendererHeight() / factor;
+		}
+        var width = line_data.getRendererWidth() / factor;
+		this.renderer.resize(width, height);
 		//this.renderer.resize(line_data.getRendererWidth(), line_data.getRendererHeight());
 		this.player.generateAudio();
 	}
