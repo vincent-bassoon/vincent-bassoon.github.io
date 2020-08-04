@@ -511,6 +511,10 @@ class Score {
 		if(!line_data.is_mobile && height + buttons.offsetHeight > window.innerHeight){
         	factor = line_data.getRendererWidth() / (buttons.offsetWidth - 17);
         	height = line_data.getRendererHeight() / factor;
+        	document.getElementById("staff").style.width = (buttons.offsetWidth - 17) + "px";
+		}
+		else{
+        	document.getElementById("staff").style.width = buttons.offsetWidth + "px";
 		}
         var width = line_data.getRendererWidth() / factor;
 		this.renderer.resize(width, height);
