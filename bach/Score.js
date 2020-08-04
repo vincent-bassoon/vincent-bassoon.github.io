@@ -510,7 +510,7 @@ class Score {
 		var buttons = document.getElementById("flex_container");
         var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
         var height = line_data.getRendererHeight() / factor;
-		if(!line_data.is_mobile && height + buttons.offsetWidth > window.innerHeight){
+		if(!line_data.is_mobile && height + buttons.offsetHeight > window.innerHeight){
         	factor = line_data.getRendererWidth() / (document.body.children[0].offsetWidth - 16);
         	height = line_data.getRendererHeight() / factor;
 		}
