@@ -259,7 +259,7 @@ class LineData {
 		}
 		else{
 			var width = document.getElementById("flex_container").offsetWidth;
-			this.stave_width = Math.max((width - this.x_margin), (this.min_measure_beat_size * 13 + max_initial_note_indent));
+			this.stave_width = Math.max(Math.round(1.17 * (width - this.x_margin)), (this.min_measure_beat_size * 13 + max_initial_note_indent));
 		}
 		var possible_beats = (this.stave_width - this.initial_note_indent) / this.min_measure_beat_size;
 		this.score.measures_per_line = Math.floor(possible_beats / 4);
