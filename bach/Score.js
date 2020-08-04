@@ -336,7 +336,6 @@ class Score {
 		this.formatter = new this.vf.Formatter({softmaxFactor: this.softmaxFactor});
 		
 		var div = document.getElementById("staff");
-		div.style.width = document.getElementById("flex_container").offsetWidth + "px";
 		this.renderer = new this.vf.Renderer(div, this.vf.Renderer.Backends.SVG);
 		
 		this.context = this.renderer.getContext();
@@ -507,10 +506,10 @@ class Score {
 			line_data.generateLine(measures, num_beats, true);
 		}
 		var buttons = document.getElementById("flex_container");
-        var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
+        var factor = line_data.getRendererWidth() / buttons.offsetWidth;
         var height = line_data.getRendererHeight() / factor;
 		if(!line_data.is_mobile && height + buttons.offsetHeight > window.innerHeight){
-        	factor = line_data.getRendererWidth() / (document.body.children[0].offsetWidth - 16);
+        	factor = line_data.getRendererWidth() / (buttons.offsetWidth - 17);
         	height = line_data.getRendererHeight() / factor;
 		}
         var width = line_data.getRendererWidth() / factor;
