@@ -506,7 +506,6 @@ class Score {
 		if(num_beats > 0){
 			line_data.generateLine(measures, num_beats, true);
 		}
-        this.context.setViewBox(0, 0, line_data.getRendererWidth(), line_data.getRendererHeight());
 		var buttons = document.getElementById("flex_container");
         var factor = line_data.getRendererWidth() / document.body.children[0].offsetWidth;
         var height = line_data.getRendererHeight() / factor;
@@ -517,6 +516,7 @@ class Score {
         var width = line_data.getRendererWidth() / factor;
 		this.renderer.resize(width, height);
 		//this.renderer.resize(line_data.getRendererWidth(), line_data.getRendererHeight());
+        this.context.setViewBox(0, 0, line_data.getRendererWidth(), line_data.getRendererHeight());
 		this.player.generateAudio();
 	}
 	
