@@ -581,13 +581,8 @@ class MotionFunctions {
 		motion = Math.abs(motion);
 		next_motion = Math.abs(next_motion);
 		
-		if(motion == this.type.MORDENT || motion == this.type.PASSING_16){
-			if(harmony[index + 1].end_of_phrase){
-				return this.max_score + 1;
-			}
-			else{
-				score += 10;
-			}
+		if((motion == this.type.MORDENT || motion == this.type.PASSING_16) && harmony[index + 1].end_of_phrase){
+			return this.max_score + 1;
 		}
 		if(motion == this.type.MORDENT && index == 0){
 			return this.max_score + 1;
