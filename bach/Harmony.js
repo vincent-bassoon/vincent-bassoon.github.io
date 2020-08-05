@@ -115,8 +115,9 @@ class HarmonyFunctions {
 		for(var i = 0; i < order_index; i++){
 			var voice2 = voice_order[i];
 			var interval2;
-			var interval1 = Math.abs(harmony[index].getValue(voice1, 0) -
+			var interval0 = Math.abs(harmony[index].getValue(voice1, 0) -
 						harmony[index].getValue(voice2, 0)) % 12;
+			var interval1 = interval0;
 			var max = Math.max(voice1_num_notes, harmony[index].getNumNotes(voice2));
 			for(var j = 1; j < max; j++){
 				interval2 = Math.abs(harmony[index].getValue(voice1, j) -
@@ -129,6 +130,9 @@ class HarmonyFunctions {
 			interval2 = Math.abs(harmony[index + 1].getValue(voice1, 0) -
 					     harmony[index + 1].getValue(voice2, 0)) % 12;
 			if(this.checkParallelIntervals(interval1, interval2)){
+				return true;
+			}
+			if(this.checkParallelIntervals(interval0, interval2)){
 				return true;
 			}
 		}
