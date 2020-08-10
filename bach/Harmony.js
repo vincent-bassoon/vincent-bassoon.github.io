@@ -147,12 +147,6 @@ class HarmonyFunctions {
 			case this.mf.type.PASSING_8:
 				doubling_valid = true;
 				break;
-			case this.mf.type.PASSING_16:
-				doubling_valid = true;
-				break;
-			case this.mf.type.MORDENT:
-				doubling_valid = true;
-				break;
 			default:
 				doubling_valid = false;
 				break;
