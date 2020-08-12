@@ -89,7 +89,7 @@ class Poem {
 	}
 
 	invalidRhyme(d){
-		if(d.score === undefined || d.score < 20 || !isIambicEnd(d.tags[0])){
+		if(d.score === undefined || d.score < 20 || !this.isIambicEnd(d.tags[0])){
 			return true;
 		}
 		return parseFloat(d.tags[1].replace("f:", "")) < .5;
@@ -233,7 +233,7 @@ class Poem {
 
 	validMeter(data, syllables, code){
 		for(var i = 0; i < 10; i++){
-			if(data.word.includes(NUMBERS[i])){
+			if(data.word.includes(this.numbers[i])){
 				return false;
 			}
 		}
@@ -247,10 +247,10 @@ class Poem {
 			return true;
 		}
 		else if(code == "lc"){
-			return isIambicEnd(data.tags[0]) == (syllables % 2 == 0)
+			return this.isIambicEnd(data.tags[0]) == (syllables % 2 == 0)
 		}
 		else{
-			return isIambicStart(data.tags[0]) == (syllables % 2 == 0)
+			return this.isIambicStart(data.tags[0]) == (syllables % 2 == 0)
 		}
 	}
 
