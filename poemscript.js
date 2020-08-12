@@ -145,7 +145,7 @@ class Poem {
 			console.log("empty queue");
 			return;
 		}
-		this.accessURL(queue[0].code + "=" + queue[0].word + "&md=rfs", function(poem, data){
+		this.accessURL(this.queue[0].code + "=" + this.queue[0].word + "&md=rfs", function(poem, data){
 			var word = poem.queue[0].word;
 			var syllables = poem.queue[0].syllables;
 			var code = poem.queue[0].code;
