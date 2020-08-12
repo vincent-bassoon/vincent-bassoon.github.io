@@ -103,7 +103,19 @@ class Poem {
 
 	
 	chooseWordIndex(data){
-
+		var sum = 0;
+		for(var i = 0; i < data.length; i++){
+			sum += data[i].score;
+		}
+		var num = Math.random() * sum;
+		sum = 0;
+		for(var i = 0; i < data.length; i++){
+			sum += data[i].score;
+			if(sum > num){
+				return i;
+			}
+		}
+		return null;
 	}
 
 
@@ -303,10 +315,10 @@ class Poem {
 }
 
 function run(){
-	button.disabled = true;
+	document.getElementById("startButton").disabled = true;
 	display.innerText = "";
 	setTimeout(function(){
 		var poem = new Poem();
-		poem.generate();
+		poem.generateRhyme();
 	}, 3);
 }
