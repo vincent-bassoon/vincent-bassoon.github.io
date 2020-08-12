@@ -79,7 +79,7 @@ class Poem {
 				}
 				poem.scheme_index++;
 			}
-			if(poem.scheme_index < this.scheme.length){
+			if(poem.scheme_index < poem.scheme.length){
 				poem.generateSeed();
 			}
 			else{
