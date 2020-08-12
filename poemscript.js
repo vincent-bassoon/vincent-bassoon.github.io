@@ -304,15 +304,15 @@ class Poem {
 			word = temp;
 			if(code == "lc"){
 				line.push(word);
-				syllable_values.push(word_dict[word].syllables);
+				syllable_values.push(this.word_dict[word].syllables);
 			}
 			else{
 				line.unshift(word);
-				syllable_values.unshift(word_dict[word].syllables);
+				syllable_values.unshift(this.word_dict[word].syllables);
 			}
 		}
 		if(code == "rc"){
-			word = word_dict[word][code][word_dict[word].syllables];
+			word = this.word_dict[word][code][this.word_dict[word].syllables];
 			line.unshift(word);
 		}
 	}
