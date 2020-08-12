@@ -296,7 +296,7 @@ class Poem {
 		}
 	}
 
-	addToLine(line, syllable_values, word_dict, word, syllable, code){
+	addToLine(line, syllable_values, word, syllable, code){
 		var temp;
 		while(syllable != this.word_dict[word].syllables){
 			temp = this.word_dict[word][code][syllable];
