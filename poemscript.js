@@ -96,6 +96,7 @@ class Poem {
 	}
 
 	generateRhyme(){
+		console.log("generating rhymes");
 		this.rhymes = {};
 		this.scheme_index = 0;
 		this.generateSeed();
@@ -122,6 +123,7 @@ class Poem {
 
 
 	generatePoem(){
+		console.log("generating poem");
 		this.queue = [];
 		this.lines = {};
 		this.line_index = 0;
@@ -129,6 +131,7 @@ class Poem {
 	}
 
 	generateLine(){
+		console.log("generating line at index ", this.line_index);
 		this.word_dict = {};
 		this.queue.push({"word": this.rhymes[this.line_index].word, "syllables": this.rhymes[this.line_index].syllables, "code": "rc"});
 		if(this.line_index != 0){
@@ -152,7 +155,6 @@ class Poem {
 			poem.queue.shift();
 			var sum_syllables;
 			var new_counter = 0;
-			var dict_temp;
 			while(data.length > 0 && new_counter < 2){
 				var index = poem.chooseWordIndex(data);
 				var d = data[index];
@@ -255,6 +257,7 @@ class Poem {
 	}
 
 	finalizeLine(word_start, syllable_start, syllable_sum, code){
+		console.log("finalizing line at index " + this.line_index);
 		var line = [word_start];
 		var syllable_values = [this.word_dict[word_start].syllables];
 		this.addToLine(line, syllable_values, word_start, syllable_sum, code);
@@ -281,6 +284,7 @@ class Poem {
 			}
 		}*/
 		this.lines[this.line_index] = line;
+		console.log("finalized line at index " + this.line_index + ": " + line.join(" "));
 		this.queue = [];
 		this.line_index++;
 		if(this.line_index == 14){
