@@ -319,7 +319,7 @@ class KeyGenerator {
 				       "minor": {0: "minor", 3: "major", 5: "minor", 7: "minor", 8: "major", 10: "major"}};
 		
 		//mediant should always go to V
-		this.mod_freqs = {"major": {"pivot": {"vi-ii": 30, "IV-I": 5, "I-IV": 30, "I-V": 35},
+		this.mod_freqs = {"major": {"pivot": {"vi-ii": 32, "I-IV": 33, "I-V": 35},
 							 		"mediant": {"I+": 50, "IV-": 50}},
 						  "minor": {"pivot": {"VII-V": 30, "III-V": 30, "i-iv": 30, "i-ii": 10},
 						  			"mediant": {"III-": 50, "VI+": 50}}};
