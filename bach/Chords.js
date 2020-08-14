@@ -55,7 +55,7 @@ class ChordFunctions {
 		if(num1 == null){
 			num1 = num2;
 		}
-		return new Chord(num1, num2, key, this.key_generator.qualities[key.modality][num], mod, seven, inversion);
+		return new Chord(num1, num2, key, this.key_generator.qualities[key.modality][num2], mod, seven, inversion);
 	}
 	numToClass(num){
 		switch(num){
