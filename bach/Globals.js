@@ -493,7 +493,7 @@ class MotionFunctions {
 	constructor(max_score){
 		this.type = {"CONSTANT": 0, "STEP": 1, "THIRD": 2, "LEAP": 3,
 			     "MORDENT": 4, "TURN": 5, "PASSING_8": 6, "PASSING_16": 7,
-			     "SUSPENSION": 8, "SUSPENSION_7": 9};
+			     "SUSPENSION": 8, "SUSPENSION_7": 9, "ACCENTED_PASSING_8": 10};
 		
 		this.max_score = max_score;
 	}

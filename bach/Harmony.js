@@ -242,6 +242,17 @@ class HarmonyFunctions {
 					}
 				}
 			}
+			if(!harmony[index].end_of_phrase && !harmony[index + 1].has_nct){
+				for(var voice1 = 3; voice1 >= 0; voice1--){
+					if(Math.abs(harmony[index].getMotion(voice1)) == this.mf.type.PASSING_8){
+						var direction = this.mf.direction(harmony[index].getMotion(voice1));
+						harmony[index + 1].setNotes(voice1, [harmony[index].getValue(voice1, 1), harmony[index + 1].getValue(voice1, 0)],
+													harmony[index + 1].getDegree(voice1), 2, this.mf.type.ACCENTED_PASSING_8 * direction);
+						harmony[index].setNotes(voice1, [harmony[index].getValue(voice1, 0)], harmony[index].getDegree(voice1), 1, this.mf.type.STEP * direction);
+						voice1 = -1;
+					}
+				}
+			}
 			harmony[index].has_nct = false;
 			for(var voice1 = 0; voice1 < 4; voice1++){
 				if(harmony[index].getNumNotes(voice1) > 1){
@@ -455,6 +466,7 @@ class HarmonyFunctions {
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
 			//leading tone check, ignores inner voices at penultimate chord
 			only_sus = true;
+			//only_sus is to prevent passing tone between 7-5
 			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase && motion == -1 * this.mf.type.THIRD)){
 				return;
 			}
