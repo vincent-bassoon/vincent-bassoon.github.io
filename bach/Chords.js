@@ -303,7 +303,7 @@ class ChordFunctions {
 						chord_index++;
 					}
 				}
-				if(!mods[i].keys[1].equals(prev_key) && !seven){
+				if(!mods[i].keys[1].equals(prev_key) && !seven && i != 0){
 					new_key = true;
 				}
 				prev_key = mods[i].keys[1];
