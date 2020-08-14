@@ -384,21 +384,22 @@ class KeyGenerator {
 }
 
 class Chord {
-	constructor(roman_num, key, quality, mod, seven, inversion){
-		this.roman_num = roman_num;
+	constructor(start_num, end_num, key, quality, mod, seven, inversion){
+		this.start_num = start_num;
+		this.end_num = end_num;
 		this.key = key;
 		this.quality = quality;
 		this.mod = mod;
 		this.seven = seven;
 		this.inversion = inversion;
 		
-		this.pitches = [key.numToPitch(roman_num)];
+		this.pitches = [key.numToPitch(end_num)];
 		var chord_mapping = {"major": {1: 4, 2: 7}, "aug": {1: 4, 2: 8},
 				     "minor": {1: 3, 2: 7}, "dim": {1: 3, 2: 6}};
 		for(var i = 1; i < 3; i++){
 			this.pitches.push((this.pitches[0] + chord_mapping[quality][i]) % 12);
 		}
-		if(roman_num == 5 && quality == "major"){
+		if(end_num == 5 && quality == "major"){
 			this.pitches.push((this.pitches[0] + chord_mapping[quality][2] + 3) % 12);
 		}
 	}

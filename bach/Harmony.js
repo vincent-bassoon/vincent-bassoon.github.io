@@ -336,8 +336,8 @@ class HarmonyFunctions {
 		var start_num = key.valueToNum(value);
 		var sus_pitch = key.numToPitch((start_num % 7) + 1);
 		var suspension = ((voice == 1 || voice == 2) && index > 1 && !harmony[index - 1].end_of_phrase &&
-				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch) && !(degree == 0 && harmony[index].chord.roman_num == 5) && 
-				  !(harmony[index].chord.inversion == 2 && harmony[index].chord.roman_num == 1));
+				  degree != 2 && harmony[index - 1].chord.pitches.includes(sus_pitch) && !(degree == 0 && harmony[index].chord.end_num == 5) && 
+				  !(harmony[index].chord.inversion == 2 && harmony[index].chord.end_num == 1));
 		var queue;
 		if(only_sus){
 			queue = [];
@@ -447,7 +447,7 @@ class HarmonyFunctions {
 				}
 			}
 		}
-		if(harmony[index].chord.inversion == 2 && harmony[index].chord.roman_num == 1 && (degree == 0 || degree == 1)){
+		if(harmony[index].chord.inversion == 2 && harmony[index].chord.end_num == 1 && (degree == 0 || degree == 1)){
 			if(!(motion == -1 * this.mf.type.STEP || (motion == this.mf.type.CONSTANT && next_motion == this.mf.type.SUSPENSION))){
 				return;
 			}
@@ -472,9 +472,15 @@ class HarmonyFunctions {
 			// be considered with ncts
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion, only_sus);
 		}
-		if(harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
-			// makes sure it never leaps up to mediant chord
+		if(voice == 3 && harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
+			// makes sure bass it never leaps up to mediant chord
 			return;
+		}
+		if(voice == 3 && harmony[index + 1].chord.start_num == 6 && (harmony[index].chord.end_num == 5 || harmony[index].chord.end_num == 7)){
+			if(Math.abs(motion) == this.mf.type.THIRD || Math.abs(motion) == this.mf.type.LEAP){
+				// makes sure bass never leaps on a dominant-vi pattern
+				return;
+			}
 		}
 		if(next_motion == this.mf.type.SUSPENSION){
 			if(value != next_value || next_key.valueToName(next_value) != key.valueToName(value)){
