@@ -298,7 +298,7 @@ class ChordFunctions {
 								seven = this.chooseSeven();
 							}
 						}
-						chords[chord_index] = this.generateChord(mods[i].nums, mods[i].keys[j], mod_string, seven, null);
+						chords[chord_index] = this.generateChord([mods[i].nums[j]], mods[i].keys[j], mod_string, seven, null);
 						this.chord_strings[chord_index] = this.generateNumString(mods[i].nums[j], mods[i].keys[j], seven, null) + " (mediant)";
 						chord_index++;
 					}
