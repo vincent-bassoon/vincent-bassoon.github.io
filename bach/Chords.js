@@ -492,6 +492,8 @@ class ChordFunctions {
 				num_mods = 2;
 			}
 		}
+		var prev_mods_temp = [];
+		prev_mods_temp.push(...prev_mods);
 		for(var i = 0; i < num_mods; i++){
 			if(type == "mediant"){
 				type = "pivot";
@@ -507,11 +509,12 @@ class ChordFunctions {
 			else{
 				type = choose({"mediant": 40, "pivot": 60});
 			}
-			var mod = key.getModulation(prev_key, type, prev_mods, (is_last && i == num_mods - 1));
+			var mod = key.getModulation(prev_key, type, prev_mods_temp, (is_last && i == num_mods - 1));
 			if(mod == null){
 				return null;
 			}
 			mods.push(mod);
+			prev_mods_temp.push(mod);
 			prev_key = mods[mods.length - 1].keys[1];
 		}
 		mods[0].additions_valid = false;
