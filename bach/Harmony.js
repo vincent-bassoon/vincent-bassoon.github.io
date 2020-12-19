@@ -448,12 +448,13 @@ class HarmonyFunctions {
 			}
 		}
 		if(harmony[index].chord.inversion == 2 && harmony[index].chord.end_num == 1 && (degree == 0 || degree == 1)){
+			//cadential 64 chords must act as suspensions (64 resolves to 53)
 			if(!(motion == -1 * this.mf.type.STEP || (motion == this.mf.type.CONSTANT && next_motion == this.mf.type.SUSPENSION))){
 				return;
 			}
 		}
 		if(key.valueToNum(value) == 7 && next_key.valueToName(next_value) != key.valueToName(key.pitch)){
-			//leading tone check, ignores inner voices at penultimate chord
+			//leading tone must resolve, ignores inner voices at penultimate chord of phrase
 			only_sus = true;
 			if(!((voice == 1 || voice == 2) && harmony[index + 1].end_of_phrase && motion == -1 * this.mf.type.THIRD)){
 				return;
@@ -464,7 +465,7 @@ class HarmonyFunctions {
 			return;
 		}
 		if(this.nf.isAugOrDim(change, key.valueToName(value), next_key.valueToName(next_value))){
-			// this check ignores augmented/diminished unison
+			//aug/dim interval check, ignores augmented/diminished unison
 			return;
 		}
 		if(Math.abs(change) < 6 && !harmony[index].end_of_phrase){
@@ -473,7 +474,7 @@ class HarmonyFunctions {
 			this.addNctOptions(options, degree, harmony, index, voice, key, next_key, value, next_value, motion, next_motion, only_sus);
 		}
 		if(voice == 3 && harmony[index + 1].chord.mod == "mediant" && (motion == this.mf.type.THIRD || motion == this.mf.type.LEAP)){
-			// makes sure bass it never leaps up to mediant chord
+			// makes sure bass never leaps up to mediant chord
 			return;
 		}
 		if(voice == 3 && harmony[index + 1].chord.start_num == 6 && (harmony[index].chord.end_num == 5 || harmony[index].chord.end_num == 7)){
