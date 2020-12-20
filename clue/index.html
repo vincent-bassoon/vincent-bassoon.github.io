@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width">
 	<head>
   		<title>Clue</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -14,42 +14,76 @@
 				margin: 0;
 				font-family: Arial;
 			}
+			table {
+				border-collapse: collapse;
+				width: 100%;
+			}
+			td {
+				border: 1px solid #ccc;
+				text-align: left;
+			}
+			a.tab {
+				width: 50%;
+				background-color: #555;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				padding: 10px;
+				text-align: center;
+			}
+			td.data {
+				background-color: #aaa;
+			}
+			td.data-pressed {
+				background-color: #bbb;
+			}
+			td.title {
+				padding-top: 2px;
+				padding-bottom: 2px;
+				padding-left: 10px;
+				width: 133px;
+			}
+			td.weapon {
+				background-color: #ddd;
+			}
+			div.container {
+				width: 100%;
+				padding-right: 10px;
+			}
+
+
+			.table-container {
+				width: 100%;
+				display: flex;
+			}
+			.name-container {
+				float: left;
+				padding-right: 10px;
+				padding-left: 10px;
+				padding-top: 10px;
+				background-color: #ddd;
+				width: 200px;
+			}
+			.box-container {
+				flex-grow: 1;
+				float: left;
+				padding-top: 10px;
+			}
+			.name {
+				height: 19px;
+			}
+			.box {
+				width: 100%;
+				height: 19px;
+			}
 		</style>
 	</head>
 	<body>
-		<p>
-			Col. Mustard<br>
-			Prof. Plum<br>
-			Mr. Green<br>
-			Mrs. Peacock<br>
-			Miss Scarlet<br>
-			Mrs. White<br>
-			Mme. Rose<br>
-			Sgt. Gray<br>
-			M. Brunette<br>
-			Miss Peach<br>
-<br>
-			Knife<br>
-			Candlestick<br>
-			Revolver<br>
-			Rope<br>
-			Lead Pipe<br>
-			Wrench<br>
-			Poison<br>
-			Horseshoe<br>
-<br>
-			Courtyard<br>
-			Gazebo<br>
-			Drawing Room<br>
-			Dining Room<br>
-			Kitchen<br>
-			Carriage House<br>
-			Trophy Room<br>
-			Conservatory<br>
-			Studio<br>
-			Billiard Room<br>
-			Library<br>
-			Fountain<br>
-		</p>
+		<div class="container">
+			<table id="table"></table>
+		</div>
+
 	</body>
+	<script src="script.js"></script>
 </html>
