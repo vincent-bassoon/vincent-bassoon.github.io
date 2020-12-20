@@ -22,6 +22,11 @@ function createUI(){
 		for(var j = 0; j < 4; j++){
 			item = document.createElement("td");
 			item.onclick = function(){this.classList.toggle("data-pressed")};
+			item.ondblclick = function(){
+				this.classList.toggle("data-dbl-pressed");
+				if(this.classList.contains("data-pressed")){
+					this.classList.remove("data-pressed");
+				}};
 			item.classList.add("data");
 			elements[j + "d" + i] = item;
 			row.appendChild(item);

@@ -34,9 +34,13 @@
 			}
 			td.data {
 				background-color: #aaa;
+				text-align: center;
 			}
 			td.data-pressed {
 				background-color: #bbb;
+			}
+			td.data-dbl-pressed {
+				background-color: #FF0000;
 			}
 			td.title {
 				padding-top: 2px;
@@ -47,41 +51,20 @@
 			td.weapon {
 				background-color: #ddd;
 			}
-			div.container {
+			div.table-container {
 				width: 100%;
 				padding-right: 10px;
-			}
-
-
-			.table-container {
-				width: 100%;
-				display: flex;
-			}
-			.name-container {
-				float: left;
-				padding-right: 10px;
-				padding-left: 10px;
-				padding-top: 10px;
-				background-color: #ddd;
-				width: 200px;
-			}
-			.box-container {
-				flex-grow: 1;
-				float: left;
-				padding-top: 10px;
-			}
-			.name {
-				height: 19px;
-			}
-			.box {
-				width: 100%;
-				height: 19px;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
+		<div class="table-container">
 			<table id="table"></table>
+		</div>
+		<div class="input-container">
+			<input type="text" placeholder="Enter tag">
+			<a>Enter</a>
+			<a>Clear</a>
 		</div>
 
 	</body>
