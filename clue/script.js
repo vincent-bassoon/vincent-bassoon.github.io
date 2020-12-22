@@ -60,6 +60,10 @@ function createUI(){
 		document.getElementById("input-container").style.display = "block";
 		document.getElementById("field").focus();
 	};
+	document.getElementById("cancel").onclick = function(){
+		document.getElementById("field").blur();
+		document.getElementById("input-container").style.display = "none";
+	}
 	document.getElementById("clear").onclick = function(){
 		for(var id in boxes){
 			if(boxes[id].pressed){

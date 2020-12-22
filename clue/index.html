@@ -81,6 +81,9 @@
 				padding: 20px;
 				background-color: white;
 			}
+			div.input-div {
+				margin-bottom: 20px;
+			}
 			div.selections{
 				margin-bottom: 20px;
 			}
@@ -127,12 +130,15 @@
 		<a class="bottom-tab" id="clear">Clear all boxes</a>
 		<div class="input-container" id="input-container">
 			<div class="selections" id="selections"></div>
-			<div>
+			<div class="input-div">
 				<input type="text" placeholder="Enter tag" id="field">
 				<a class="button">Submit tag</a>
 			</div>
-			<div>
+			<div class="input-div">
 				<a class="button">Undo previous edit</a>
+			</div>
+			<div class="input-div">
+				<a class="button" id="cancel">Cancel</a>
 			</div>
 		</div>
 
