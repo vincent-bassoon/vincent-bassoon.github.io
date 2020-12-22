@@ -27,7 +27,7 @@
 			}
 			th {
 				border: 1px solid #ccc;
-				font-weight: 100;
+				font-weight: 300;
 			}
 			td.data {
 				background-color: #aaa;
@@ -127,15 +127,20 @@
 		</div>
 		<table id="table"></table>
 		<a class="bottom-tab" id="edit">Edit 0 boxes</a>
-		<a class="bottom-tab" id="clear">Clear all boxes</a>
+		<a class="bottom-tab" id="clear">Clear</a>
 		<div class="input-container" id="input-container">
 			<div class="selections" id="selections"></div>
 			<div class="input-div">
 				<input type="text" placeholder="Enter tag" id="field">
-				<a class="button">Submit tag</a>
+				<a class="button" id="submit-tag">Submit tag</a>
 			</div>
 			<div class="input-div">
-				<a class="button">Undo previous edit</a>
+				<a class="button" id="x">X</a>
+				<a class="button" id="o">O</a>
+				<a class="button" id="seen">Seen</a>
+			</div>
+			<div class="input-div">
+				<a class="button" id="undo">Undo previous edit</a>
 			</div>
 			<div class="input-div">
 				<a class="button" id="cancel">Cancel</a>

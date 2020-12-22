@@ -3,8 +3,10 @@ var boxes = {};
 var players = ["V", "C", "T", "J"];
 var current_tab;
 var current_box_num = 0;
+var row_height;
+var base_font_size;
 
-function createUI(){
+function createTabs(){
 	var tabs = {};
 	var tab_ids = ["all", "known", "unknown"];
 	for(var i = 0; i < tab_ids.length; i++){
@@ -19,7 +21,11 @@ function createUI(){
 			current_tab = this;
 		};
 	}
+}
+
+function createTable(){
 	var table = document.getElementById("table");
+	base_font_size = parseInt(window.getComputedStyle(table).fontSize.replace("px", ""));
 	var row = document.createElement("tr");
 	var item = document.createElement("td");
 	item.classList.add("title");
@@ -38,43 +44,6 @@ function createUI(){
 	names.push(...weapons);
 	names.push(...rooms);
 
-	document.getElementById("edit").onclick = function(){
-		var string = "Selected:\n";
-		if(current_box_num == 0){
-			string += "\tNone\n";
-		}
-		else{
-			for(var i = 0; i < 4; i++){
-				var clues = [];
-				for(var j = 0; j < names.length; j++){
-					if(boxes[i + "d" + j].pressed){
-						clues.push(boxes[i + "d" + j].clue);
-					}
-				}
-				if(clues.length > 0){
-					string += "\tColumn " + players[i] + ": " + clues.join(", ") + "\n";
-				}
-			}
-		}
-		document.getElementById("selections").innerText = string;
-		document.getElementById("input-container").style.display = "block";
-		document.getElementById("field").focus();
-	};
-	document.getElementById("cancel").onclick = function(){
-		document.getElementById("field").blur();
-		document.getElementById("input-container").style.display = "none";
-	}
-	document.getElementById("clear").onclick = function(){
-		for(var id in boxes){
-			if(boxes[id].pressed){
-				boxes[id].pressed = false;
-				boxes[id].element.classList.toggle("data-pressed");
-			}
-		}
-		current_box_num = 0;
-		document.getElementById("edit").innerText = "Edit 0 boxes";
-	};
-
 	for(var i = 0; i < names.length; i++){
 		row = document.createElement("tr");
 		item = document.createElement("td");
@@ -89,7 +58,7 @@ function createUI(){
 		for(var j = 0; j < 4; j++){
 			item = document.createElement("td");
 			item.id = j + "d" + i;
-			boxes[item.id] = {element: item, pressed: false, column: players[j], clue: names[i]};
+			boxes[item.id] = {element: item, tags: [], pressed: false, column: players[j], clue: names[i]};
 			item.onclick = function(){
 				this.classList.toggle("data-pressed");
 				boxes[this.id].pressed = !boxes[this.id].pressed;
@@ -110,7 +79,73 @@ function createUI(){
 		}
 		table.appendChild(row);
 	}
-
+	row_height = item.offsetHeight;
 }
 
-createUI();
+function configureButtons(){
+	function clearBoxes(){
+		for(var id in boxes){
+			if(boxes[id].pressed){
+				boxes[id].pressed = false;
+				boxes[id].element.classList.toggle("data-pressed");
+			}
+		}
+		current_box_num = 0;
+		document.getElementById("edit").innerText = "Edit 0 boxes";
+	}
+	function close(){
+		clearBoxes();
+		var field = document.getElementById("field");
+		field.blur();
+		field.value = "";
+		document.getElementById("input-container").style.display = "none";
+	}
+	document.getElementById("edit").onclick = function(){
+		var string = "";
+		if(current_box_num == 0){
+			string = "No boxes selected";
+		}
+		else{
+			for(var i = 0; i < 4; i++){
+				var clues = [];
+				for(var j = 0; j < 30; j++){
+					if(boxes[i + "d" + j].pressed){
+						clues.push(boxes[i + "d" + j].clue);
+					}
+				}
+				if(clues.length > 0){
+					string += players[i] + ":\n" + clues.join("\n") + "\n";
+				}
+			}
+		}
+		document.getElementById("selections").innerText = string;
+		document.getElementById("input-container").style.display = "block";
+		document.getElementById("field").focus();
+	};
+	document.getElementById("clear").onclick = clearBoxes;
+	document.getElementById("cancel").onclick = close;
+	document.getElementById("submit-tag").onclick = function(){
+		if(document.getElementById("field").value.trim() != ""){
+			for(var i = 0; i < 4; i++){
+				for(var j = 0; j < 30; j++){
+					var box = boxes[i + "d" + j];
+					if(box.pressed){
+						box.tags.push(document.getElementById("field").value.trim());
+						box.element.innerText = box.tags.join(", ");
+						var font_size = base_font_size;
+						box.element.style.fontSize = font_size + "px";
+						while(font_size > 8 && box.element.offsetHeight > row_height){
+							font_size--;
+							box.element.style.fontSize = font_size + "px";
+						}
+					}
+				}
+			}
+		}
+		close();
+	};
+}
+
+createTabs();
+createTable();
+configureButtons();
