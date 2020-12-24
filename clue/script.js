@@ -19,6 +19,26 @@ function createTabs(){
 			current_tab.classList.toggle("active-tab");
 			this.classList.toggle("active-tab");
 			current_tab = this;
+			if(this.id == "all"){
+				for(var i = 0; i < 30; i++){
+					if(document.getElementById("r" + i).classList.contains("hide")){
+						document.getElementById("r" + i).classList.toggle("hide");
+					}
+				}
+			}
+			else{
+				for(var i = 0; i < 30; i++){
+					var known = false;
+					for(var j = 0; j < 4; j++){
+						if(boxes[j + "d" + i].status == 1){
+							known = true;
+						}
+					}
+					if(((this.id == "known") == known) == document.getElementById("r" + i).classList.contains("hide")){
+						document.getElementById("r" + i).classList.toggle("hide");
+					}
+				}
+			}
 		};
 	}
 }
@@ -46,6 +66,7 @@ function createTable(){
 
 	for(var i = 0; i < names.length; i++){
 		row = document.createElement("tr");
+		row.id = "r" + i;
 		item = document.createElement("td");
 		item.id = "t" + i;
 		item.innerText = names[i];
@@ -58,7 +79,7 @@ function createTable(){
 		for(var j = 0; j < 4; j++){
 			item = document.createElement("td");
 			item.id = j + "d" + i;
-			boxes[item.id] = {element: item, tags: [], pressed: false, column: players[j], clue: names[i]};
+			boxes[item.id] = {element: item, tags: [], pressed: false, column: players[j], clue: names[i], status: -1};
 			item.onclick = function(){
 				this.classList.toggle("data-pressed");
 				boxes[this.id].pressed = !boxes[this.id].pressed;
@@ -99,6 +120,30 @@ function configureButtons(){
 		field.blur();
 		field.value = "";
 		document.getElementById("input-container").style.display = "none";
+	}
+	document.getElementById("yes").onclick = function(){
+		for(var i = 0; i < 4; i++){
+			var clues = [];
+			for(var j = 0; j < 30; j++){
+				if(boxes[i + "d" + j].pressed){
+					boxes[i + "d" + j].element.classList.add("data-yes");
+					boxes[i + "d" + j].status = 1;
+				}
+			}
+		}
+		close();
+	}
+	document.getElementById("no").onclick = function(){
+		for(var i = 0; i < 4; i++){
+			var clues = [];
+			for(var j = 0; j < 30; j++){
+				if(boxes[i + "d" + j].pressed){
+					boxes[i + "d" + j].element.classList.add("data-no");
+					boxes[i + "d" + j].status = 0;
+				}
+			}
+		}
+		close();
 	}
 	document.getElementById("edit").onclick = function(){
 		var string = "";
