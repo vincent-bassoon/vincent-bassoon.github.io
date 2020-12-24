@@ -21,6 +21,9 @@
 				font: 16px;
 				table-layout: fixed;
 			}
+			div {
+				width: 100%;
+			}
 			td {
 				border: 1px solid #ccc;
 				text-align: left;
@@ -56,8 +59,7 @@
 			td.weapon {
 				background-color: #dedede;
 			}
-			a.top-tab {
-				width: 33.3333%;
+			.tab {
 				background-color: #555;
 				color: white;
 				float: left;
@@ -66,15 +68,20 @@
 				padding: 14px;
 				text-align: center;
 			}
-			a.bottom-tab {
+			a.tab.top {
+				width: 33.3333%;
+			}
+			a.tab.bottom {
 				width: 50%;
-				background-color: #555;
-				color: white;
-				float: left;
-				border: none;
-				outline: none;
-				padding: 14px;
-				text-align: center;
+			}
+			a.tab.status {
+				width: 33.3333%;
+			}
+			a.tab.add {
+				width: 25%;
+			}
+			a.tab.edit {
+				width: 33.3333%;
 			}
 			a.active-tab {
 				background-color: #777;
@@ -130,35 +137,40 @@
 		</style>
 	</head>
 	<body>
-		<div class="tab-container">
-			<a class="top-tab" id="all">All</a>
-			<a class="top-tab" id="unknown">Unknown</a>
-			<a class="top-tab" id="known">Known</a>
+		<div>
+			<a class="top tab" id="top-tab-all">All</a>
+			<a class="top tab" id="top-tab-unknown">Unknown</a>
+			<a class="top tab" id="top-tab-known">Known</a>
 		</div>
 		<table id="table"></table>
-		<a class="bottom-tab" id="edit">Edit 0 boxes</a>
-		<a class="bottom-tab" id="clear">Clear</a>
+		<a class="bottom tab" id="edit">Edit 0 boxes</a>
+		<a class="bottom tab" id="clear">Clear</a>
 		<div class="input-container" id="input-container">
 			<div class="selections" id="selections"></div>
-			<div class="input-div">
-				<input type="text" placeholder="Enter tag" id="field">
-				<a class="button" id="submit-tag">Submit tag</a>
+			<div class="tab">Set Status</div>
+			<div>
+				<a class="status tab" id="status-tab-none">None</a>
+				<a class="status tab" id="status-tab-1">X</a>
+				<a class="status tab" id="status-tab-0">/</a>
 			</div>
-			<div class="input-div">
-				<a class="button" id="yes">X</a>
-				<a class="button" id="no">/</a>
-				<a class="button" id="seen">Seen</a>
+			<div class="tab">Add Tag</div>
+			<div>
+				<a class="add tab" id="add-tab-none">None</a>
+				<a class="add tab" id="add-tab-1">C1</a>
+				<a class="add tab" id="add-tab-2">T1</a>
+				<a class="add tab" id="add-tab-3">J1</a>
 			</div>
-			<div class="input-div">
-				<a class="button" id="undo">Undo previous edit</a>
+			<div class="tab" id="edit-title"></div>
+			<div id="edit-tab-container">
+				<a class="edit tab" id="edit-tab-none">None</a>
+				<a class="edit tab" id="edit-tab-remove">Remove</a>
+				<a class="edit tab" id="edit-tab-delete">Delete</a>
 			</div>
-			<div class="input-div">
-				<a class="button" id="cancel">Cancel</a>
-			</div>
+			<a class="tab" id="submit">Submit</a>
 		</div>
 
 	</body>
-	<script src="script.js"></script>
+	<script src="vscript.js"></script>
 </html>
 <!--
 Selected clues (no title, just list)
