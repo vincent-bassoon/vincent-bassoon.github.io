@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta name="viewport" content="width=device-width">
+	<head>
+  		<title>Clue</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+		<style>
+			* {box-sizing: border-box}
+			body, html {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				font-family: Arial;
+			}
+			table {
+				border-collapse: collapse;
+				width: 100%;
+				font: 16px;
+				table-layout: fixed;
+			}
+			div {
+				width: 100%;
+			}
+			div.hide {
+				display: none;
+			}
+			td {
+				border: 1px solid #ccc;
+				text-align: left;
+			}
+			th {
+				border: 1px solid #ccc;
+				font-weight: 300;
+			}
+			td.data {
+				background-color: #aaa;
+				text-align: center;
+				width: auto;
+			}
+			td.data-pressed {
+				background-color: #bbb;
+			}
+			td.data-yes {
+				background-color: black;
+				color: white;
+			}
+			td.data-no {
+				background-color: white;
+			}
+			tr.hide {
+				display: none;
+			}
+			td.title {
+				padding-top: 2px;
+				padding-bottom: 2px;
+				padding-left: 10px;
+				width: 133px;
+			}
+			td.weapon {
+				background-color: #dedede;
+			}
+			a.tab {
+				float: left;
+				border: none;
+				outline: none;
+				text-align: center;
+				display: block;
+			}
+			.top.active-tab {
+				background-color: #777;
+			}
+			.top {
+				padding: 16px;
+				color: white;
+				width: 33.3333%;
+				background-color: #555;
+			}
+			.bottom {
+				padding: 16px;
+				color: white;
+				width: 50%;
+				background-color: #555;
+			}
+
+			.settings {
+				width: 50%;
+				padding: 16px;
+				background-color: #aaa;
+			}
+			
+			.submit {
+				padding: 16px;
+				width: 100%;
+				position: fixed;
+				background-color: #aaa;
+				bottom: 0;
+			}
+
+			.status-none {
+				padding: 8px;
+			}
+			.status-unknown {
+				background-color: #ccc;
+				padding: 8px;
+			}
+			.status-yes {
+				color: white;
+				background-color: black;
+				padding: 8px;
+			}
+			.status-no {
+				background-color: white;
+				padding: 8px;
+			}
+			.status.active-tab {
+				background-color: #DA9CA4;
+			}
+			.status-color {
+				background-color: #DA9CA4;
+			}
+			.status {
+				background-color: #aaa;
+				width: 25%;
+				padding: 8px;
+			}
+
+			.add.active-tab {
+				background-color: #9CC5DA;
+			}
+			.add-color {
+				background-color: #9CC5DA;
+			}
+			.add {
+				padding: 16px;
+				background-color: #aaa;
+				width: 25%;
+			}
+
+			.edit.active-tab {
+				background-color: #AEDA9C;
+			}
+			.edit-color {
+				background-color: #AEDA9C;
+			}
+			.edit {
+				padding: 16px;
+				background-color: #aaa;
+				width: 33.3333%;
+			}
+
+			.confirm {
+				padding: 20px;
+				background-color: #aaa;
+
+				border-radius: 3px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				-ms-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+			}
+
+			.cancel {
+				position: fixed;
+				top: 0;
+				width: 100%;
+				padding: 16px;
+				background-color: #aaa;
+			}
+
+			.confirm-container {
+				position: fixed;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.5);
+			}
+
+			div.input-title {
+				float: left;
+				border: none;
+				outline: none;
+				padding: 16px;
+				text-align: center;
+				display: block;
+			}
+			div.selections{
+				background-color: #DAD99C;
+				padding: 16px;
+				float: left;
+				border: none;
+				outline: none;
+				display: block;
+			}
+			div.offscreen{
+				position: fixed;
+				top: -100px;
+				width: 100%;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="offscreen">
+			<table>
+				<tr>
+					<td class="title">Carriage House</td>
+					<td class="data" id="test_element"></td>
+					<td class="data"></td>
+					<td class="data"></td>
+					<td class="data"></td>
+				</tr>
+			</table>
+		</div>
+		<div id="main-container">
+			<div>
+				<a class="top tab" id="top-tab-all">All</a>
+				<a class="top tab" id="top-tab-unknown">Unknown</a>
+				<a class="top tab" id="top-tab-known">Known</a>
+			</div>
+			<table id="table"></table>
+			<a class="bottom tab" id="edit">Edit 0 boxes</a>
+			<a class="bottom tab" id="clear">Clear</a>
+		</div>
+		<div class="hide" id="input-container">
+			<div>
+				<a class="settings tab" id="settings-tab-reset">Reset</a>
+				<a class="settings tab" id="settings-tab-undo">Undo</a>
+			</div>
+			<div class="selections" id="selections"></div>
+			<div class="input-title status-color">Set Status</div>
+			<div>
+				<a class="status tab" id="status-tab-none">
+					<div class="status-none">None</div>
+				</a>
+				<a class="status tab" id="status-tab-2">
+					<div class="status-unknown">?</div>
+				</a>
+				<a class="status tab" id="status-tab-1">
+					<div class="status-yes">X</div>
+				</a>
+				<a class="status tab" id="status-tab-0">
+					<div class="status-no">O</div>
+				</a>
+			</div>
+			<div class="input-title add-color">Add Tag</div>
+			<div>
+				<a class="add tab" id="add-tab-none">None</a>
+				<a class="add tab" id="add-tab-1">C1</a>
+				<a class="add tab" id="add-tab-2">T1</a>
+				<a class="add tab" id="add-tab-3">J1</a>
+			</div>
+			<div class="input-title edit-color" id="edit-title"></div>
+			<div id="edit-tab-container">
+				<a class="edit tab" id="edit-tab-none">None</a>
+				<a class="edit tab" id="edit-tab-remove">Remove</a>
+				<a class="edit tab" id="edit-tab-delete">Delete</a>
+			</div>
+			<a class="tab submit" id="submit">Submit</a>
+		</div>
+		<div class="confirm-container hide" id="confirm-container">
+			<a class="cancel tab" id="cancel-tab">Touch anywhere to cancel</a>
+			<a class="confirm tab" id="confirm-tab"></a>
+		</div>
+
+	</body>
+	<script src="vscript.js"></script>
+</html>
