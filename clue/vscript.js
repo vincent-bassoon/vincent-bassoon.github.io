@@ -162,6 +162,10 @@ function configureEdit(){
 						selected_boxes.push(boxes[i][j]);
 					}
 				}
+				if(selected_clues.length > 3){
+					selected_clues.splice(3, selected_clues.length);
+					selected_clues[2] += "...";
+				}
 				if(selected_clues.length > 0){
 					string += players[i] + ":\n" + selected_clues.join(", ") + "\n";
 				}

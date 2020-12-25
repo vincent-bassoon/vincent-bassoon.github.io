@@ -60,8 +60,6 @@
 				background-color: #dedede;
 			}
 			a.tab {
-				background-color: #555;
-				color: white;
 				float: left;
 				border: none;
 				outline: none;
@@ -70,26 +68,58 @@
 				display: block;
 			}
 			a.tab.top {
+				color: white;
 				width: 33.3333%;
+				background-color: #555;
 			}
 			a.tab.bottom {
+				color: white;
 				width: 50%;
+				background-color: #555;
 			}
-			a.tab.status {
-				width: 25%;
-			}
-			a.tab.add {
-				width: 25%;
-			}
-			a.tab.edit {
-				width: 33.3333%;
-			}
-			a.tab.submit {
+			
+			.submit {
 				width: 100%;
 				position: fixed;
+				background-color: #aaa;
 				bottom: 0;
 			}
-			a.active-tab {
+
+			.status.active-tab {
+				background-color: #DA9CA4;
+			}
+			.status-color {
+				background-color: #DA9CA4;
+			}
+			.status {
+				background-color: #aaa;
+				width: 25%;
+			}
+
+			.add.active-tab {
+				background-color: #9CC5DA;
+			}
+			.add-color {
+				background-color: #9CC5DA;
+			}
+			.add {
+				background-color: #aaa;
+				width: 25%;
+			}
+
+			.edit.active-tab {
+				background-color: #AEDA9C;
+			}
+			.edit-color {
+				background-color: #AEDA9C;
+			}
+			.edit {
+				background-color: #aaa;
+				width: 33.3333%;
+			}
+
+
+			.active-tab {
 				background-color: #777;
 			}
 			div.input-container {
@@ -101,11 +131,9 @@
 				left: 0;
 				right: 0;
 				bottom: 0;
-				background-color: #777;
+				background-color: white;
 			}
 			div.input-title {
-				background-color: #777;
-				color: white;
 				float: left;
 				border: none;
 				outline: none;
@@ -114,6 +142,7 @@
 				display: block;
 			}
 			div.selections{
+				background-color: #DAD99C;
 				padding: 16px;
 				float: left;
 				border: none;
@@ -133,21 +162,21 @@
 		<a class="bottom tab" id="clear">Clear</a>
 		<div class="input-container" id="input-container">
 			<div class="selections" id="selections"></div>
-			<div class="input-title">Set Status</div>
+			<div class="input-title status-color">Set Status</div>
 			<div>
 				<a class="status tab" id="status-tab-none">None</a>
 				<a class="status tab" id="status-tab-2">?</a>
 				<a class="status tab" id="status-tab-1">X</a>
 				<a class="status tab" id="status-tab-0">/</a>
 			</div>
-			<div class="input-title">Add Tag</div>
+			<div class="input-title add-color">Add Tag</div>
 			<div>
 				<a class="add tab" id="add-tab-none">None</a>
 				<a class="add tab" id="add-tab-1">C1</a>
 				<a class="add tab" id="add-tab-2">T1</a>
 				<a class="add tab" id="add-tab-3">J1</a>
 			</div>
-			<div class="input-title" id="edit-title"></div>
+			<div class="input-title edit-color" id="edit-title"></div>
 			<div id="edit-tab-container">
 				<a class="edit tab" id="edit-tab-none">None</a>
 				<a class="edit tab" id="edit-tab-remove">Remove</a>
