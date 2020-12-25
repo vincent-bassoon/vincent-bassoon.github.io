@@ -60,6 +60,12 @@ function createTabs(){
 					document.getElementById("edit-tab-delete").click();
 				};
 			}
+			else if(key == "status"){
+				tabs[i].onclick = function(){
+					updateTab(this);
+					document.getElementById("edit-tab-none").click();
+				};
+			}
 			else{
 				tabs[i].onclick = function(){
 					updateTab(this);
@@ -157,7 +163,7 @@ function configureEdit(){
 					}
 				}
 				if(selected_clues.length > 0){
-					string += players[i] + ":\n" + selected_clues.join("\n") + "\n";
+					string += players[i] + ":\n" + selected_clues.join(", ") + "\n";
 				}
 			}
 			shared_tags = [];
@@ -217,22 +223,23 @@ function configureEdit(){
 			box.element.style.fontSize = font_size + "px";
 		}
 	}
+	document.getElementById("clear").onclick = clearBoxes;
 	document.getElementById("submit").onclick = function(){
 		if(current_tab.status.id != "status-tab-none"){
 			var status = parseInt(current_tab.status.id.split("-")[2]);
-			var add_class, remove_class;
-			if(status == 0){
-				add_class = "data-no";
-				remove_class = "data-yes";
-			}
-			else{
-				add_class = "data-yes";
-				remove_class = "data-no";
+			if(status == 2){
+				status = -1;
 			}
 			for(var i = 0; i < selected_boxes.length; i++){
 				selected_boxes[i].status = status;
-				selected_boxes[i].element.classList.remove(remove_class);
-				selected_boxes[i].element.classList.add(add_class);
+				selected_boxes[i].element.classList.remove("data-no");
+				selected_boxes[i].element.classList.remove("data-yes");
+				if(status == 0){
+					selected_boxes[i].element.classList.add("data-no");
+				}
+				else if(status == 1){
+					selected_boxes[i].element.classList.add("data-yes");
+				}
 			}
 		}
 		if(current_tab.add.id != "add-tab-none"){

@@ -59,14 +59,15 @@
 			td.weapon {
 				background-color: #dedede;
 			}
-			.tab {
+			a.tab {
 				background-color: #555;
 				color: white;
 				float: left;
 				border: none;
 				outline: none;
-				padding: 14px;
+				padding: 16px;
 				text-align: center;
+				display: block;
 			}
 			a.tab.top {
 				width: 33.3333%;
@@ -75,13 +76,18 @@
 				width: 50%;
 			}
 			a.tab.status {
-				width: 33.3333%;
+				width: 25%;
 			}
 			a.tab.add {
 				width: 25%;
 			}
 			a.tab.edit {
 				width: 33.3333%;
+			}
+			a.tab.submit {
+				width: 100%;
+				position: fixed;
+				bottom: 0;
 			}
 			a.active-tab {
 				background-color: #777;
@@ -95,44 +101,24 @@
 				left: 0;
 				right: 0;
 				bottom: 0;
-				padding: 20px;
-				background-color: rgba(0, 0, 0, 0.7);
+				background-color: #777;
 			}
-			div.input-div {
-				margin-bottom: 20px;
+			div.input-title {
+				background-color: #777;
+				color: white;
+				float: left;
+				border: none;
+				outline: none;
+				padding: 16px;
+				text-align: center;
+				display: block;
 			}
 			div.selections{
-				margin-bottom: 20px;
-			}
-			input:focus {
+				padding: 16px;
+				float: left;
+				border: none;
 				outline: none;
-			}
-			input {
-				box-sizing: border-box;
-				display: inline-block;
-				border: 1px solid #ccc;
-				border-radius: 4px;
-				padding-left: 10px;
-				padding-top: 5px;
-				padding-bottom: 5px;
-				font-size: 16px;
-				width: 150px;
-			}
-			a.button {
-				color: #000000;
-				text-decoration: none;
-				border: 2px;
-				background: #dedede;
-				border-radius: 3px;
-				padding-top: 6px;
-				padding-left: 9px;
-				padding-right: 9px;
-				padding-bottom: 6px;
-				cursor: pointer;
-				transition: all 0.25s;
-				font-size: 16px;
-				margin-left:auto;
-				margin-right:0;
+				display: block;
 			}
 		</style>
 	</head>
@@ -147,26 +133,27 @@
 		<a class="bottom tab" id="clear">Clear</a>
 		<div class="input-container" id="input-container">
 			<div class="selections" id="selections"></div>
-			<div class="tab">Set Status</div>
+			<div class="input-title">Set Status</div>
 			<div>
 				<a class="status tab" id="status-tab-none">None</a>
+				<a class="status tab" id="status-tab-2">?</a>
 				<a class="status tab" id="status-tab-1">X</a>
 				<a class="status tab" id="status-tab-0">/</a>
 			</div>
-			<div class="tab">Add Tag</div>
+			<div class="input-title">Add Tag</div>
 			<div>
 				<a class="add tab" id="add-tab-none">None</a>
 				<a class="add tab" id="add-tab-1">C1</a>
 				<a class="add tab" id="add-tab-2">T1</a>
 				<a class="add tab" id="add-tab-3">J1</a>
 			</div>
-			<div class="tab" id="edit-title"></div>
+			<div class="input-title" id="edit-title"></div>
 			<div id="edit-tab-container">
 				<a class="edit tab" id="edit-tab-none">None</a>
 				<a class="edit tab" id="edit-tab-remove">Remove</a>
 				<a class="edit tab" id="edit-tab-delete">Delete</a>
 			</div>
-			<a class="tab" id="submit">Submit</a>
+			<a class="tab submit" id="submit">Submit</a>
 		</div>
 
 	</body>
