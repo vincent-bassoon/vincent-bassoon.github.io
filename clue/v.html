@@ -4,9 +4,9 @@
 	<head>
   		<title>Clue</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
 		<style>
 			* {box-sizing: border-box}
 			body, html {
@@ -23,6 +23,9 @@
 			}
 			div {
 				width: 100%;
+			}
+			div.hide {
+				display: none;
 			}
 			td {
 				border: 1px solid #ccc;
@@ -63,7 +66,6 @@
 				float: left;
 				border: none;
 				outline: none;
-				padding: 16px;
 				text-align: center;
 				display: block;
 			}
@@ -71,23 +73,48 @@
 				background-color: #777;
 			}
 			.top {
+				padding: 16px;
 				color: white;
 				width: 33.3333%;
 				background-color: #555;
 			}
 			.bottom {
+				padding: 16px;
 				color: white;
 				width: 50%;
 				background-color: #555;
 			}
+
+			.settings {
+				width: 50%;
+				padding: 16px;
+				background-color: #aaa;
+			}
 			
 			.submit {
+				padding: 16px;
 				width: 100%;
 				position: fixed;
 				background-color: #aaa;
 				bottom: 0;
 			}
 
+			.status-none {
+				padding: 8px;
+			}
+			.status-unknown {
+				background-color: #ccc;
+				padding: 8px;
+			}
+			.status-yes {
+				color: white;
+				background-color: black;
+				padding: 8px;
+			}
+			.status-no {
+				background-color: white;
+				padding: 8px;
+			}
 			.status.active-tab {
 				background-color: #DA9CA4;
 			}
@@ -97,6 +124,7 @@
 			.status {
 				background-color: #aaa;
 				width: 25%;
+				padding: 8px;
 			}
 
 			.add.active-tab {
@@ -106,6 +134,7 @@
 				background-color: #9CC5DA;
 			}
 			.add {
+				padding: 16px;
 				background-color: #aaa;
 				width: 25%;
 			}
@@ -117,20 +146,39 @@
 				background-color: #AEDA9C;
 			}
 			.edit {
+				padding: 16px;
 				background-color: #aaa;
 				width: 33.3333%;
 			}
-			div.input-container {
-				display: none;
+
+			.confirm {
+				padding: 20px;
+				background-color: #aaa;
+
+				border-radius: 3px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				-ms-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+			}
+
+			.cancel {
 				position: fixed;
+				top: 0;
+				width: 100%;
+				padding: 16px;
+				background-color: #aaa;
+			}
+
+			.confirm-container {
+				position: fixed;
+				top: 0;
 				width: 100%;
 				height: 100%;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background-color: white;
+				background-color: rgba(0, 0, 0, 0.5);
 			}
+
 			div.input-title {
 				float: left;
 				border: none;
@@ -147,25 +195,56 @@
 				outline: none;
 				display: block;
 			}
+			div.offscreen{
+				position: fixed;
+				top: -100px;
+				width: 100%;
+			}
+
 		</style>
 	</head>
 	<body>
-		<div>
-			<a class="top tab" id="top-tab-all">All</a>
-			<a class="top tab" id="top-tab-unknown">Unknown</a>
-			<a class="top tab" id="top-tab-known">Known</a>
+		<div class="offscreen">
+			<table>
+				<tr>
+					<td class="title">Carriage House</td>
+					<td class="data" id="test_element"></td>
+					<td class="data"></td>
+					<td class="data"></td>
+					<td class="data"></td>
+				</tr>
+			</table>
 		</div>
-		<table id="table"></table>
-		<a class="bottom tab" id="edit">Edit 0 boxes</a>
-		<a class="bottom tab" id="clear">Clear</a>
-		<div class="input-container" id="input-container">
+		<div id="main-container">
+			<div>
+				<a class="top tab" id="top-tab-all">All</a>
+				<a class="top tab" id="top-tab-unknown">Unknown</a>
+				<a class="top tab" id="top-tab-known">Known</a>
+			</div>
+			<table id="table"></table>
+			<a class="bottom tab" id="edit">Edit 0 boxes</a>
+			<a class="bottom tab" id="clear">Clear</a>
+		</div>
+		<div class="hide" id="input-container">
+			<div>
+				<a class="settings tab" id="settings-tab-reset">Reset</a>
+				<a class="settings tab" id="settings-tab-undo">Undo</a>
+			</div>
 			<div class="selections" id="selections"></div>
 			<div class="input-title status-color">Set Status</div>
 			<div>
-				<a class="status tab" id="status-tab-none">None</a>
-				<a class="status tab" id="status-tab-2">?</a>
-				<a class="status tab" id="status-tab-1">X</a>
-				<a class="status tab" id="status-tab-0">O</a>
+				<a class="status tab" id="status-tab-none">
+					<div class="status-none">None</div>
+				</a>
+				<a class="status tab" id="status-tab-2">
+					<div class="status-unknown">?</div>
+				</a>
+				<a class="status tab" id="status-tab-1">
+					<div class="status-yes">X</div>
+				</a>
+				<a class="status tab" id="status-tab-0">
+					<div class="status-no">O</div>
+				</a>
 			</div>
 			<div class="input-title add-color">Add Tag</div>
 			<div>
@@ -182,19 +261,11 @@
 			</div>
 			<a class="tab submit" id="submit">Submit</a>
 		</div>
+		<div class="confirm-container hide" id="confirm-container">
+			<a class="cancel tab" id="cancel-tab">Touch anywhere to cancel</a>
+			<a class="confirm tab" id="confirm-tab"></a>
+		</div>
 
 	</body>
 	<script src="vscript.js"></script>
 </html>
-<!--
-Selected clues (no title, just list)
-
-Set Status
-None-X-/
-
-Add Tag
-None-C12-J7-T8
-
-Edit Tags: (list current tags)
-None-remove-remove all
--->
