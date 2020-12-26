@@ -212,6 +212,22 @@ function execute(actions, selections){
 	}
 }
 
+function updateTagText(box){
+	console.log("update tag text: ");
+	box.element.innerText = box.tags.join(", ");
+	test_element.innerText = box.tags.join(", ");
+	var font_size = base_font_size;
+	box.element.style.fontSize = font_size + "px";
+	test_element.style.fontSize = font_size + "px";
+	while(font_size > 8 && test_element.offsetHeight > row_height){
+		console.log("font decrease");
+		font_size--;
+		test_element.style.fontSize = font_size + "px";
+	}
+	console.log(test_element.offsetHeight + " " + row_height);
+	box.element.style.fontSize = font_size + "px";
+}
+
 function configureEdit(){
 	document.getElementById("edit").onclick = function(){
 		for(var i = 1; i < 4; i++){
@@ -297,21 +313,6 @@ function configureEdit(){
 		}
 		current_box_num = 0;
 		document.getElementById("edit").innerText = "Edit 0 boxes";
-	}
-	function updateTagText(box){
-		console.log("update tag text: ");
-		box.element.innerText = box.tags.join(", ");
-		test_element.innerText = box.tags.join(", ");
-		var font_size = base_font_size;
-		box.element.style.fontSize = font_size + "px";
-		test_element.style.fontSize = font_size + "px";
-		while(font_size > 8 && test_element.offsetHeight > row_height){
-			console.log("font decrease");
-			font_size--;
-			test_element.style.fontSize = font_size + "px";
-		}
-		console.log(test_element.offsetHeight + " " + row_height);
-		box.element.style.fontSize = font_size + "px";
 	}
 	document.getElementById("clear").onclick = clearBoxes;
 	document.getElementById("submit").onclick = function(){
