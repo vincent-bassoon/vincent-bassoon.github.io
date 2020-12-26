@@ -339,10 +339,10 @@ function configureEdit(){
 		if(shared_tags.length != 0 && current_tab.edit.id != "edit-tab-none"){
 			actions.edit = [];
 			if(current_tab.edit.id == "edit-tab-delete"){
-				for(var h = 0; h < shared_tags.length; h++){
-					for(var i = 0; i < 4; i++){
-						for(var j = 0; j < 30; j++){
-							var list = null;
+				for(var i = 0; i < 4; i++){
+					for(var j = 0; j < 30; j++){
+						var list = null;
+						for(var h = 0; h < shared_tags.length; h++){
 							for(k = 0; k < boxes[i][j].tags.length; k++){
 								if(boxes[i][j].tags[k] == shared_tags[h]){
 									if(list == null){
