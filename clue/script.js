@@ -13,7 +13,7 @@ var firebaseConfig = {
 
 
 var boxes = {0: {}, 1: {}, 2: {}, 3: {}};
-var players = ["T", "J", "V", "C"];
+var players = ["C", "T", "J", "V"];
 var clues;
 var current_tab = {top: document.getElementById("top-tab-all"),
 				   status: document.getElementById("status-tab-none"),
@@ -27,8 +27,13 @@ var base_font_size;
 var change_history = [];
 var test_element = document.getElementById("test_element");
 
+var player_initial = test_element.innerText;
+while(players[0] != player_initial.toUpperCase()){
+	players.unshift(players.pop());
+}
+
 function getHistory(){
-	firebase.database().ref("t/history").once('value').then(function(snapshot){
+	firebase.database().ref(player_initial + "/history").once('value').then(function(snapshot){
 		var data = snapshot.val();
 		if(data != null){
 			change_history = data;
@@ -39,6 +44,10 @@ function getHistory(){
 		else{
 			console.log("null data from server");
 		}
+		document.getElementById("opacity-container").style.opacity = 1;
+		setTimeout(function(){
+			document.getElementById("loading-message").innerText = "";
+		}, 500);
 	}, function(error){
 		console.log("Could not obtain data from server");
 	});
@@ -370,7 +379,7 @@ function configureEdit(){
 		else{
 			change_history[change_history.length - 1].a = actions;
 			execute(change_history[change_history.length - 1].a, change_history[change_history.length - 1].s);
-			firebase.database().ref('t/history/' + (change_history.length - 1)).set(change_history[change_history.length - 1]);
+			firebase.database().ref(player_initial + '/history/' + (change_history.length - 1)).set(change_history[change_history.length - 1]);
 		}
 		clearBoxes();
 		document.getElementById("input-container").style.display = "none";
@@ -395,7 +404,7 @@ function configureEdit(){
 	function reset(){
 		clearData();
 		change_history = [];
-		firebase.database().ref('t/history').set(change_history);
+		firebase.database().ref(player_initial + '/history').set(change_history);
 		document.getElementById("confirm-container").style.display = "none";
 		document.getElementById("input-container").style.display = "none";
 		document.getElementById("main-container").style.display = "block";
@@ -407,7 +416,7 @@ function configureEdit(){
 	};
 	function undo(){
 		change_history.pop();
-		firebase.database().ref('t/history/' + (change_history.length - 1)).remove();
+		firebase.database().ref(player_initial + '/history/' + (change_history.length - 1)).remove();
 		change_history.pop();
 		clearData();
 		for(var i = 0; i < change_history.length; i++){
