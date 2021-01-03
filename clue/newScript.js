@@ -361,32 +361,20 @@ function configureEdit(){
 		}
 		document.getElementById("status-tab-none").click();
 		document.getElementById("add-tab-none").click();
-		var string = "";
 		if(current_box_num == 0){
 			turn_history.push({b: [], s: null, t: null});
-			string = "No boxes selected";
 		}
 		else{
 			var selections = [];
 			for(var i = 0; i < 4; i++){
-				var selected_clues = [];
 				for(var j = 0; j < 30; j++){
 					if(boxes[i][j].pressed){
-						selected_clues.push(clues[j]);
 						selections.push({0: i, 1: j});
 					}
-				}
-				if(selected_clues.length > 3){
-					selected_clues.splice(3, selected_clues.length);
-					selected_clues[2] += "...";
-				}
-				if(selected_clues.length > 0){
-					string += players[i] + ":\t" + selected_clues.join(", ") + "\n";
 				}
 			}
 			turn_history.push({b: selections, t: null, s: null});
 		}
-		document.getElementById("selections").innerText = string;
 		document.getElementById("main-container").style.display = "none";
 		document.getElementById("input-container").style.display = "block";
 	};
