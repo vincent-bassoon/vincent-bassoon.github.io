@@ -15,7 +15,6 @@ var player_initial = test_element.innerText;
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
-
 const messaging = firebase.messaging();
 
 if('serviceWorker' in navigator){
