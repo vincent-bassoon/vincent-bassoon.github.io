@@ -27,7 +27,6 @@ if('serviceWorker' in navigator){
 					console.log("token_key: " + token_key.key);
 					token_key.set(currentToken);
 					token_key.onDisconnect().remove();
-					Notification.requestPermission();
 				}
 				else{
 					console.log('No registration token available. Request permission to generate one.');
