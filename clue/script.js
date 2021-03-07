@@ -10,6 +10,7 @@ var firebaseConfig = {
 };
 
 
+var test_element = document.getElementById("test_element");
 var player_initial = test_element.innerText;
 
 firebase.initializeApp(firebaseConfig);
@@ -59,7 +60,6 @@ var row_height;
 var base_font_size;
 var turn_history = [];
 var tag_history = [];
-var test_element = document.getElementById("test_element");
 
 while(players[0] != player_initial.toUpperCase()){
 	players.unshift(players.pop());
