@@ -16,3 +16,10 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+
+messaging.onMessage((payload) => {
+  console.log('Message received. ', payload);
+  // ...
+});
