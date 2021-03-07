@@ -16,18 +16,12 @@ const messaging = firebase.messaging();
 
 function initialize(){
 
-	messaging.getToken({ vapidKey: 'BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0' }).then((currentToken) => {
-	  if (currentToken) {
-	    // Send the token to your server and update the UI if necessary
-	    // ...
-	    console.log("gungus");
-	  } else {
-	    // Show permission request UI
-	    console.log('No registration token available. Request permission to generate one.');
-	    // ...
-	  }
-	}).catch((err) => {
-	  console.log('An error occurred while retrieving token. ', err);
+	
+
+	const messaging = firebase.messaging();
+
+	messaging.onMessage((payload) => {
+	  console.log('Message received. ', payload);
 	  // ...
 	});
 }
@@ -37,7 +31,7 @@ if('serviceWorker' in navigator) {
 		navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
 			// Registration was successful
 			console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			//initialize();
+			initialize();
 		}, function(err) {
 			// registration failed :(
 			console.log('ServiceWorker registration failed: ', err);
