@@ -24,9 +24,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-messaging.js');
-
 const messaging = firebase.messaging();
 
 messaging.getToken({ vapidKey: 'BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0' }).then((currentToken) => {
