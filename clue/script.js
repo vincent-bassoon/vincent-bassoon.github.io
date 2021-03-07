@@ -41,7 +41,7 @@ if('serviceWorker' in navigator){
 			console.log('ServiceWorker registration failed: ', err);
 		});
 	});
-}\
+}
 
 var titles = {};
 var boxes = {0: {}, 1: {}, 2: {}, 3: {}};
