@@ -26,10 +26,7 @@ if('serviceWorker' in navigator){
 					var token_key = firebase.database().ref(player_initial + "_token").push();
 					console.log("token_key: " + token_key.key);
 					token_key.set(currentToken);
-					window.beforeunload = function(){
-						firebase.database().ref(player_initial + "_token/" + token_key.key).remove();
-						return null;
-					}
+					token_key.onDisconnect().remove();
 				}
 				else{
 					console.log('No registration token available. Request permission to generate one.');
