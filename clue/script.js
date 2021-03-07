@@ -12,13 +12,13 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-const messaging = firebase.messaging();
-
 function initialize(){
 
 	
 
 	const messaging = firebase.messaging();
+
+	messaging.getToken({vapidKey: "BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0"});
 
 	messaging.onMessage((payload) => {
 	  console.log('Message received. ', payload);
