@@ -21,7 +21,7 @@ if('serviceWorker' in navigator) {
 			messaging.getToken({vapidKey: "BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0", serviceWorkerRegistration: registration}).then((currentToken) => {
 				if(currentToken) {
 					// Send the token to your server and update the UI if necessary
-					console.log("success?");
+					console.log(currentToken);
 				}
 				else {
 					console.log('No registration token available. Request permission to generate one.');
