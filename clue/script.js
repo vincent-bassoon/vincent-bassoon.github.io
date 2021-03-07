@@ -27,9 +27,6 @@ if('serviceWorker' in navigator){
 					console.log("token_key: " + token_key.key);
 					token_key.set(currentToken);
 					token_key.onDisconnect().remove();
-					messaging.onMessage((payload) => {
-						console.log('Message received. ', payload);
-					});
 				}
 				else{
 					console.log('No registration token available. Request permission to generate one.');
@@ -42,6 +39,10 @@ if('serviceWorker' in navigator){
 		});
 	});
 }
+
+messaging.onMessage((payload) => {
+	console.log('Message received. ', payload);
+});
 
 var titles = {};
 var boxes = {0: {}, 1: {}, 2: {}, 3: {}};
