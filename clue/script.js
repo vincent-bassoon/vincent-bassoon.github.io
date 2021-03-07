@@ -1,6 +1,7 @@
 var firebaseConfig = {
     apiKey: "AIzaSyD9njoN659jBaO-Ov6sQI33Q5xi9kRl3jw",
     authDomain: "clue-51aa1.firebaseapp.com",
+    databaseURL: "https://clue-51aa1-default-rtdb.firebaseio.com",
     projectId: "clue-51aa1",
     storageBucket: "clue-51aa1.appspot.com",
     messagingSenderId: "314308110149",
@@ -22,6 +23,26 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-messaging.js');
+
+const messaging = firebase.messaging();
+
+messaging.getToken({ vapidKey: 'BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0' }).then((currentToken) => {
+  if (currentToken) {
+    // Send the token to your server and update the UI if necessary
+    // ...
+    console.log("gungus");
+  } else {
+    // Show permission request UI
+    console.log('No registration token available. Request permission to generate one.');
+    // ...
+  }
+}).catch((err) => {
+  console.log('An error occurred while retrieving token. ', err);
+  // ...
+});
 
 var titles = {};
 var boxes = {0: {}, 1: {}, 2: {}, 3: {}};
