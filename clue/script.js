@@ -9,32 +9,40 @@ var firebaseConfig = {
     measurementId: "G-092MCPQDB9"
 };
 
+
+var player_initial = test_element.innerText;
+
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 const messaging = firebase.messaging();
 
-if('serviceWorker' in navigator) {
-	window.addEventListener('load', function() {
-		navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration) {
+if('serviceWorker' in navigator){
+	window.addEventListener('load', function(){
+		navigator.serviceWorker.register('firebase-messaging-sw.js').then(function(registration){
 			console.log('ServiceWorker registration successful with scope: ', registration.scope);
 			messaging.getToken({vapidKey: "BI56U_-65I1qf2tjba9bv6vYA_uVSVGXLgOACLv275CXwupMSd_lvyGp3Vg7jfJbVHkrxXkZBRs3dUcATQKILS0", serviceWorkerRegistration: registration}).then((currentToken) => {
-				if(currentToken) {
-					// Send the token to your server and update the UI if necessary
-					console.log(currentToken);
+				if(currentToken){
+					var token_key = firebase.database().ref(player_initial + "_token").push();
+					console.log("token_key: " + token_key.key);
+					token_key.set(currentToken);
 				}
-				else {
+				else{
 					console.log('No registration token available. Request permission to generate one.');
 				}
 			}).catch((err) => {
 				console.log('An error occurred while retrieving token. ', err);
 			});
-			messaging.onMessage((payload) => {
-				console.log('Message received. ', payload);
-			});
-		}, function(err) {
+		}, function(err){
 			console.log('ServiceWorker registration failed: ', err);
 		});
+	});
+}
+
+function initialize(registration){
+	
+	messaging.onMessage((payload) => {
+		console.log('Message received. ', payload);
 	});
 }
 
@@ -53,7 +61,6 @@ var turn_history = [];
 var tag_history = [];
 var test_element = document.getElementById("test_element");
 
-var player_initial = test_element.innerText;
 while(players[0] != player_initial.toUpperCase()){
 	players.unshift(players.pop());
 }
