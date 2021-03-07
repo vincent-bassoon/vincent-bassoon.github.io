@@ -1,6 +1,3 @@
-// Give the service worker access to Firebase Messaging.
-// Note that you can only use Firebase Messaging here. Other Firebase libraries
-// are not available in the service worker.
 importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.2.10/firebase-messaging.js');
 
@@ -19,12 +16,3 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
-// Retrieve an instance of Firebase Messaging so that it can handle background
-// messages.
-const messaging = firebase.messaging();
-
-messaging.onMessage((payload) => {
-  console.log('Message received. ', payload);
-  // ...
-});
