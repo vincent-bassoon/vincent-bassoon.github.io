@@ -6,10 +6,22 @@ var firebaseConfig = {
     messagingSenderId: "314308110149",
     appId: "1:314308110149:web:73d763dd4c6d554714802c",
     measurementId: "G-092MCPQDB9"
-  };
+};
 
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
 
 var titles = {};
 var boxes = {0: {}, 1: {}, 2: {}, 3: {}};
