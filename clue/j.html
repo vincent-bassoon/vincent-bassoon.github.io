@@ -3,271 +3,41 @@
 	<meta name="viewport" content="width=device-width">
 	<head>
   		<title>Clue</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-analytics.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-database.js"></script>
-		<style>
-			* {box-sizing: border-box}
-			body, html {
-				width: 100%;
-				height: 100%;
-				margin: 0;
-				font-family: Arial;
-			}
-			table {
-				border-collapse: collapse;
-				width: 100%;
-				font: 16px;
-				table-layout: fixed;
-			}
-			.border{
-				background-color: #555;
-				width: 100%;
-				height: 10px;
-			}
-			div {
-				width: 100%;
-			}
-			div.hide {
-				display: none;
-			}
-			td {
-				border: 1px solid #ccc;
-				text-align: left;
-			}
-			th {
-				border: 1px solid #ccc;
-				font-weight: 300;
-			}
-			td.data {
-				background-color: #aaa;
-				text-align: center;
-				width: auto;
-			}
-			td.multiple-tag {
-				color: blue;
-			}
-			td.single-tag {
-				color: red;
-			}
-			td.data-pressed {
-				background-color: #bbb;
-			}
-			td.data-3 {
-				background-color: white;
-				background: url(eye-solid.svg) no-repeat;
-				background-size: 18px 18px;
-				background-position: center center;
-			}
-			td.data-1 {
-				background-color: black;
-				color: white;
-			}
-			td.data-0 {
-				background-color: white;
-			}
-			tr.hide {
-				display: none;
-			}
-			td.title {
-				padding-top: 2px;
-				padding-bottom: 2px;
-				padding-left: 10px;
-				width: 133px;
-			}
-			td.title-0 {
-				color: red;
-			}
-			td.title-1 {
-				text-decoration: line-through;
-			}
-			td.weapon {
-				background-color: #dedede;
-			}
-			a.tab {
-				float: left;
-				border: none;
-				outline: none;
-				text-align: center;
-				display: block;
-			}
-			.top.active-tab {
-				background-color: #777;
-			}
-			.top {
-				padding: 16px;
-				color: white;
-				width: 33.3333%;
-				background-color: #555;
-			}
-			.bottom {
-				padding: 16px;
-				color: white;
-				width: 50%;
-				background-color: #555;
-			}
-
-			.settings {
-				width: 50%;
-				padding: 16px;
-				background-color: #aaa;
-			}
-			
-			.submit {
-				padding: 16px;
-				width: 100%;
-				position: fixed;
-				background-color: #aaa;
-				bottom: 0;
-				z-index: 2;
-			}
-
-			.status-none {
-				padding: 8px;
-			}
-			.status-unknown {
-				background-color: #ccc;
-				padding: 8px;
-			}
-			.status-yes {
-				color: white;
-				background-color: black;
-				padding: 8px;
-			}
-			.status-no {
-				background-color: white;
-				padding: 8px;
-			}
-			.status-seen {
-				background-color: white;
-				height: 100%;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-			.status.active-tab {
-				background-color: #82d196;
-			}
-			.status-color {
-				background-color: #82d196;
-			}
-			.status {
-				background-color: #aaa;
-				width: 20%;
-				height: 50px;
-				padding: 8px;
-			}
-
-			.add.active-tab {
-				background-color: #9CC5DA;
-			}
-			.add-color {
-				background-color: #9CC5DA;
-			}
-			.add {
-				padding: 16px;
-				background-color: #aaa;
-				width: 25%;
-			}
-
-			.confirm {
-				padding: 20px;
-				background-color: #aaa;
-				border-radius: 3px;
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				-ms-transform: translate(-50%, -50%);
-				transform: translate(-50%, -50%);
-			}
-
-			.cancel {
-				position: fixed;
-				top: 0;
-				width: 100%;
-				padding: 16px;
-				background-color: #aaa;
-			}
-
-			.confirm-container {
-				position: fixed;
-				top: 0;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.5);
-			}
-
-			div.input-title {
-				float: left;
-				border: none;
-				outline: none;
-				padding: 16px;
-				text-align: center;
-				display: block;
-			}
-			div.offscreen{
-				position: fixed;
-				top: -100px;
-				width: 100%;
-			}
-			.loading {
-				position: fixed;
-				top: 0;
-				width: 100%;
-				height: 100%;
-				background-color: #777;
-				color: white;
-			}
-			.loading-message {
-				position: absolute;
-				text-align: center;
-				font-size: 20px;
-				top: 50%;
-				left: 50%;
-				-ms-transform: translate(-50%, -50%);
-				transform: translate(-50%, -50%);
-			}
-			.opacity-container {
-				position: relative;
-				background-color: white;
-				opacity: 0;
-				transition: 0.4s ease;
-			}
-			.input-container {
-				background-color: white;
-			}
-		</style>
+		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<div class="loading" id="loading">
+		<div class="loading-container">
 			<div class="loading-message" id="loading-message">Loading...</div>
 		</div>
 		<div class="offscreen">
 			<table>
 				<tr>
 					<td class="title">Carriage House</td>
-					<td class="data" id="test_element">j</td>
+					<td class="data" id="test-element">j</td>
 					<td class="data"></td>
 					<td class="data"></td>
 					<td class="data"></td>
 				</tr>
 			</table>
 		</div>
-		<div class="opacity-container" id="opacity-container">
-			<div id="main-container">
+		<div class="main-container" id="main-container">
+			<div id="table-container">
 				<div>
 					<a class="top tab" id="top-tab-all">All</a>
 					<a class="top tab" id="top-tab-unknown">Unknown</a>
 					<a class="top tab" id="top-tab-known">Known</a>
 				</div>
 				<table id="table"></table>
+				<a class="guess" id="guess">Guess</a>
 				<a class="bottom tab" id="edit">Edit 0 boxes</a>
-				<a class="bottom tab" id="clear">Clear</a>
+				<a class="bottom tab" id="show">Show Card</a>
 			</div>
-			<div class="input-container hide" id="input-container">
+			<div class="hide" id="edit-container">
 				<div>
-					<a class="settings tab" id="settings-tab-reset">Reset</a>
 					<a class="settings tab" id="settings-tab-undo">Undo</a>
 				</div>
 				<div class="input-title status-color">Set Status</div>
@@ -284,11 +54,6 @@
 					<a class="status tab" id="status-tab-0">
 						<div class="status-no">O</div>
 					</a>
-					<a class="status tab" id="status-tab-3">
-						<div class="status-seen">
-							<img src="eye-solid.svg" class="eye" width="18px" height="18px">
-						</div>
-					</a>
 				</div>
 				<div class="input-title add-color">Add Tag</div>
 				<div>
@@ -297,11 +62,24 @@
 					<a class="add tab" id="add-tab-2"></a>
 					<a class="add tab" id="add-tab-3"></a>
 				</div>
-				<a class="tab submit" id="submit">Submit</a>
+				<a class="input-title submit" id="submit-edit">Submit</a>
+			</div>
+			<div class="hide" id="show-container">
+				<a class="input-title show-title">Select a player and card to show</a>
+				<div>
+					<a class="player tab" id="player-tab-1"></a>
+					<a class="player tab" id="player-tab-2"></a>
+					<a class="player tab" id="player-tab-3"></a>
+				</div>
+				<div id="show-cards"></div>
+				<div class="bottom-tab-container">
+					<a class="input-title half" id="submit-show">Submit</a>
+					<a class="input-title half" id="cancel-show">Cancel</a>
+				</div>
 			</div>
 			<div class="confirm-container hide" id="confirm-container">
-				<a class="cancel tab" id="cancel-tab">Touch anywhere to cancel</a>
-				<a class="confirm tab" id="confirm-tab"></a>
+				<a class="cancel input-title" id="cancel">Touch anywhere to cancel</a>
+				<a class="confirm input-title" id="confirm"></a>
 			</div>
 		</div>
 	</body>
