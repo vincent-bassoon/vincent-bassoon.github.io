@@ -4,7 +4,6 @@ var firebaseConfig = {
     databaseURL: "https://clue-51aa1-default-rtdb.firebaseio.com",
     projectId: "clue-51aa1",
     storageBucket: "clue-51aa1.appspot.com",
-    messagingSenderId: "314308110149",
     appId: "1:314308110149:web:73d763dd4c6d554714802c",
     measurementId: "G-092MCPQDB9"
 };
