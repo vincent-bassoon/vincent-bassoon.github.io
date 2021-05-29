@@ -132,6 +132,11 @@ a.tab {
 	position: fixed;
 	bottom: 0;
 }
+.blank {
+	display: block;
+	float: left;
+	height: 50px;
+}
 
 .status-none {
 	padding: 8px;
