@@ -1,6 +1,7 @@
 var start_button = document.getElementById("start_button");
 var words = [];
-var LAYERS = 1;
+var real_words = {};
+var LAYERS = 5;
 var markov = {};
 
 function set(location, substring){
@@ -26,6 +27,9 @@ function initialize(){
 	x.onreadystatechange = function(){
 		if(x.readyState == 4 && x.status == 200){
   			words = x.responseText.split("\n");
+  			for(var i = 0; i < words.length; i++){
+  				real_words[words[i]] = true;
+  			}
   			for(var layer = 1; layer <= LAYERS; layer++){
   				markov[layer] = {};
   				var prefix = "";
@@ -82,6 +86,9 @@ function generate_word(depth, string){
 		letter = next_letter(depth, string);
 		counter += 1;
 	}
+	if(final_string in real_words){
+		return final_string + "*";
+	}
 	return final_string;
 }
 
@@ -98,6 +105,7 @@ function generate(){
 		}
 		output += "\n";
 	}
+	output += "\n* indicates a real word";
 	document.getElementById("message").innerText = output;
 	start_button.innerText = "Generate new words";
 	start_button.classList.toggle("running");
