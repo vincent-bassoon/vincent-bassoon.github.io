@@ -40,7 +40,7 @@ function initialize(){
   				}
   			}
   			console.log("Markov");
-  			consoe.log(markov);
+  			console.log(markov);
   			generate();
   		}
   	}
