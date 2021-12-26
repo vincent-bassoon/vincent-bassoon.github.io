@@ -50,7 +50,7 @@ function get(location, string){
 		return get(location[string[0]], string.subset(1));
 	}
 	else{
-		return location(string[0]);
+		return location[string[0]];
 	}
 }
 
