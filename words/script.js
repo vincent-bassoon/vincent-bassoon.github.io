@@ -4,6 +4,7 @@ var LAYERS = 1;
 var markov = {};
 
 function set(location, substring){
+	console.log("set " + substring);
 	if(substring.length > 1){
 		if(typeof location[substring.substring(0, 1)] === 'undefined'){
 			location[substring.substring(0, 1)] = {};
@@ -41,6 +42,7 @@ function initialize(){
   					}
   				}
   			}
+  			console.log("Markov " + markov);
   			generate();
   		}
   	}
