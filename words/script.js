@@ -5,17 +5,17 @@ var markov = {};
 
 function set(location, substring){
 	if(substring.length > 1){
-		if(typeof location[substring[0]] === 'undefined'){
-			location[substring[0]] = {};
+		if(typeof location[substring.substring(0, 1)] === 'undefined'){
+			location[substring.substring(0, 1)] = {};
 		}
-		set(location[substring[0]], substring.substring(1));
+		set(location[substring.substring(0, 1)], substring.substring(1));
 	}
 	else{
-		if(typeof location[substring[0]] === 'undefined'){
-			location[substring[0]] = 1;
+		if(typeof location[substring.substring(0, 1)] === 'undefined'){
+			location[substring.substring(0, 1)] = 1;
 		}
 		else{
-			location[substring[0]] += 1;
+			location[substring.substring(0, 1)] += 1;
 		}
 	}
 }
@@ -35,7 +35,7 @@ function initialize(){
   				for(var i = 0; i++; i < words.length){
   					var word = prefix + words[i] + ">";
   					for(var j = 0; j <= word.length - layer; j++){
-  						set(markov[layer], word.substring(j, j + layer));
+  						set(markov[layer], word.substring(j, j + layer + 1));
   					}
   				}
   			}
@@ -47,10 +47,10 @@ function initialize(){
 
 function get(location, string){
 	if(string.length > 1){
-		return get(location[string[0]], string.substring(1));
+		return get(location[string.substring(0, 1)], string.substring(1));
 	}
 	else{
-		return location[string[0]];
+		return location[string];
 	}
 }
 
