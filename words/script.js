@@ -4,7 +4,6 @@ var LAYERS = 1;
 var markov = {};
 
 function set(location, substring){
-	console.log("set " + substring);
 	if(substring.length > 1){
 		if(typeof location[substring.substring(0, 1)] === 'undefined'){
 			location[substring.substring(0, 1)] = {};
@@ -35,14 +34,13 @@ function initialize(){
   				}
   				for(var i = 0; i < words.length; i++){
   					var word = prefix + words[i] + ">";
-  					console.log(word);
   					for(var j = 0; j <= word.length - layer; j++){
-  						console.log(word.substring(j, j + layer + 1));
   						set(markov[layer], word.substring(j, j + layer + 1));
   					}
   				}
   			}
-  			console.log("Markov " + markov);
+  			console.log("Markov");
+  			consoe.log(markov);
   			generate();
   		}
   	}
