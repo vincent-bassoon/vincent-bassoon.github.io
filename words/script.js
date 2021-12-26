@@ -33,7 +33,7 @@ function initialize(){
   				for(var i = 0; i < layer; i++){
   					prefix += "<";
   				}
-  				for(var i = 0; i++; i < words.length){
+  				for(var i = 0; i < words.length; i++){
   					var word = prefix + words[i] + ">";
   					console.log(word);
   					for(var j = 0; j <= word.length - layer; j++){
