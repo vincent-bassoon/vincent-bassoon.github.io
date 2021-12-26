@@ -87,14 +87,14 @@ function generate_word(depth, string){
 
 function generate(){
 	var output = "";
-	for(var i = 0; i < LAYERS; i++){
-		output += "Words generated with markov depth of " + (i + 1) + "\n\n";
+	for(var layer = 1; layer <= LAYERS; layer++){
+		output += "Words generated with markov depth of " + layer + "\n\n";
 		var prefix = "";
-		for(var j = 0; j < i; j++){
+		for(var j = 0; j < layer; j++){
 			prefix += "<";
 		}
 		for(var j = 0; j < 10; j++){
-			output += generate_word(i + 1, prefix) + "\n";
+			output += generate_word(layer, prefix) + "\n";
 		}
 		output += "\n";
 	}
