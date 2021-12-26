@@ -96,6 +96,9 @@ function generate(){
 		}
 		output += "\n";
 	}
+	start_button.innerText = "Generate new words";
+	start_button.classList.toggle("running");
+	start_button.onclick = button;
 }
 
 function button(){
@@ -103,9 +106,6 @@ function button(){
 	start_button.classList.toggle("running");
 	start_button.onclick = "";
 	generate();
-	start_button.innerText = "Generate new words";
-	start_button.classList.toggle("running");
-	start_button.onclick = button;
 }
 
-start_button.onclick = button;
+initialize();
