@@ -47,7 +47,7 @@ function initialize(){
 
 function get(location, string){
 	if(string.length > 1){
-		return get(location[string[0]], string.subset(1));
+		return get(location[string[0]], string.substring(1));
 	}
 	else{
 		return location[string[0]];
