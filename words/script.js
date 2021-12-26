@@ -34,7 +34,7 @@ function initialize(){
   				}
   				for(var i = 0; i < words.length; i++){
   					var word = prefix + words[i] + ">";
-  					for(var j = 0; j <= word.length - layer; j++){
+  					for(var j = 0; j < word.length - layer; j++){
   						set(markov[layer], word.substring(j, j + layer + 1));
   					}
   				}
