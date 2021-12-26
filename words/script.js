@@ -98,6 +98,7 @@ function generate(){
 		}
 		output += "\n";
 	}
+	document.getElementById("message").innerText = output;
 	start_button.innerText = "Generate new words";
 	start_button.classList.toggle("running");
 	start_button.onclick = button;
