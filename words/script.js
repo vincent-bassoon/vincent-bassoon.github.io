@@ -109,6 +109,17 @@ function get_std_dev(word_list){
     return Math.sqrt(dev / word_list.length);
 }
 
+function shuffle(array){
+	var random_index;
+	for(var i = array.length; i > 0; i--){
+		random_index = Math.floor(Math.random() * i);
+		var temp = array[i - 1];
+		array[i - 1] = array[random_index];
+		array[random_index] = temp;
+	}
+	return array;
+}
+
 function generate(){
 	var output = "";
 	for(var layer = 1; layer <= LAYERS; layer++){
@@ -136,22 +147,28 @@ function generate(){
 			word_list[j] = generate_word(layer, prefix);
 		}
         var count = 0;
+        var true_count = 0;
+        var order = [];
+        for(var j = 0; j < 10; j++){
+        	order.push(j);
+        }
+        order = shuffle(order);
 		while(Math.abs(get_std_dev(word_list) - dev) > 0.5 || Math.abs(get_mean(word_list) - mean) > 0.5){
-			var index = Math.floor(Math.random() * 10);
-			if(count % 3 == 0){
+			if(count % 3 != 2){
 				for(var j = 0; j < 10; j++){
-					if(Math.abs(word_list[index].length - mean) > dev){
+					if(Math.abs(word_list[order[count % 10]].length - mean) > dev){
 						j = 10;
 					}
 					else{
-						index = Math.floor(Math.random() * 10);
+						count++;
 					}
 				}
 			}
-			word_list[index] = generate_word(layer, prefix);
+			word_list[order[count % 10]] = generate_word(layer, prefix);
             count++;
+            true_count++;
 		}
-        console.log("layer " + layer + " has count " + count + " and std dev " + get_std_dev(word_list) + " and mean " + get_mean(word_list));
+        console.log("layer " + layer + " has count " + true_count + " and std dev " + get_std_dev(word_list) + " and mean " + get_mean(word_list));
         for(var j = 0; j < 10; j++){
 			output += word_list[j] + "\n";
 		}
