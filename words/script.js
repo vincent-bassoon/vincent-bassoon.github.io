@@ -97,7 +97,7 @@ function get_mean(word_list){
     for(var j = 0; j < word_list.length; j++){
         mean += word_list[j].length;
     }
-    return mean / word_list[j].length;
+    return mean / word_list.length;
 }
 
 function get_std_dev(word_list){
@@ -126,7 +126,7 @@ function generate(){
 	var mean = get_mean(words);
     var dev = get_std_dev(words);
     for(var layer = 1; layer <= LAYERS; layer++){
-		output += "Words generated with markov depth of " + layer + ", filtered to an appropriate standard deviation\n\n";
+		output += "\n\nWords generated with markov depth of " + layer + ", filtered to an appropriate standard deviation\n\n";
 		var prefix = "";
 		for(var j = 0; j < layer; j++){
 			prefix += "<";
@@ -140,7 +140,7 @@ function generate(){
 			word_list[Math.floor(Math.random() * 10)] = generate_word(layer, prefix);
             count++;
 		}
-        console.log("layer " + layer + " has count " + count);
+        console.log("layer " + layer + " has count " + count + " and std dev " + get_std_dev(word_list) + " and mean " + get_mean(word_list));
         for(var j = 0; j < 10; j++){
 			output += word_list[j] + "\n";
 		}
