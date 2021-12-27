@@ -136,7 +136,7 @@ function generate(){
 			word_list[j] = generate_word(layer, prefix);
 		}
         var count = 0;
-		while(get_std_dev(word_list) > dev + 0.5 || Math.pow(get_mean(word_list) - mean) > 1){
+		while(Math.pow(get_std_dev(word_list) - dev, 2) > 1 || Math.pow(get_mean(word_list) - mean) > 1){
 			word_list[Math.floor(Math.random() * 10)] = generate_word(layer, prefix);
             count++;
 		}
