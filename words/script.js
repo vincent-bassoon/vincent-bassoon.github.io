@@ -122,11 +122,11 @@ function generate(){
 		}
 		output += "\n";
 	}
-	output += "\n* indicates a real word";
+	output += "* indicates a real word\n\n\n\n";
 	var mean = get_mean(words);
     var dev = get_std_dev(words);
     for(var layer = 1; layer <= LAYERS; layer++){
-		output += "\n\nWords generated with markov depth of " + layer + ", filtered to an appropriate standard deviation\n\n";
+		output += "Words generated with markov depth of " + layer + ", filtered to an appropriate standard deviation\n\n";
 		var prefix = "";
 		for(var j = 0; j < layer; j++){
 			prefix += "<";
@@ -146,7 +146,7 @@ function generate(){
 		}
 		output += "\n";
 	}
-	output += "\n* indicates a real word";
+	output += "* indicates a real word";
 	document.getElementById("message").innerText = output;
 	start_button.innerText = "Generate new words";
 	start_button.classList.toggle("running");
