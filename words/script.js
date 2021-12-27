@@ -122,7 +122,7 @@ function generate(){
 		}
 		output += "\n";
 	}
-	output += "* indicates a real word\n\n\n\n";
+	output += "* indicates a real word\n\n\n----------------------\n\n\n";
 	var mean = get_mean(words);
     var dev = get_std_dev(words);
     for(var layer = 1; layer <= LAYERS; layer++){
@@ -136,8 +136,19 @@ function generate(){
 			word_list[j] = generate_word(layer, prefix);
 		}
         var count = 0;
-		while(Math.pow(get_std_dev(word_list) - dev, 2) > 1 || Math.pow(get_mean(word_list) - mean, 2) > 1){
-			word_list[Math.floor(Math.random() * 10)] = generate_word(layer, prefix);
+		while(Math.abs(get_std_dev(word_list) - dev) > 0.5 || Math.abs(get_mean(word_list) - mean) > 0.5){
+			var index = Math.floor(Math.random() * 10);
+			if(count % 3 == 0){
+				for(var j = 0; j < 10; j++){
+					if(Math.abs(word_list[index].length - mean) > dev){
+						j = 10;
+					}
+					else{
+						index = Math.floor(Math.random() * 10);
+					}
+				}
+			}
+			word_list[index] = generate_word(layer, prefix);
             count++;
 		}
         console.log("layer " + layer + " has count " + count + " and std dev " + get_std_dev(word_list) + " and mean " + get_mean(word_list));
