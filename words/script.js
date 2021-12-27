@@ -92,6 +92,23 @@ function generate_word(depth, string){
 	return final_string;
 }
 
+function get_mean(word_list){
+	var mean = 0;
+    for(var j = 0; j < word_list.length; j++){
+        mean += word_list[j].length;
+    }
+    return mean / word_list[j].length;
+}
+
+function get_std_dev(word_list){
+	var mean = get_mean(word_list);
+    var dev = 0;
+    for(var j = 0; j < word_list.length; j++){
+        dev += Math.pow(word_list[j].length - mean, 2);
+    }
+    return Math.sqrt(dev / word_list.length);
+}
+
 function generate(){
 	var output = "";
 	for(var layer = 1; layer <= LAYERS; layer++){
@@ -102,6 +119,30 @@ function generate(){
 		}
 		for(var j = 0; j < 10; j++){
 			output += generate_word(layer, prefix) + "\n";
+		}
+		output += "\n";
+	}
+	output += "\n* indicates a real word";
+	var mean = get_mean(words);
+    var dev = get_std_dev(words);
+    for(var layer = 1; layer <= LAYERS; layer++){
+		output += "Words generated with markov depth of " + layer + ", filtered to an appropriate standard deviation\n\n";
+		var prefix = "";
+		for(var j = 0; j < layer; j++){
+			prefix += "<";
+		}
+        var word_list = [];
+		for(var j = 0; j < 10; j++){
+			word_list[j] = generate_word(layer, prefix);
+		}
+        var count = 0;
+		while(get_std_dev(word_list) > dev + 0.5 || Math.pow(get_mean(word_list) - mean) > 1){
+			word_list[Math.floor(Math.random() * 10)] = generate_word(layer, prefix);
+            count++;
+		}
+        console.log("layer " + layer + " has count " + count);
+        for(var j = 0; j < 10; j++){
+			output += word_list[j] + "\n";
 		}
 		output += "\n";
 	}
