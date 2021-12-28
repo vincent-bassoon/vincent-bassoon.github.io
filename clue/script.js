@@ -38,7 +38,7 @@ function main_function(){
 
 	var players = [];
 	var name_to_player = {};
-	var current_player = window.location.href[window.location.href.length - 1];
+	var current_player = parseInt(window.location.href[window.location.href.length - 1]);
 
 	var answers;
 	var starting_hand;
