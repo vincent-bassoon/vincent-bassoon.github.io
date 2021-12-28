@@ -18,12 +18,14 @@
 			}
 			div {
 				width: 100%;
-				display: inline-block;
 			}
 			img {
-				width: 300px;
-				margin: auto;
-				display: block;
+				width: 70%;
+				position: absolute;
+				top: 22%;
+				left: 50%;
+				-ms-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
 			}
 			.button {
 				display: block;
@@ -38,7 +40,6 @@
 				text-align: center;
 				font-size: 18px;
 				margin: auto;
-				margin-top: 20px;
 			}
 			.button-size {
 				width: 230px;
@@ -69,66 +70,13 @@
 				position: absolute;
 				bottom: 0;
 			}
-
-			a.tab {
-				float: left;
-				border: none;
-				outline: none;
-				text-align: center;
-				display: block;
-				padding: 16px;
-				color: white;
-			}
-
-			.tab.full {
-				width: 100%;
-				background-color: #777;
-			}
-			.tab.half {
-				width: 50%;
-				color: black;
-			}
-
-			.tab.playercount {
-				width: 16.666666666%;
-				background-color: #555;
-			}
-			.tab.playercount.active-tab {
-				background-color: #777;
-			}
-	        input.playername:focus {
-	            outline: none;
-	        }
-	        input.playername {
-	            border: 1px solid #ccc;
-	            border-radius: 4px;
-	            box-sizing: border-box;
-	            padding: 10px;
-	            margin: 6px;
-	        }
-
-	        div.plum{
-	        	background-color: purple;
-	        }
-	        .hide{
-	        	display: none;
-	        }
 		</style>
 	</head>
 	<body>
 		<img src="clue-logo.png">
-		<a class="tab full">Select Number of Players</a>
 		<div>
-			<a class="tab playercount" id="playercount-tab-4">4</a>
-			<a class="tab playercount" id="playercount-tab-5">5</a>
-			<a class="tab playercount" id="playercount-tab-6">6</a>
-			<a class="tab playercount" id="playercount-tab-7">7</a>
-			<a class="tab playercount" id="playercount-tab-8">8</a>
-			<a class="tab playercount" id="playercount-tab-9">9</a>
+			<a class="center button button-size" id="reset-button">Start New Game</a>
 		</div>
-		<div id="player-info-container">
-		</div>
-		<a class="button button-size" id="reset-button">Start New Game</a>
 		<div class="confirm-container hide" id="confirm-container">
 			<a class="center button button-size" id="confirm">Confirm</a>
 			<a class="button title" id="cancel">Touch anywhere to cancel</a>
