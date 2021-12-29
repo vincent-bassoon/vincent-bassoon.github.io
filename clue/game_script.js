@@ -15,7 +15,7 @@ firebase.analytics();
 function main_function(){
 	var suspects = ["Col. Mustard", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Miss Scarlet", "Mrs. White", "Mme. Rose", "Sgt. Gray", "M. Brunette", "Miss Peach"];
 	var player_count = 4;
-	var colors = ["#c4c03b", "#bc5de8", "#38c738", "#34c6e0", "#fc4c4c", "white", "#f77eef", "#b0b0b0", "#8f6363", "#f0ae89"];
+
 	var characters = {};
 	for(var i = 0; i < suspects.length; i++){
 		characters[i] = -1;
@@ -152,9 +152,17 @@ function main_function(){
 		reset_button.innerText = "Starting...";
 		reset_button.onclick = null;
 
-		var players = [];
+
+		var player_to_character = {};
+		for(var i = 0; i < suspects.length; i++){
+			if(characters[i] != -1){
+				player_to_character[characters[i]] = i;
+			}
+		}
+		var players = {"names": [], "characters": []};
 		for(var i = 0; i < player_count; i++){
-			players.push(document.getElementById("playername-" + i).value);
+			players.names.push(document.getElementById("playername-" + i).value);
+			players.characters.push(player_to_character[i]);
 		}
 
 		var data = {"answer": []};
@@ -179,6 +187,10 @@ function main_function(){
 		}
 		data["status"] = Date.now();
 		data["players"] = players;
+		data["locations"] = {};
+		for(var i = 0; i < player_count; i++){
+			data.locations[i] = {"row": 14, "col": 9};
+		}
 		console.log(data);
 		firebase.database().ref("/game").set(data);
 

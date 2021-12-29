@@ -5,10 +5,42 @@ body, html {
 	margin: 0;
 	font-family: Arial;
 }
-table {
+
+
+table.map {
 	border-collapse: collapse;
 	width: 100%;
-	font: 16px;
+	font-size: 14px;
+	table-layout: fixed;
+}
+td.map {
+	height: 20px;
+	font: 12px;
+}
+td.square {
+	border: 1px solid #ccc;
+	text-align: center;
+	padding: 2px;
+}
+td.room {
+	text-align: center;
+	padding: 3px;
+}
+td.passage {
+	border: 3px solid #008500;
+	color: white;
+	text-align: center;
+	padding: 2px;
+}
+td.wall {
+	background-color: black;
+}
+
+
+
+table.notes {
+	border-collapse: collapse;
+	width: 100%;
 	table-layout: fixed;
 }
 .border{
@@ -22,11 +54,11 @@ div {
 .hide {
 	display: none;
 }
-td {
+td.notes {
 	border: 1px solid #ccc;
 	text-align: left;
 }
-th {
+th.notes {
 	border: 1px solid #ccc;
 	font-weight: 300;
 }
@@ -146,6 +178,9 @@ a.tab {
 MISC
 */
 
+.player-button {
+	
+}
 .input-title {
 	width: 100%;
 	text-align: center;
@@ -265,7 +300,7 @@ SINGLE USE
 	top: -100px;
 	width: 100%;
 }
-.loading-message {
+.loading-div {
 	position: absolute;
 	text-align: center;
 	font-size: 20px;

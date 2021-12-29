@@ -37,8 +37,9 @@ function main_function(){
 	var test_selector = $("#test-element");
 
 	var players = [];
+	var characters = [];
 	var name_to_player = {};
-	var current_player = parseInt(window.location.href[window.location.href.length - 1]);
+	var current_player = parseInt(window.location.href.replace(".html", "")[window.location.href.replace(".html", "").length - 1]);
 
 	var answers;
 	var starting_hand;
@@ -46,14 +47,16 @@ function main_function(){
 	var row_height;
 	var base_font_size;
 
-
-
 	function createTabs(){
 		//create tag and showplayer cards
 		var item;
 		var tag_row_sizes = [players.length, 0];
+		var showplayer_row_sizes = [players.length - 1, 0];
 		if(players.length >= 7){
 			tag_row_sizes = [Math.ceil(players.length / 2), Math.floor(players.length / 2)];
+		}
+		if(players.length + 1 >= 7){
+			showplayer_row_sizes = [Math.ceil((players.length - 1) / 2), Math.floor((players.length - 1) / 2)];
 		}
 		document.getElementById("tag-tab-none").style.width = (100.0 / tag_row_sizes[0]) + "%";
 		for(var i = 1; i < players.length; i++){
@@ -77,6 +80,12 @@ function main_function(){
 
 			//configure showplayer tabs
 			item = document.createElement("a");
+			if(i - 1 < showplayer_row_sizes[0]){
+				item.style.width = (100.0 / showplayer_row_sizes[0]) + "%";
+			}
+			else{
+				item.style.width = (100.0 / showplayer_row_sizes[1]) + "%";
+			}
 			item.classList.add("tab");
 			item.classList.add("showplayer");
 			item.classList.add("remove");
@@ -152,7 +161,8 @@ function main_function(){
 			added_elements[i].classList.remove("active-tab");
 		}
 		firebase.database().ref("/game").once('value').then(function(snapshot){
-			players = snapshot.val().players;
+			players = snapshot.val().players.names;
+			characters = snapshot.val().players.characters;
 			answers = snapshot.val().answer;
 			game_status = snapshot.val().status;
 			for(var j = 0; j < players.length; j++){
@@ -164,18 +174,21 @@ function main_function(){
 			createTabs();
 			document.getElementById("main-tab-notes").click();
 			createTable();
+			resetPath();
 			if(first){
 				createEdit();
+				createMap();
 			}
 			firebase.database().ref("/" + current_player + "/status").once('value').then(function(snapshot){
 				if(snapshot.val() != game_status){
 					console.log("starting new game");
+
 					turn_history = [];
-					firebase.database().ref(current_player).set(turn_history).then(function(){
+					firebase.database().ref("/" + current_player).set({}).then(function(){
 						getHistory(function(){
 							document.getElementById("page-container").style.opacity = 1;
 							setTimeout(function(){
-								document.getElementById("loading-message").innerText = "";
+								setLoadingMessage("", false);
 							}, 500);
 						});
 					});
@@ -184,12 +197,27 @@ function main_function(){
 					getHistory(function(){
 						document.getElementById("page-container").style.opacity = 1;
 						setTimeout(function(){
-							document.getElementById("loading-message").innerText = "";
+							setLoadingMessage("", false);
 						}, 500);
 					});
 				}
 			});
 		});
+	}
+
+
+	function setLoadingMessage(str, display_players){
+		/*for(var i = 0; i < 9; i++){
+			if(display_players && i < players.length){
+				document.getElementById("player-buttons-" + i).style.display = "block";
+				document.getElementById("player-buttons-" + i).style.backgroundColor = colors[characters[i]];
+				document.getElementById("player-buttons-" + i).innerText = players[i];
+			}
+			else{
+				document.getElementById("player-buttons-" + i).style.display = "none";
+			}
+		}*/
+		document.getElementById("loading-message").innerText = str;
 	}
 
 
@@ -211,6 +239,7 @@ function main_function(){
 		//offscreen formatting
 		for(var i = 0; i < players.length - 4; i++){
 			var item = document.createElement("td");
+			item.classList.add("notes");
 			item.classList.add("data");
 			item.classList.add("remove");
 			document.getElementById("test-row").appendChild(item);
@@ -219,6 +248,7 @@ function main_function(){
 		//create table
 		var table = document.createElement("table");
 		table.classList.add("remove");
+		table.classList.add("notes");
 		var container = document.getElementById("notes-container");
 		container.insertBefore(table, container.firstChild);
 
@@ -227,10 +257,13 @@ function main_function(){
 		var row = document.createElement("tr");
 		var item = document.createElement("td");
 		item.classList.add("title");
+		item.classList.add("notes");
 		row.appendChild(item);
 		for(var i = 0; i < players.length; i++){
 			var index = (current_player + i) % players.length;
 			item = document.createElement("th");
+			item.classList.add("notes");
+			item.style.backgroundColor = colors[characters[index]];
 			item.innerText = players[index];
 			row.appendChild(item);
 		}
@@ -241,6 +274,7 @@ function main_function(){
 			if(i == suspects.length || i == suspects.length + weapons.length){
 				row = document.createElement("tr");
 				item = document.createElement("td");
+				item.classList.add("notes");
 				item.classList.add("border");
 				item.colSpan = "" + (players.length + 1);
 				row.appendChild(item);
@@ -251,6 +285,7 @@ function main_function(){
 			item = document.createElement("td");
 			item.id = "t" + i;
 			item.innerText = clues[i];
+			item.classList.add("notes");
 			item.classList.add("title");
 			if(weapons.includes(clues[i])){
 				item.classList.add("weapon");
@@ -260,6 +295,7 @@ function main_function(){
 			for(var j = 0; j < players.length; j++){
 				var index = (current_player + j) % players.length;
 				item = document.createElement("td");
+				item.classList.add("notes");
 				item.id = index + "d" + i;
 				boxes[index][i] = {element: item, tags: [], pressed: false, status: 2, update: false};
 				item.onclick = function(){
@@ -600,12 +636,12 @@ function main_function(){
 			document.getElementById("show-container").style.display = "block";
 		};
 		function show(){
-			var x = parseInt(current_tab.player.id.split("-")[2]);
+			var x = parseInt(current_tab.showplayer.id.split("-")[2]);
 			var y = parseInt(current_tab.showcard.id.split("-")[2]);
 			turn_history.push({b: [{0: x, 1: y}], s: 3, t: null});
 
 			clearBoxes();
-			current_tab.top.click();
+			current_tab.main.click();
 
 			execute(turn_history[turn_history.length - 1].t, turn_history[turn_history.length - 1].s, turn_history[turn_history.length - 1].b);
 			firebase.database().ref("/" + current_player + '/history/' + (turn_history.length - 1)).set(turn_history[turn_history.length - 1]);
@@ -688,13 +724,13 @@ function main_function(){
 				});
 				for(var i = 0; i < 3; i++){
 					if(indices[i] != answers[i]){
-						document.getElementById("loading-message").innerText = "Incorrect guess.";
+						setLoadingMessage("Incorrect guess.", false);
 						document.getElementById("page-container").style.opacity = 0;
 						setTimeout(function(){
 							document.getElementById("page-container").style.opacity = 1;
 						}, 5000);
 						setTimeout(function(){
-							document.getElementById("loading-message").innerText = "";
+							setLoadingMessage("", false);
 						}, 5500);
 						return;
 					}
@@ -715,15 +751,15 @@ function main_function(){
 			else{
 				var data = snapshot.val();
 				console.log(data);
-				document.getElementById("loading-message").innerText = "Player " + players[data.p] + " has " + clues[data.i];
+				setLoadingMessage("Player " + players[data.p] + " has " + clues[data.i], false);
 				document.getElementById("page-container").style.opacity = 0;
 				setTimeout(function(){
 					clearBoxes();
 					if(document.getElementById("input-container").style == "block"){
 						turn_history.pop();
 					}
-					boxes[index][data.i].pressed = true;
-					boxes[index][data.i].element.classList.toggle("data-pressed");
+					boxes[data.p][data.i].pressed = true;
+					boxes[data.p][data.i].element.classList.toggle("data-pressed");
 					current_box_num = 1;
 					editFunction();
 					document.getElementById("status-tab-1").click();
@@ -737,39 +773,41 @@ function main_function(){
 					document.getElementById("page-container").style.opacity = 1;
 				}, 3000);
 				setTimeout(function(){
-					document.getElementById("loading-message").innerText = "";
+					setLoadingMessage("", false);
 				}, 3500);
 			}
 		});
 		var game_first = true;
-		firebase.database().ref("/game").on('value', (snapshot) => {
+		firebase.database().ref("/game/status").on('value', (snapshot) => {
 			if(game_first){
 				game_first = false;
 			}
-			else if(snapshot.val().status.length == 1){
-				if(snapshot.val().status == current_player){
-					document.getElementById("loading-message").innerText = "You won!\n";
+			else if(snapshot.val().length == 1){
+				var str = "";
+				if(snapshot.val() == current_player){
+					str = "You won!\n";
 				}
 				else{
-					document.getElementById("loading-message").innerText = "Player " + players[snapshot.val().status] + " has won.\n";
+					str = "Player " + players[snapshot.val()] + " has won.\n";
 				}
 				for(var i = 0; i < 3; i++){
-					document.getElementById("loading-message").innerText += "\n" + clues[snapshot.val().answer[i]];
+					str += "\n" + clues[answers[i]];
 				}
+				setLoadingMessage(str, false);
 				document.getElementById("page-container").style.opacity = 0;
 				setTimeout(function(){
 					document.getElementById("page-container").style.opacity = 1;
 				}, 4000);
 				setTimeout(function(){
-					document.getElementById("loading-message").innerText = "";
+					setLoadingMessage("", false);
 				}, 4500);
 			}
 			else{
 				console.log("Starting new game");
-				document.getElementById("loading-message").innerText = "Starting new game...";
+				setLoadingMessage("Starting new game...", false);
 				document.getElementById("page-container").style.opacity = 0;
 				turn_history = [];
-				firebase.database().ref(current_player).set(turn_history);
+				firebase.database().ref(current_player).set({});
 				setTimeout(function(){
 					createPage(false);
 				}, 500);
@@ -778,6 +816,419 @@ function main_function(){
 	}
 
 	createPage(true);
+
+
+
+
+	var map_data;
+	var map_raw_text =  `x,x,x,x,x,x,x,x,x,t5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+x,x,x,x,x,x,x,x,x,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+t7,7,7,7,7,7,7,x,x,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+7,7,7,7,7,7,7,x,x,5,5,5,5,5,5,5,5,5,5,5,5,5,5,b5
+7,7,7,7,7,7,7,x,x,x,x,d5,d5,x,x,x,x,x,x,x,x,x,x,x
+7,7,7,7,7,7,7,x,x,x,x,d6,d6,x,x,x,x,x,x,x,x,x,x,x
+7,7,7,7,7,7,7,x,x,t6,6,6,6,6,6,x,x,t4,4,4,4,4,4,4
+7,7,7,7,7,7,7,s,d6,6,6,6,6,6,6,d6,s,4,4,4,4,4,4,4
+7,7,7,7,7,7,7,s,s,6,6,6,6,6,6,s,s,4,4,4,4,4,4,4
+7,7,7,7,7,7,b7,s,s,6,6,6,6,6,6,s,s,4,4,4,4,4,4,4
+x,d8,s,s,s,s,d7,s,s,6,6,6,6,6,6,s,s,4,4,4,4,4,4,4
+t8,8,8,8,8,8,8,s,s,6,6,6,6,6,b6,s,s,4,4,4,4,4,4,b4
+8,8,8,8,8,8,8,s,s,s,s,d6,d6,s,s,s,s,s,d4,s,s,s,s,x
+8,8,8,8,8,8,8,d8,s,s,s,p+,s,s,s,s,s,s,s,s,s,s,d3,x
+8,8,8,8,8,8,8,s,s,t12,12,12,12,12,s,s,t3,3,3,3,3,3,3,3
+8,8,8,8,8,8,b8,s,s,12,12,12,12,12,d12,s,3,3,3,3,3,3,3,3
+x,d9,s,d8,s,s,s,s,s,12,12,12,12,12,s,s,3,3,3,3,3,3,3,3
+t9,9,9,9,9,9,s,s,d12,12,12,12,12,12,s,s,3,3,3,3,3,3,3,3
+9,9,9,9,9,9,s,s,s,12,12,12,12,12,s,d3,3,3,3,3,3,3,3,3
+9,9,9,9,9,9,s,s,s,12,12,12,12,b12,s,s,3,3,3,3,3,3,3,b3
+9,9,9,9,9,9,d9,s,s,s,s,d12,s,s,s,s,s,s,s,s,s,d3,s,x
+9,9,9,9,9,b9,s,s,s,d0,s,s,s,s,d0,s,s,s,s,s,s,s,s,x
+x,d9,s,s,s,s,s,s,t0,0,0,0,0,0,0,0,s,s,s,d2,s,s,s,x
+t10,10,10,10,10,s,s,s,0,0,0,0,0,0,0,0,s,s,t2,2,2,2,2,2
+10,10,10,10,10,d10,s,s,0,0,0,0,0,0,0,0,s,s,2,2,2,2,2,2
+10,10,10,10,10,s,s,s,0,0,0,0,0,0,0,0,s,s,2,2,2,2,2,2
+10,10,10,10,10,s,s,d0,0,0,0,0,0,0,0,0,d0,s,2,2,2,2,2,2
+10,10,10,10,b10,x,x,x,0,0,0,0,0,0,0,0,x,x,2,2,2,2,2,b2
+x,x,x,x,x,x,x,x,0,0,0,0,0,0,0,0,x,x,x,x,x,x,x,x
+x,x,x,x,x,d11,s,d0,0,0,0,0,0,0,0,0,d0,s,d1,x,x,x,x,x
+t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
+11,11,11,11,11,11,11,x,x,x,x,x,x,x,x,x,x,1,1,1,1,1,1,1
+11,11,11,11,11,11,11,d11,s,s,s,s,p-,s,s,s,d1,1,1,1,1,1,1,1
+11,11,11,11,11,11,b11,x,x,x,x,x,x,x,x,x,x,1,1,1,1,1,1,b1`;
+
+
+	function createMap(){
+		//create map_data
+		map_data = [];
+
+		var passages = {"t7": {dest: "t2"},
+						"t2": {dest: "t7"},
+						"t4": {dest: "t10"},
+						"t10": {dest: "t4"},
+						"p-": {dest: "p+"},
+						"p+": {dest: "p-"}};
+
+
+		var rows = map_raw_text.split("\n");
+		for(var row = 0; row < rows.length; row++){
+			var cols = rows[row].split(",");
+			map_data[row] = [];
+			for(var col = 0; col < cols.length; col++){
+				var value = cols[col];
+				if(value in passages){
+					passages[value].row = row;
+					passages[value].col = col;
+				}
+				map_data[row][col] = {"value": value, "movable": /^[tsdp]$/.test(value[0])};
+			}
+		}
+
+		
+		//get t and d coords
+		var tcoords = {};
+		var dcoords = {};
+		for(var row = 0; row < map_data.length; row++){
+			for(var col = 0; col < map_data[row].length; col++){
+				if(map_data[row][col].value[0] == "t"){
+					tcoords[map_data[row][col].value] = {"row": row, "col": col};
+				}
+				else if(map_data[row][col].value[0] == "d"){
+					var key = map_data[row][col].value;
+					if(!(key in dcoords)){
+						dcoords[key] = [];
+					}
+					dcoords[key].push({"row": row, "col": col});
+				}
+			}
+		}
+		//get move possibilities
+		for(var row = 0; row < map_data.length; row++){
+			for(var col = 0; col < map_data[row].length; col++){
+				if(map_data[row][col].movable){
+					var value = map_data[row][col].value;
+					var moves = [];
+					if(value in passages){
+						var dest = passages[value].dest;
+						moves.push({row: passages[dest].row, col: passages[dest].col});
+					}
+					if(value in tcoords){
+						moves.push(...dcoords["d" + value.substring(1)]);
+					}
+					if(value in dcoords){
+						moves.push(tcoords["t" + value.substring(1)]);
+					}
+					checkMove(moves, row, col, row - 1, col);
+					checkMove(moves, row, col, row + 1, col);
+					checkMove(moves, row, col, row, col - 1);
+					checkMove(moves, row, col, row, col + 1);
+					map_data[row][col].moves = moves;
+					map_data[row][col].dists = {};
+				}
+			}
+		}
+
+		//populate move numbers
+		for(var key in tcoords){
+			var room_index = parseInt(key.substring(1));
+			var queue = [];
+			queue.push({"row": tcoords[key].row, "col": tcoords[key].col, "prevdist": -1});
+			while(queue.length > 0){
+				var row = queue[0].row;
+				var col = queue[0].col;
+				var prevdist = queue.shift().prevdist;
+				if(!(room_index in map_data[row][col].dists) || prevdist + 1 < map_data[row][col].dists[room_index]){
+					map_data[row][col].dists[room_index] = prevdist + 1;
+					var moves = map_data[row][col].moves;
+					for(var i = 0; i < moves.length; i++){
+						queue.push({"row": moves[i].row, "col": moves[i].col, "prevdist": prevdist + 1});
+					}
+				}
+
+			}
+
+		}
+		configurePlayers();
+		createMapTable();
+		createMapButton();
+	}
+
+	var player_locations = {};
+
+	function configurePlayers(){
+		for(var row = 0; row < map_data.length; row++){
+			for(var col = 0; col < map_data[row].length; col++){
+				if(map_data[row][col].movable){
+					map_data[row][col].players = new Set();
+				}
+			}
+		}
+		firebase.database().ref("/game/locations").on('value', (snapshot) => {
+			var new_locations = snapshot.val();
+			console.log(new_locations);
+			for(var i = 0; i < new_locations.length; i++){
+				//update locations, updating the current players location last
+				var index = (current_player + 1 + i) % new_locations.length;
+				if(!(index in player_locations) || player_locations[index].row != new_locations[index].row || player_locations[index].col != new_locations[index].col || index == current_player){
+					if(!(index in player_locations)){
+						player_locations[index] = {};
+					}
+					else{
+						map_data[player_locations[index].row][player_locations[index].col].players.delete(index);
+						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = "";
+						if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
+							updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
+						}
+					}
+					player_locations[index].row = new_locations[index].row;
+					player_locations[index].col = new_locations[index].col;
+					map_data[player_locations[index].row][player_locations[index].col].players.add(index);
+					if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
+						updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
+						if(current_player == index){
+							map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
+							console.log(colors[characters[index]]);
+							console.log(map_data[player_locations[index].row][player_locations[index].col].element);
+						}
+					}
+					else{
+						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
+					}
+				}
+			}
+			console.log("New player locations");
+			console.log(map_data);
+		});
+	}
+
+	function createMapTable(){
+
+		//create table
+		var table = document.createElement("table");
+		table.classList.add("map");
+		var container = document.getElementById("map-container");
+		container.insertBefore(table, container.firstChild);
+
+		var room_coords = {};
+		for(var row = 0; row < map_data.length; row++){
+			var row_element = document.createElement("tr");
+			for(var col = 0; col < map_data[row].length; col++){
+				switch(map_data[row][col].value[0]){
+					case "s":
+					case "p":
+					case "x":
+					case "d":
+						var item = document.createElement("td");
+						if(map_data[row][col].value[0] != "x"){
+							map_data[row][col].element = item;
+						}
+						item.classList.add("map");
+						if(map_data[row][col].value[0] == "p"){
+							item.classList.add("passage");
+						}
+						else if(map_data[row][col].value[0] == "x"){
+							item.classList.add("wall");
+						}
+						else{
+							item.classList.add("square");
+						}
+						createRoomBorders(item, row, col);
+						row_element.appendChild(item);
+						break;
+					case "t":
+						var item = document.createElement("td");
+						map_data[row][col].element = item;
+						item.classList.add("room");
+						var room_index = parseInt(map_data[row][col].value.substring(1));
+						item.id = "room_" + room_index;
+						updateRoomText(map_data[row][col]);
+						room_coords[room_index] = {"row": row, "col": col};
+						row_element.appendChild(item)
+						break;
+					case "b":
+						var room_index = parseInt(map_data[row][col].value.substring(1));
+						document.getElementById("room_" + room_index).colSpan = 1 + col - room_coords[room_index].col;
+						document.getElementById("room_" + room_index).rowSpan = 1 + row - room_coords[room_index].row;
+						break;
+					default:
+				}
+			}
+			table.appendChild(row_element);
+		}
+	}
+
+	function resetPath(){
+		var old_path = document.getElementsByClassName("path");
+		for(var i = old_path.length - 1; i >= 0; i--){
+			old_path[i].style.backgroundColor = "";
+			old_path[i].classList.remove("path");
+		}
+	}
+
+	var destination = null;
+	var roll = null;
+
+	function drawPath(){
+		console.log("drawing path");
+		var room_index = parseInt(this.id.split("_")[1]);
+		resetPath();
+		var row = player_locations[current_player].row;
+		var col = player_locations[current_player].col;
+		for(var i = 0; i < roll; i++){
+			if(map_data[row][col].dists[room_index] == 0){
+				if(i == 0){
+					destination = {"row": row, "col": col};
+					return;
+				}
+				map_data[row][col].element.classList.add("path");
+				map_data[row][col].element.style.backgroundColor = colors[characters[current_player]];
+			}
+			else{
+				var min_dist = 100;
+				var best_move = null;
+				for(var j = 0; j < map_data[row][col].moves.length; j++){
+					var move = map_data[row][col].moves[j];
+					if(map_data[move.row][move.col].dists[room_index] < min_dist){
+						min_dist = map_data[move.row][move.col].dists[room_index];
+						best_move = move;
+					}
+				}
+				if(i == roll - 1 && map_data[best_move.row][best_move.col].players.size > 0){
+					destination = {"row": row, "col": col};
+					return;
+				}
+				row = best_move.row;
+				col = best_move.col;
+				map_data[row][col].element.classList.add("path");
+				if(min_dist == 0 || i == roll - 1){
+					map_data[row][col].element.style.backgroundColor = colors[characters[current_player]];
+					destination = {"row": row, "col": col};
+				}
+				else{
+					map_data[row][col].element.style.backgroundColor = lighter_colors[characters[current_player]];
+				}
+			}
+		}
+	}
+
+	function createMapButton(){
+		var button = document.getElementById("main-move");
+		function movePlayer(){
+			resetPath();
+			firebase.database().ref("/game/locations/" + current_player).set(destination);
+			document.getElementById("confirm-container").style.display = "none";
+			document.getElementById("input-container").style.display = "none";
+			document.getElementById("view-container").style.display = "block";
+			destination = null;
+			button.onclick = rollDice;
+			button.innerText = "Roll";
+			for(var row = 0; row < map_data.length; row++){
+				for(var col = 0; col < map_data[row].length; col++){
+					if(map_data[row][col].value[0] == "t"){
+						map_data[row][col].element.onclick = null;
+					}
+				}
+			}
+		}
+		function moveButton(){
+			console.log(map_data[destination.row][destination.col].players);
+			if(destination == null || map_data[destination.row][destination.col].players.has(current_player)){
+				return;
+			}
+			document.getElementById("confirm").innerText = "Confirm move";
+			document.getElementById("confirm").onclick = movePlayer;
+			document.getElementById("confirm-container").style.display = "block";
+
+		}
+		function rollDice(){
+			roll = 2 + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6);
+			button.innerText = "Move " + roll + " spaces";
+			button.onclick = moveButton;
+			for(var row = 0; row < map_data.length; row++){
+				for(var col = 0; col < map_data[row].length; col++){
+					if(map_data[row][col].value[0] == "t"){
+						map_data[row][col].element.onclick = drawPath;
+					}
+				}
+			}
+		}
+		button.onclick = rollDice;
+	}
+
+	var passage_names = {7: "1", 2: "1", 4: "2", 10: "2"};
+
+	function updateRoomText(map_data_element){
+		var room_index = parseInt(map_data_element.value.substring(1));
+		var text;
+		if(room_index == 12){
+			text = "Cloak Room\n";
+		}
+		else{
+			text = rooms[room_index] + "\n";
+		}
+		if(room_index in passage_names){
+			text += "(passage " + passage_names[room_index] + ")\n";
+		}
+		var occupants = Array.from(map_data_element.players);
+		var occupant_names = [];
+		for(var i = 0; i < occupants.length; i++){
+			occupant_names.push(players[occupants[i]]);
+		}
+		text += occupant_names.join(", ");
+		map_data_element.element.innerText = text;
+		console.log(text);
+	}
+
+	function checkMove(moves, row1, col1, row2, col2){
+		if(row2 < 0 || row2 == map_data.length){
+			return;
+		}
+		if(col2 < 0 || col2 == map_data[row1].length){
+			return;
+		}
+		if(!map_data[row2][col2].movable){
+			return;
+		}
+		if(/^t\d+$/.test(map_data[row1][col1].value) || /^t\d+$/.test(map_data[row2][col2].value)){
+			return;
+		}
+		moves.push({"row": row2, "col": col2});
+	}
+
+	function checkRoomBorder(row1, col1, row2, col2){
+		if(row2 < 0 || row2 == map_data.length){
+			return false;
+		}
+		if(col2 < 0 || col2 == map_data[row1].length){
+			return false;
+		}
+		if(map_data[row1][col1].value[0] == "d" && map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
+			return false;
+		}
+		return /^[tb]?\d+$/.test(map_data[row2][col2].value);
+	}
+
+	function createRoomBorders(item, row, col){
+		var border = "2px solid black";
+		if(map_data[row][col].value == "x"){
+			item.style.border = border;
+			return;
+		}
+		if(map_data[row][col].value[0] == "p"){
+			return;
+		}
+		if(checkRoomBorder(row, col, row - 1, col)){
+			item.style.borderTop = border;
+		}
+		if(checkRoomBorder(row, col, row + 1, col)){
+			item.style.borderBottom = border;
+		}
+		if(checkRoomBorder(row, col, row, col - 1)){
+			item.style.borderLeft = border;
+		}
+		if(checkRoomBorder(row, col, row, col + 1)){
+			item.style.borderRight = border;
+		}
+	}
 }
 
 main_function();
