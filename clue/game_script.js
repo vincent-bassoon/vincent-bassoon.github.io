@@ -187,9 +187,9 @@ function main_function(){
 		}
 		data["status"] = Date.now();
 		data["players"] = players;
-		data["locations"] = {};
+		data["map"] = {"status": data.status, "locations": []};
 		for(var i = 0; i < player_count; i++){
-			data.locations[i] = {"row": 14, "col": 9};
+			data.map.locations[i] = {"row": 14, "col": 9};
 		}
 		console.log(data);
 		firebase.database().ref("/game").set(data);

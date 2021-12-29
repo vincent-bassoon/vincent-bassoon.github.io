@@ -179,6 +179,7 @@ function main_function(){
 				createEdit();
 				createMap();
 			}
+			updateMap(snapshot.val().map.locations);
 			firebase.database().ref("/" + current_player + "/status").once('value').then(function(snapshot){
 				if(snapshot.val() != game_status){
 					console.log("starting new game");
@@ -954,6 +955,42 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 	var player_locations = {};
 
+	function updateMap(new_locations){
+		console.log(new_locations);
+		for(var i = 0; i < new_locations.length; i++){
+			//update locations, updating the current players location last
+			var index = (current_player + 1 + i) % new_locations.length;
+			if(!(index in player_locations) || player_locations[index].row != new_locations[index].row || player_locations[index].col != new_locations[index].col || index == current_player){
+				if(!(index in player_locations)){
+					player_locations[index] = {};
+				}
+				else{
+					map_data[player_locations[index].row][player_locations[index].col].players.delete(index);
+					map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = "";
+					if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
+						updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
+					}
+				}
+				player_locations[index].row = new_locations[index].row;
+				player_locations[index].col = new_locations[index].col;
+				map_data[player_locations[index].row][player_locations[index].col].players.add(index);
+				if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
+					updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
+					if(current_player == index){
+						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
+						console.log(colors[characters[index]]);
+						console.log(map_data[player_locations[index].row][player_locations[index].col].element);
+					}
+				}
+				else{
+					map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
+				}
+			}
+		}
+		console.log("New player locations");
+		console.log(map_data);
+	}
+
 	function configurePlayers(){
 		for(var row = 0; row < map_data.length; row++){
 			for(var col = 0; col < map_data[row].length; col++){
@@ -962,41 +999,17 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 				}
 			}
 		}
-		firebase.database().ref("/game/locations").on('value', (snapshot) => {
-			var new_locations = snapshot.val();
-			console.log(new_locations);
-			for(var i = 0; i < new_locations.length; i++){
-				//update locations, updating the current players location last
-				var index = (current_player + 1 + i) % new_locations.length;
-				if(!(index in player_locations) || player_locations[index].row != new_locations[index].row || player_locations[index].col != new_locations[index].col || index == current_player){
-					if(!(index in player_locations)){
-						player_locations[index] = {};
-					}
-					else{
-						map_data[player_locations[index].row][player_locations[index].col].players.delete(index);
-						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = "";
-						if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
-							updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
-						}
-					}
-					player_locations[index].row = new_locations[index].row;
-					player_locations[index].col = new_locations[index].col;
-					map_data[player_locations[index].row][player_locations[index].col].players.add(index);
-					if(map_data[player_locations[index].row][player_locations[index].col].value[0] == "t"){
-						updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
-						if(current_player == index){
-							map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
-							console.log(colors[characters[index]]);
-							console.log(map_data[player_locations[index].row][player_locations[index].col].element);
-						}
-					}
-					else{
-						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
-					}
+		firebase.database().ref("/game/map/locations").on('value', (snapshot) => {
+			var locations = snapshot.val();
+			firebase.database().ref("/game/map/status").once('value').then(function(snapshot){
+				if(game_status != snapshot.val()){
+					firebase.database().ref("/game/map/status").set(game_status);
+					return;
 				}
-			}
-			console.log("New player locations");
-			console.log(map_data);
+				else{
+					updateMap(locations);
+				}
+			});
 		});
 	}
 
@@ -1114,7 +1127,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		var button = document.getElementById("main-move");
 		function movePlayer(){
 			resetPath();
-			firebase.database().ref("/game/locations/" + current_player).set(destination);
+			firebase.database().ref("/game/map/locations/" + current_player).set(destination);
 			document.getElementById("confirm-container").style.display = "none";
 			document.getElementById("input-container").style.display = "none";
 			document.getElementById("view-container").style.display = "block";
@@ -1201,8 +1214,13 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		if(col2 < 0 || col2 == map_data[row1].length){
 			return false;
 		}
-		if(map_data[row1][col1].value[0] == "d" && map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
-			return false;
+		if(map_data[row1][col1].value[0] == "d"){
+			if(map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
+				return false;
+			}
+			if(/^[tb]$/.test(map_data[row2][col2].value[0]) && map_data[row1][col1].value.substring(1) == map_data[row2][col2].value.substring(1)){
+				return false;
+			}
 		}
 		return /^[tb]?\d+$/.test(map_data[row2][col2].value);
 	}
