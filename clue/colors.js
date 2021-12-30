@@ -8,6 +8,7 @@ var hsl =  [[58, 54, 50],//   Col. Mustard
 			[0, 0, 75],//     Sgt. Gray
 			[25, 17, 50],//     M. Brunette
 			[22, 77, 75]];//  Miss Peach"];
+
 var colors = [];
 for(var i = 0; i < hsl.length; i++){
 	colors[i] = "hsl(" + hsl[i][0] + ", " + hsl[i][1] + "%, " + hsl[i][2] + "%)";

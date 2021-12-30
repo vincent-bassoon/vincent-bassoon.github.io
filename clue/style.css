@@ -90,8 +90,8 @@ td.data-0 {
 	background-color: white;
 }
 td.title {
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding-top: 4px;
+	padding-bottom: 4px;
 	padding-left: 10px;
 	width: 133px;
 }
@@ -202,6 +202,10 @@ MISC
 SINGLE USE
 */
 
+.fixed-header {
+	position: sticky;
+	top: 0;
+}
 .guess {
 	float: left;
 	border: none;
@@ -268,7 +272,10 @@ SINGLE USE
 }
 
 
-
+mark {
+	padding: 2px;
+	color: black;
+}
 
 
 .confirm {

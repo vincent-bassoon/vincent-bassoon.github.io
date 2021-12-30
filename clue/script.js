@@ -178,6 +178,15 @@ function main_function(){
 			if(first){
 				createEdit();
 				createMap();
+				window.onscroll = function(){
+					var header = document.getElementById("notes-header-row");
+					if(window.pageYOffset > document.getElementById("notes-table").offsetTop){
+						header.classList.add("fixed-header");
+					}
+					else{
+						header.classList.remove("fixed-header");
+					}
+				}
 			}
 			updateMap(snapshot.val().map.locations);
 			firebase.database().ref("/game/map/status").set(game_status);
@@ -249,6 +258,7 @@ function main_function(){
 
 		//create table
 		var table = document.createElement("table");
+		table.id = "notes-table";
 		table.classList.add("remove");
 		table.classList.add("notes");
 		var container = document.getElementById("notes-container");
@@ -257,6 +267,7 @@ function main_function(){
 		//set font and header row of table
 		base_font_size = parseInt(window.getComputedStyle(table).fontSize.replace("px", ""));
 		var row = document.createElement("tr");
+		row.id = "notes-header-row";
 		var item = document.createElement("td");
 		item.classList.add("title");
 		item.classList.add("notes");
@@ -330,7 +341,8 @@ function main_function(){
 
 
 	function testFont(selector, font_size, success){
-		if(font_size == 8){
+		if(font_size == 12){
+			selector.css("font-size", font_size);
 			success();
 			return;
 		}
@@ -371,6 +383,7 @@ function main_function(){
 				updateBoxes(p, c + 1, success);
 				return;
 			}
+			console.log(box.element.innerText);
 			testFont($("[id=" + box.element.id + "]"), base_font_size, function(){
 				updateBoxes(p, c + 1, success);
 			});
@@ -719,7 +732,7 @@ function main_function(){
 			if(guesses.length == 3){
 				var indices = [];
 				for(var i = 0; i < 3; i++){
-					indices.push(parseInt(answers[i].id.substring(1)));
+					indices.push(parseInt(guesses[i].id.substring(1)));
 				}
 				indices.sort(function(a, b) {
 					return a - b;
@@ -784,7 +797,7 @@ function main_function(){
 			if(game_first){
 				game_first = false;
 			}
-			else if(snapshot.val().length == 1){
+			else if(("" + snapshot.val()).length == 1){
 				var str = "";
 				if(snapshot.val() == current_player){
 					str = "You won!\n";
@@ -986,6 +999,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 				}
 				else{
 					map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
+					map_data[player_locations[index].row][player_locations[index].col].element.innerText = players[index];
 				}
 			}
 		}
@@ -1176,21 +1190,21 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		var room_index = parseInt(map_data_element.value.substring(1));
 		var text;
 		if(room_index == 12){
-			text = "Cloak Room\n";
+			text = "Cloak Room<br />";
 		}
 		else{
-			text = rooms[room_index] + "\n";
+			text = rooms[room_index] + "<br />";
 		}
 		if(room_index in passage_names){
-			text += "(passage " + passage_names[room_index] + ")\n";
+			text += "(passage " + passage_names[room_index] + ")<br />";
 		}
 		var occupants = Array.from(map_data_element.players);
 		var occupant_names = [];
 		for(var i = 0; i < occupants.length; i++){
-			occupant_names.push(players[occupants[i]]);
+			occupant_names.push("<mark style='background-color:" + colors[characters[occupants[i]]] + ";'>" + players[occupants[i]] + "</mark>");
 		}
 		text += occupant_names.join(", ");
-		map_data_element.element.innerText = text;
+		map_data_element.element.innerHTML = text;
 	}
 
 	function checkMove(moves, row1, col1, row2, col2){
