@@ -217,17 +217,7 @@ function main_function(){
 	}
 
 
-	function setLoadingMessage(str, display_players){
-		/*for(var i = 0; i < 9; i++){
-			if(display_players && i < players.length){
-				document.getElementById("player-buttons-" + i).style.display = "block";
-				document.getElementById("player-buttons-" + i).style.backgroundColor = colors[characters[i]];
-				document.getElementById("player-buttons-" + i).innerText = players[i];
-			}
-			else{
-				document.getElementById("player-buttons-" + i).style.display = "none";
-			}
-		}*/
+	function setLoadingMessage(str, new_game_link){
 		document.getElementById("loading-message").innerText = str;
 	}
 
