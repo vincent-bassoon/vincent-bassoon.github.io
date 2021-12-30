@@ -99,7 +99,6 @@ function main_function(){
 		for(var i = 0; i < starting_hand.length; i++){
 			var card = document.createElement("a");
 			card.innerText = clues[starting_hand[i]];
-			console.log(card.innerText);
 			card.classList.add("tab");
 			card.classList.add("remove");
 			card.classList.add("showcard");
@@ -172,7 +171,6 @@ function main_function(){
 				name_to_player[players[j]] = j;
 			}
 			starting_hand = snapshot.val()[current_player];
-			console.log(starting_hand);
 			createTabs();
 			document.getElementById("main-tab-chart").click();
 			createTable();
@@ -278,6 +276,7 @@ function main_function(){
 			var index = (current_player + i) % players.length;
 			item = document.createElement("th");
 			item.classList.add("chart");
+			item.classList.add("player-name-header");
 			item.style.backgroundColor = colors[characters[index]];
 			item.innerText = players[index];
 			row.appendChild(item);
@@ -345,20 +344,19 @@ function main_function(){
 	function testFont(selector, font_size, success){
 		if(font_size == 12){
 			selector.css("font-size", font_size);
+			console.log("font set to min font size of " + font_size);
 			success();
 			return;
 		}
 		$(document).ready(function(){
 			if(test_selector.height() > row_height){
-				console.log(test_selector.height() + " > " + row_height)
 				font_size--;
-				console.log(Date.now() + " font decrease to " + font_size);
 				test_selector.css("font-size", font_size);
 				testFont(selector, font_size, success);
 			}
 			else{
 				selector.css("font-size", font_size);
-				console.log(test_selector.height() + " " + row_height);
+				console.log("font set to " + font_size + " with heights of " + test_selector.height() + " and " + row_height);
 				success();
 			}
 		});
@@ -381,7 +379,7 @@ function main_function(){
 			test_element.style.fontSize = base_font_size + "px";
 			test_element.innerText = box.tags.join(", ");
 			box.element.innerText = box.tags.join(", ");
-			if(box.tags.length == 0){
+			if(box.tags.length < 2){
 				updateBoxes(p, c + 1, success);
 				return;
 			}
@@ -973,7 +971,6 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 	function updateMap(new_locations){
 		console.log("updating map");
-		console.log(new_locations);
 		for(var i = 0; i < new_locations.length; i++){
 			//update locations, updating the current players location last
 			var index = (current_player + 1 + i) % new_locations.length;
@@ -995,8 +992,6 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 					updateRoomText(map_data[player_locations[index].row][player_locations[index].col]);
 					if(current_player == index){
 						map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor = colors[characters[index]];
-						console.log(colors[characters[index]]);
-						console.log(map_data[player_locations[index].row][player_locations[index].col].element);
 					}
 				}
 				else{
@@ -1005,8 +1000,6 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 				}
 			}
 		}
-		console.log("New player locations");
-		console.log(map_data);
 	}
 
 	function configurePlayers(){

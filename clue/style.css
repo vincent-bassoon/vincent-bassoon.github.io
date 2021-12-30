@@ -64,6 +64,8 @@ td.chart {
 th.chart {
 	border: 1px solid #ccc;
 	font-weight: 300;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 td.data {
 	background-color: #aaa;
