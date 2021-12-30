@@ -180,6 +180,7 @@ function main_function(){
 				createMap();
 			}
 			updateMap(snapshot.val().map.locations);
+			firebase.database().ref("/game/map/status").set(game_status);
 			firebase.database().ref("/" + current_player + "/status").once('value').then(function(snapshot){
 				if(snapshot.val() != game_status){
 					console.log("starting new game");
@@ -956,6 +957,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 	var player_locations = {};
 
 	function updateMap(new_locations){
+		console.log("updating map");
 		console.log(new_locations);
 		for(var i = 0; i < new_locations.length; i++){
 			//update locations, updating the current players location last
@@ -1003,7 +1005,8 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 			var locations = snapshot.val();
 			firebase.database().ref("/game/map/status").once('value').then(function(snapshot){
 				if(game_status != snapshot.val()){
-					firebase.database().ref("/game/map/status").set(game_status);
+					console.log("incorrect map status");
+					//firebase.database().ref("/game/map/status").set(game_status);
 					return;
 				}
 				else{
@@ -1188,7 +1191,6 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		}
 		text += occupant_names.join(", ");
 		map_data_element.element.innerText = text;
-		console.log(text);
 	}
 
 	function checkMove(moves, row1, col1, row2, col2){
