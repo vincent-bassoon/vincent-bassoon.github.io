@@ -16,13 +16,13 @@
 			</div>
 		</div>
 		<div class="offscreen">
-			<table class="notes">
-				<tr class="notes" id="test-row">
-					<td class="notes title">Carriage House</td>
-					<td class="notes data" id="test-element"></td>
-					<td class="notes data"></td>
-					<td class="notes data"></td>
-					<td class="notes data"></td>
+			<table class="chart">
+				<tr class="chart" id="test-row">
+					<td class="chart title">Carriage House</td>
+					<td class="chart data" id="test-element"></td>
+					<td class="chart data"></td>
+					<td class="chart data"></td>
+					<td class="chart data"></td>
 					<!---
 						--->
 				</tr>
@@ -31,10 +31,11 @@
 		<div class="page-container" id="page-container">
 			<div id="view-container">
 				<div>
+					<a class="main tab" id="main-tab-chart">Chart</a>
 					<a class="main tab" id="main-tab-notes">Notes</a>
 					<a class="main tab" id="main-tab-map">Map</a>
 				</div>
-				<div id="notes-container">
+				<div id="chart-container">
 					<!---
 						Table is added here
 						--->
@@ -44,6 +45,9 @@
 				</div>
 				<div id="map-container">
 					<a class="main-bottom tab full" id="main-move">Roll</a>
+				</div>
+				<div class="notes-container" id="notes-container">
+					<textarea class="notes-text-field" rows="37"></textarea>
 				</div>
 			</div>
 			<div class="hide" id="input-container">

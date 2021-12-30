@@ -5,6 +5,9 @@ body, html {
 	margin: 0;
 	font-family: Arial;
 }
+.div{
+	width: 100%;
+}
 
 
 table.map {
@@ -38,7 +41,7 @@ td.wall {
 
 
 
-table.notes {
+table.chart {
 	border-collapse: collapse;
 	width: 100%;
 	table-layout: fixed;
@@ -54,11 +57,11 @@ div {
 .hide {
 	display: none;
 }
-td.notes {
+td.chart {
 	border: 1px solid #ccc;
 	text-align: left;
 }
-th.notes {
+th.chart {
 	border: 1px solid #ccc;
 	font-weight: 300;
 }
@@ -128,7 +131,7 @@ a.tab {
 	padding: 16px;
 	color: white;
 	background-color: #555;
-	width: 50%;
+	width: 33.3333333%;
 }
 .tab.main.active-tab {
 	background-color: #777;
@@ -273,7 +276,8 @@ SINGLE USE
 
 
 mark {
-	padding: 2px;
+	padding-left: 2px;
+	padding-right: 2px;
 	color: black;
 }
 
@@ -316,6 +320,30 @@ mark {
 	-ms-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 }
+textarea.notes-text-field:focus {
+	outline: none;
+}
+textarea.notes-text-field {
+	font-family: Arial;
+	font-size: 16px;
+
+    overflow: auto;
+    outline: none;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+
+    width: 100%;
+
+    resize: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	padding: 10px;
+	overflow: scroll;
+	margin-top: 10px;
+}
 
 
 /*
@@ -347,4 +375,8 @@ CONTAINERS
 .bottom-tab-container {
 	position: fixed;
 	bottom: 0;
+}
+.notes-container{
+	background-color: #777;
+	padding: 10px;
 }

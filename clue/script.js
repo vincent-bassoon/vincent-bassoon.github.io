@@ -19,7 +19,7 @@ function main_function(){
 	var turn_history = [];
 	var tag_history = [];
 
-	var current_tab = {main: document.getElementById("main-tab-notes"),
+	var current_tab = {main: document.getElementById("main-tab-chart"),
 					   status: document.getElementById("status-tab-none"),
 					   tag: document.getElementById("tag-tab-none")};
 	var current_tag = {};
@@ -134,6 +134,7 @@ function main_function(){
 						}
 						if(type == "main"){
 							document.getElementById("map-container").style.display = "none";
+							document.getElementById("chart-container").style.display = "none";
 							document.getElementById("notes-container").style.display = "none";
 							document.getElementById(this.id.split("-")[2] + "-container").style.display = "block";
 						}
@@ -146,7 +147,8 @@ function main_function(){
 	function createPage(first){
 		document.getElementById("view-container").style.display = "block";
 		document.getElementById("map-container").style.display = "none";
-		document.getElementById("notes-container").style.display = "block";
+		document.getElementById("notes-container").style.display = "none";
+		document.getElementById("chart-container").style.display = "block";
 		document.getElementById("show-container").style.display = "none";
 		document.getElementById("input-container").style.display = "none";
 		document.getElementById("confirm-container").style.display = "none";
@@ -172,15 +174,15 @@ function main_function(){
 			starting_hand = snapshot.val()[current_player];
 			console.log(starting_hand);
 			createTabs();
-			document.getElementById("main-tab-notes").click();
+			document.getElementById("main-tab-chart").click();
 			createTable();
 			resetPath();
 			if(first){
 				createEdit();
 				createMap();
 				window.onscroll = function(){
-					var header = document.getElementById("notes-header-row");
-					if(window.pageYOffset > document.getElementById("notes-table").offsetTop){
+					var header = document.getElementById("chart-header-row");
+					if(window.pageYOffset > document.getElementById("chart-table").offsetTop){
 						header.classList.add("fixed-header");
 					}
 					else{
@@ -250,7 +252,7 @@ function main_function(){
 		//offscreen formatting
 		for(var i = 0; i < players.length - 4; i++){
 			var item = document.createElement("td");
-			item.classList.add("notes");
+			item.classList.add("chart");
 			item.classList.add("data");
 			item.classList.add("remove");
 			document.getElementById("test-row").appendChild(item);
@@ -258,24 +260,24 @@ function main_function(){
 
 		//create table
 		var table = document.createElement("table");
-		table.id = "notes-table";
+		table.id = "chart-table";
 		table.classList.add("remove");
-		table.classList.add("notes");
-		var container = document.getElementById("notes-container");
+		table.classList.add("chart");
+		var container = document.getElementById("chart-container");
 		container.insertBefore(table, container.firstChild);
 
 		//set font and header row of table
 		base_font_size = parseInt(window.getComputedStyle(table).fontSize.replace("px", ""));
 		var row = document.createElement("tr");
-		row.id = "notes-header-row";
+		row.id = "chart-header-row";
 		var item = document.createElement("td");
 		item.classList.add("title");
-		item.classList.add("notes");
+		item.classList.add("chart");
 		row.appendChild(item);
 		for(var i = 0; i < players.length; i++){
 			var index = (current_player + i) % players.length;
 			item = document.createElement("th");
-			item.classList.add("notes");
+			item.classList.add("chart");
 			item.style.backgroundColor = colors[characters[index]];
 			item.innerText = players[index];
 			row.appendChild(item);
@@ -287,7 +289,7 @@ function main_function(){
 			if(i == suspects.length || i == suspects.length + weapons.length){
 				row = document.createElement("tr");
 				item = document.createElement("td");
-				item.classList.add("notes");
+				item.classList.add("chart");
 				item.classList.add("border");
 				item.colSpan = "" + (players.length + 1);
 				row.appendChild(item);
@@ -298,7 +300,7 @@ function main_function(){
 			item = document.createElement("td");
 			item.id = "t" + i;
 			item.innerText = clues[i];
-			item.classList.add("notes");
+			item.classList.add("chart");
 			item.classList.add("title");
 			if(weapons.includes(clues[i])){
 				item.classList.add("weapon");
@@ -308,7 +310,7 @@ function main_function(){
 			for(var j = 0; j < players.length; j++){
 				var index = (current_player + j) % players.length;
 				item = document.createElement("td");
-				item.classList.add("notes");
+				item.classList.add("chart");
 				item.id = index + "d" + i;
 				boxes[index][i] = {element: item, tags: [], pressed: false, status: 2, update: false};
 				item.onclick = function(){
