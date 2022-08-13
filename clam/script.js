@@ -8,6 +8,8 @@ var x = setInterval(function() {
 	if (distance < 0) {
 		clearInterval(x);
 		document.getElementById("timer").innerHTML = "The Clam Has Arrived";
+		done = true;
+		document.getElementById("loading-container").style.opacity = 1;
 		return;
 	}
 	else{
