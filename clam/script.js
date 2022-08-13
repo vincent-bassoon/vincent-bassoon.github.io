@@ -10,26 +10,27 @@ var x = setInterval(function() {
 		document.getElementById("timer").innerHTML = "The Clam Has Arrived";
 		return;
 	}
+	else{
+		var units = {};
+		units[0] = Math.floor(distance / (1000 * 60 * 60 * 24));
+		units[1] = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		units[2] = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+		units[3] = Math.floor((distance % (1000 * 60)) / 1000);
 
-	var units = {};
-	units[0] = Math.floor(distance / (1000 * 60 * 60 * 24));
-	units[1] = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-	units[2] = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-	units[3] = Math.floor((distance % (1000 * 60)) / 1000);
+		names = ["day", "hour", "minute", "second"];
+		var display = "";
+		for(var i = 0; i < 4; i++){
+			display += units[i] + " " + names[i];
+			if(units[i] != 1){
+				display += "s";
+			}
+			if(i != 3){
+				display += ", ";
+			}
+		}
 
-	names = ["day", "hour", "minute", "second"];
-	var display = "";
-	for(var i = 0; i < 4; i++){
-		display += units[i] + " " + names[i];
-		if(units[i] != 1){
-			display += "s";
-		}
-		if(i != 3){
-			display += ", ";
-		}
+		document.getElementById("timer").innerHTML = "The Clam will arrive in <p></p><p></p> " + display + "<p></p><p></p>";
 	}
-
-    document.getElementById("timer").innerHTML = "The Clam will arrive in <p></p><p></p> " + display + "<p></p><p></p>";
 	if(!done){
 		done = true;
 		document.getElementById("loading-container").style.opacity = 1;
