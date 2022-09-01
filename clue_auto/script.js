@@ -964,7 +964,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		for(var i = 0; i < new_locations.length; i++){
 			//update locations, updating the current players location last
 			var index = (current_player + 1 + i) % new_locations.length;
-			if(!(index in player_locations) || player_locations[index].row != new_locations[index].row || player_locations[index].col != new_locations[index].col || index == current_player || map_data[player_locations[index].row][player_locations[index].col].element.style.backgroundColor != colors[characters[index]]){
+			if(!(index in player_locations) || player_locations[index].row != new_locations[index].row || player_locations[index].col != new_locations[index].col || index == current_player){
 				if(!(index in player_locations)){
 					player_locations[index] = {};
 				}
