@@ -1,4 +1,4 @@
-var countDownDate = new Date("Aug 16, 2022 09:00:00").getTime();
+var countDownDate = new Date("Oct 13, 2022 12:31:00").getTime();
 var done = false;
 
 var x = setInterval(function() {
@@ -7,7 +7,7 @@ var x = setInterval(function() {
 
 	if (distance < 0) {
 		clearInterval(x);
-		document.getElementById("timer").innerHTML = "The Clam Has Arrived";
+		document.getElementById("timer").innerHTML = "The Clam Has Landed";
 		done = true;
 		document.getElementById("loading-container").style.opacity = 1;
 		return;
