@@ -54,9 +54,9 @@ function main_function(){
 		queue: [],
 		page_loaded: false,
 		page_shown: false,
-		pageFinished: function(){
+		pageFinished: function(queue_length){
 			this.page_loaded = true;
-			if(this.queue.length == 0 && !this.page_shown){
+			if(this.queue.length <= queue_length && !this.page_shown){
 				this.page_shown = true;
 				this.showPage();
 			}
@@ -92,6 +92,7 @@ function main_function(){
 				updateTurn(item.turn, item.pause);
 			}
 			if(this.queue.length == 0 && !this.page_shown && this.page_finished){
+				this.page_shown = true;
 				this.showPage();
 			}
 		},
@@ -699,7 +700,7 @@ function main_function(){
 		updateLog(turn);
 
 		if(pause){
-			turn_queue.pageFinished();
+			turn_queue.pageFinished(0);
 			if(turn.phase > -1 && turn.guess[0] != suspects.length){
 				for(let i = 0; i < 3; i++){
 					document.getElementById("r" + turn.guess[i]).classList.add("row-highlight");
@@ -732,6 +733,7 @@ function main_function(){
 					}
 				}
 				else{
+					players[current_player].was_moved = false;
 					turn.roll = 2 + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6);
 					turn_queue.remove();
 				}
@@ -1162,7 +1164,7 @@ function main_function(){
 					start = 0;
 					end = suspects.length;
 				}
-				else if(i < weapons.length){
+				else if(i < weapons.length + suspects.length){
 					start = suspects.length;
 					end = suspects.length + weapons.length;
 				}
@@ -1338,6 +1340,7 @@ function main_function(){
 			return;
 		}
 		if(pause && queue[0].length == []){
+			turn_queue.pageFinished(2);
 			queue.shift();
 			updateBoxes(0, 0, true, function(){
 				setBottomButton(0, "View chart updates", false, true, ["main-tab-chart"], function(){

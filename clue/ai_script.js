@@ -514,7 +514,7 @@ function ai_main_function(current_player, data){
 					start = 0;
 					end = suspects.length;
 				}
-				else if(i < weapons.length){
+				else if(i < weapons.length + suspects.length){
 					start = suspects.length;
 					end = suspects.length + weapons.length;
 				}
