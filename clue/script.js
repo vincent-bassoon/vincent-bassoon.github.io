@@ -62,16 +62,18 @@ function main_function(){
 			}
 		},
 		showPage: function(){
-			console.log("Showing page");
-			for(let i = 0; i < players.length; i++){
-				for(let j = 0; j < clues.length; j++){
-					boxes[i][j].element.classList.remove("tag-highlight");
+			updateBoxes(0, 0, true, function(){
+				console.log("Showing page");
+				for(let i = 0; i < players.length; i++){
+					for(let j = 0; j < clues.length; j++){
+						boxes[i][j].element.classList.remove("tag-highlight");
+					}
 				}
-			}
-			document.getElementById("page-container").style.opacity = 1;
-			setTimeout(function(){
-				setLoadingMessage("");
-			}, 500);
+				document.getElementById("page-container").style.opacity = 1;
+				setTimeout(function(){
+					setLoadingMessage("");
+				}, 500);
+			})
 		},
 		remove: function(){
 			if(this.queue.length == 0){
@@ -475,6 +477,14 @@ function main_function(){
 					}
 					setLoadingMessage(str);
 					document.getElementById("page-container").style.opacity = 0;
+					str = "";
+					if(i == current_player){
+						str = "You won!\n";
+					}
+					else{
+						str = "Player " + players[snapshot.val()].name + " has won.\n";
+					}
+					str += clues[answers[0]] + ", " + clues[answers[1]] + ", " + clues[answers[2]];
 					document.getElementById("log-window").innerText = str;
 					setTimeout(function(){
 						document.getElementById("page-container").style.opacity = 1;
@@ -1092,29 +1102,42 @@ function main_function(){
 
 	function checkChart(queue, pause){
 		//Check for max hand size of other players, fully white rows, if something is already the answer
-		let tags = new Set();
 		for(let i = 0; i < players.length; i++){
 			let hand = 0;
-			tags.clear();
 			for(let j = 0; j < clues.length; j++){
 				if(boxes[i][j].status == 1){
 					hand++;
 				}
-				else{
-					for(let tag of boxes[i][j].tags){
-						tags.add(tag);
-					}
-				}
 			}
-			if(hand + tags.size == players[i].hand.length){
+			if(hand == players[i].hand.length){
 				let add_pause = true;
 				for(let j = 0; j < clues.length; j++){
-					if(boxes[i][j].status == 2 && boxes[i][j].tags.size == 0){
+					if(boxes[i][j].status == 2){
 						if(pause && add_pause){
 							queue.push([]);
 							add_pause = false;
 						}
 						queue.push([i, j, 0]);
+					}
+				}
+			}
+		}
+		for(let i = 0; i < players.length; i++){
+			let hand = clues.length;
+			for(let j = 0; j < clues.length; j++){
+				if(boxes[i][j].status == 0){
+					hand--;
+				}
+			}
+			if(hand == players[i].hand.length){
+				let add_pause = true;
+				for(let j = 0; j < clues.length; j++){
+					if(boxes[i][j].status == 2){
+						if(pause && add_pause){
+							queue.push([]);
+							add_pause = false;
+						}
+						queue.push([i, j, 1]);
 					}
 				}
 			}
@@ -1201,9 +1224,7 @@ function main_function(){
 			}, false, "");
 		}
 		else{
-			updateBoxes(0, 0, false, function(){
-				turn_queue.remove();
-			});
+			turn_queue.remove();
 		}
 	}
 
@@ -1223,6 +1244,8 @@ function main_function(){
 					active_tags[tag].delete(box.element.id);
 					for(let id of active_tags[tag]){
 						let xy = id.split("d");
+						xy[0] = parseInt(xy[0]);
+						xy[1] = parseInt(xy[1]);
 						boxes[xy[0]][xy[1]].tags.delete(tag);
 						boxes[xy[0]][xy[1]].update = true;
 					}
@@ -1242,6 +1265,8 @@ function main_function(){
 					if(active_tags[tag].size == 1){
 						for(let id of active_tags[tag]){
 							let xy = id.split("d");
+							xy[0] = parseInt(xy[0]);
+							xy[1] = parseInt(xy[1]);
 							if(pause){
 								queue.push([]);
 							}
@@ -1251,6 +1276,8 @@ function main_function(){
 					else{
 						for(let id of active_tags[tag]){
 							let xy = id.split("d");
+							xy[0] = parseInt(xy[0]);
+							xy[1] = parseInt(xy[1]);
 							boxes[xy[0]][xy[1]].update = true;
 						}
 					}

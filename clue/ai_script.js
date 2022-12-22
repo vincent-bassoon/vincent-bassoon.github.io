@@ -261,18 +261,46 @@ function ai_main_function(current_player, data){
 			if(current_player == turn.player){
 				if(pause){
 					setTimeout(function(){
-						let possible_rooms = []
+						let possible_rooms = [];
+						let scores = [];
 						for(let i = 0; i < rooms.length; i++){
-							if(map_data[players[current_player].location.row][players[current_player].location.col].dists[i] <= turn.roll){
+							if(map_data[players[current_player].location.row][players[current_player].location.col].dists[i] > 0){
 								possible_rooms.push(i);
+								scores.push(0);
 							}
 						}
-						if(possible_rooms.length == 0){
-							for(let i = 0; i < rooms.length; i++){
-								possible_rooms.push(i);
+						let sum = 0;
+						for(let i = 0; i < possible_rooms.length; i++){
+							let found = false;
+							for(let j = 1; j < players.length; j++){
+								if(boxes[(current_player + j) % players.length][suspects.length + weapons.length + possible_rooms[i]].status == 1){
+									scores[i] = j;
+									found = true;
+									j = players.length;
+								}
+							}
+							if(!found){
+								if(map_data[players[current_player].location.row][players[current_player].location.col].dists[possible_rooms[i]] <= turn.roll){
+									scores[i] = 3000 * players.length;
+								}
+								else{
+									scores[i] = 30 * players.length;
+								}
+							}
+							sum += scores[i];
+							console.log(clues[possible_rooms[i] + suspects.length + weapons.length] + " with score: " + scores[i]);
+						}
+						let choice = Math.random() * sum;
+						sum = 0;
+						let desired_room = -1;
+						for(let i = 0; i < possible_rooms.length; i++){
+							sum += scores[i];
+							if(sum > choice){
+								desired_room = possible_rooms[i];
+								i = possible_rooms.length;
 							}
 						}
-						let desired_room = possible_rooms[Math.floor(Math.random() * possible_rooms.length)];
+						console.log("Selected " + clues[desired_room + suspects.length + weapons.length]);
 						updateMap(current_player, calculatePath(current_player, turn.roll, desired_room));
 						if(getRoom(current_player) == -1){
 							updateTurnFirebase(encodeTurn(turn.player, players.length, turn.roll, [], clues.length, desired_room));
@@ -392,6 +420,19 @@ function ai_main_function(current_player, data){
 				}
 				else{
 					let current_response = valid_responses[Math.floor(Math.random() * valid_responses.length)];
+					let better_responses = [];
+					for(let i = 0; i < players.length; i++){
+						for(let j = 0; j < valid_responses.length; j++){
+							if(boxes[(turn.player + i) % players.length][valid_responses[j]].status == 3){
+								better_responses.push(valid_responses[j]);
+							}
+						}
+						if(better_responses.length > 0){
+							console.log("Better Responses with player " + ((turn.player + i) % players.length) + ": ", better_responses);
+							current_response = better_responses[Math.floor(Math.random() * better_responses.length)];
+							i = players.length;
+						}
+					}
 					setTimeout(function(){
 						console.log("Showing card " + current_response);
 						updateTurnFirebase(encodeTurn(turn.player, players.length, turn.roll, turn.guess, current_response, turn.map_room));
@@ -421,24 +462,34 @@ function ai_main_function(current_player, data){
 
 	function checkChart(queue){
 		//Check for max hand size of other players, fully white rows, if something is already the answer
-		let tags = new Set();
 		for(let i = 0; i < players.length; i++){
 			let hand = 0;
-			tags.clear();
 			for(let j = 0; j < clues.length; j++){
 				if(boxes[i][j].status == 1){
 					hand++;
 				}
-				else{
-					for(let tag of boxes[i][j].tags){
-						tags.add(tag);
+			}
+			if(hand == players[i].hand.length){
+				let add_pause = true;
+				for(let j = 0; j < clues.length; j++){
+					if(boxes[i][j].status == 2){
+						queue.push([i, j, 0]);
 					}
 				}
 			}
-			if(hand + tags.size == players[i].hand.length){
+		}
+		for(let i = 0; i < players.length; i++){
+			let hand = clues.length;
+			for(let j = 0; j < clues.length; j++){
+				if(boxes[i][j].status == 0){
+					hand--;
+				}
+			}
+			if(hand == players[i].hand.length){
+				let add_pause = true;
 				for(let j = 0; j < clues.length; j++){
-					if(boxes[i][j].status == 2 && boxes[i][j].tags.size == 0){
-						queue.push([i, j, 0]);
+					if(boxes[i][j].status == 2){
+						queue.push([i, j, 1]);
 					}
 				}
 			}
@@ -512,6 +563,8 @@ function ai_main_function(current_player, data){
 					active_tags[tag].delete(box.id);
 					for(let id of active_tags[tag]){
 						let xy = id.split("d");
+						xy[0] = parseInt(xy[0]);
+						xy[1] = parseInt(xy[1]);
 						boxes[xy[0]][xy[1]].tags.delete(tag);
 					}
 					active_tags[tag].clear();
@@ -530,12 +583,9 @@ function ai_main_function(current_player, data){
 					if(active_tags[tag].size == 1){
 						for(let id of active_tags[tag]){
 							let xy = id.split("d");
+							xy[0] = parseInt(xy[0]);
+							xy[1] = parseInt(xy[1]);
 							queue.push([xy[0], xy[1], 1]);
-						}
-					}
-					else{
-						for(let id of active_tags[tag]){
-							let xy = id.split("d");
 						}
 					}
 				}

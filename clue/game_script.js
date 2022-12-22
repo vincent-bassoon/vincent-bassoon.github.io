@@ -281,7 +281,8 @@ function main_function(){
 			reset_button.onclick = function(){
 				reset_button.innerText = "Starting...";
 				reset_button.onclick = null;
-				firebase.database().ref("/game/status").set(Date.now());
+				game.status = Date.now();
+				firebase.database().ref("/game").set(game);
 				setTimeout(function(){
 					reset_button.innerText = "Prepare New Game";
 					reset_button.onclick = reset;
