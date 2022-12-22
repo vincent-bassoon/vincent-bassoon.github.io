@@ -9,7 +9,6 @@ body, html {
 	width: 100%;
 }
 
-
 table.map {
 	border-collapse: collapse;
 	width: 100%;
@@ -19,6 +18,7 @@ table.map {
 td.map {
 	height: 20px;
 	font: 12px;
+	background-color: white;
 }
 td.square {
 	border: 1px solid #ccc;
@@ -28,6 +28,7 @@ td.square {
 td.room {
 	text-align: center;
 	padding: 3px;
+	background-color: white;
 }
 td.passage {
 	border: 3px solid #008500;
@@ -36,7 +37,7 @@ td.passage {
 	padding: 2px;
 }
 td.wall {
-	background-color: black;
+	background-color: #777;
 }
 
 
@@ -50,9 +51,6 @@ table.chart {
 	background-color: #555;
 	width: 100%;
 	height: 10px;
-}
-div {
-	width: 100%;
 }
 .hide {
 	display: none;
@@ -71,27 +69,27 @@ td.data {
 	background-color: #aaa;
 	text-align: center;
 	width: auto;
+	transition: background-color, 1s;
 }
-td.multiple-tag {
+td.tag-highlight {
 	color: blue;
 }
-td.single-tag {
-	color: red;
+tr.row-highlight {
+	outline: 1.5px solid blue;
+	outline-offset: -1.5px;
 }
-td.data-pressed {
-	box-shadow: inset 0 0 0 2px #4650e8;
-}
-td.data-3 {
+td.status-3 {
+	transition: background-color, 0s;
 	background-color: white;
 	background: url(eye-solid.svg) no-repeat;
 	background-size: 18px 18px;
 	background-position: center center;
 }
-td.data-1 {
+td.status-1 {
 	background-color: black;
 	color: white;
 }
-td.data-0 {
+td.status-0 {
 	background-color: white;
 }
 td.title {
@@ -105,6 +103,14 @@ td.title-0 {
 }
 td.title-1 {
 	text-decoration: line-through;
+}
+td.title-ask-selected {
+	outline: 2px solid blue;
+	outline-offset: -1px;
+}
+td.title-guess-selected {
+	outline: 2px solid red;
+	outline-offset: -1px;
 }
 td.weapon {
 	background-color: #dedede;
@@ -122,69 +128,52 @@ a.tab {
 	display: block;
 }
 
-.tab.main-bottom {
-	padding: 16px;
-	color: white;
-	background-color: #555;
-}
-
-
 .tab.main {
 	padding: 16px;
 	color: white;
 	background-color: #555;
-	width: 33.3333333%;
+	width: 25%;
 }
 .tab.main.active-tab {
 	background-color: #777;
 }
-
-
-.tab.status {
-	background-color: #aaa;
+.tab.log {
+	padding: 16px;
+	color: white;
+	background-color: #555;
 	width: 25%;
-	height: 50px;
-	padding: 8px;
 }
-.tab.status.active-tab {
-	background-color: #82d196;
+.tab.log.active-tab {
+	background-color: #777;
 }
-
-
-.tab.tag {
+.tab.toggle {
 	padding: 16px;
-	background-color: #aaa;
+	color: white;
+	background-color: #555;
+	width: 50%;
 }
-.tab.tag.active-tab {
-	background-color: #9CC5DA;
-}
-
-
-.tab.showplayer {
-	width: 33.3333%;
-	padding: 16px;
-	background-color: #aaa;
-}
-.tab.showplayer.active-tab {
-	background-color: #82d196;
-}
-
-
-.tab.showcard {
-	width: 100%;
-	padding: 16px;
-	background-color: #aaa;
-}
-.tab.showcard.active-tab {
-	background-color: #82d196;
+.tab.toggle.active-tab {
+	background-color: #777;
 }
 
 /*
 MISC
 */
 
-.player-button {
-	
+.bottom-button {
+	background-color: #555;
+	color: white;
+	padding: 16px;
+	border-radius: 14px;
+	text-align: center;
+}
+.bottom-button-container {
+	position: sticky;
+	padding: 12px;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+
 }
 .input-title {
 	width: 100%;
@@ -207,10 +196,6 @@ MISC
 SINGLE USE
 */
 
-.fixed-header {
-	position: sticky;
-	top: 0;
-}
 .guess {
 	float: left;
 	border: none;
@@ -232,49 +217,9 @@ SINGLE USE
 	background-color: #aaa;
 	bottom: 0;
 }
-/*.bottom-tab-container {
-	position: fixed;
-	bottom: 0;
-}*/
-.blank {
-	display: block;
-	float: left;
-	height: 50px;
-}
 
 
 
-
-
-.status-none {
-	padding: 8px;
-}
-.status-unknown {
-	background-color: #ccc;
-	padding: 8px;
-}
-.status-yes {
-	color: white;
-	background-color: black;
-	padding: 8px;
-}
-.status-no {
-	background-color: white;
-	padding: 8px;
-}
-.status-seen {
-	background-color: white;
-	height: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-.status-color {
-	background-color: #82d196;
-}
-.add-color {
-	background-color: #9CC5DA;
-}
 
 
 mark {
@@ -285,7 +230,7 @@ mark {
 
 
 .confirm {
-	padding: 20px;
+	padding: 16px;
 	background-color: #aaa;
 	border-radius: 3px;
 	position: absolute;
@@ -304,16 +249,13 @@ mark {
 
 
 
-/*.show-title {
-	background-color: #aaa;
-	width: 100%;
-}*/
 .offscreen{
 	position: fixed;
 	top: -100px;
 	width: 100%;
 }
 .loading-div {
+	width: 250px;
 	position: absolute;
 	text-align: center;
 	font-size: 20px;
@@ -344,13 +286,52 @@ textarea.notes-text-field {
 	box-sizing: border-box;
 	padding: 10px;
 	overflow: scroll;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+}
+.save-button{
 	margin-top: 10px;
+}
+.save-button-disabled{
+	color: #777;
+}
+.notes-flex-container{
+	display: flex;
+	padding: 10px;
+	flex-direction: column;
+	height: 100%;
+}
+
+.log-display-container {
+	margin: 5px;
+}
+.log-element{
+	padding: 10px;
+	background-color: white;
+	border: 2px solid #555;
+	border-radius: 2px;
+	margin: 2px;
 }
 
 
 /*
 CONTAINERS
 */
+.sticky-container {
+	position: sticky;
+	top: 0;
+}
+.log-window {
+	background-color: white;
+	padding: 10px;
+	height: 62px;
+	margin-bottom: 1px;
+	overflow: scroll;
+	border: 2px solid #555;
+	border-radius: 8px;
+}
+
 
 
 .loading-container {
@@ -363,9 +344,11 @@ CONTAINERS
 }
 .page-container {
 	position: relative;
+	display: flex;
+	flex-direction: column;
 	background-color: white;
 	opacity: 0;
-	transition: 0.4s ease;
+	transition: opacity 0.4s ease;
 }
 .confirm-container {
 	position: fixed;
@@ -374,11 +357,32 @@ CONTAINERS
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
 }
-.bottom-tab-container {
-	position: fixed;
-	bottom: 0;
-}
 .notes-container{
 	background-color: #777;
-	padding: 10px;
+	flex-flow: column;
+	flex: 1 1 auto;
+}
+.map-container{
+	height: 100%;
+}
+
+
+.current-player{
+	padding: 16px;
+	display: none;
+}
+.player-link-container{
+	display: none;
+}
+.player-link{
+	margin-top: 16px;
+	margin-bottom: 16px;
+	padding: 16px;
+	width: ;
+	text-align: center;
+	display: block;
+	background-color: #555;
+	color: white;
+	border-radius: 14px;
+	text-decoration: none;
 }
