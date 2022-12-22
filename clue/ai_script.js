@@ -268,7 +268,9 @@ function ai_main_function(current_player, data){
 							}
 						}
 						if(possible_rooms.length == 0){
-							possible_rooms.push(...rooms);
+							for(let i = 0; i < rooms.length; i++){
+								possible_rooms.push(i);
+							}
 						}
 						let desired_room = possible_rooms[Math.floor(Math.random() * possible_rooms.length)];
 						updateMap(current_player, calculatePath(current_player, turn.roll, desired_room));
