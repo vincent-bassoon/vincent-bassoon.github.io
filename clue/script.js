@@ -248,14 +248,14 @@ function main_function(){
 							if(bottom_button_tabs.has(this.id)){
 								for(let j = 0; j < 2; j++){
 									if(active_bottom_buttons[j]){
-										document.getElementById("bottom-button-container-" + j).style.display = "block";
+										document.getElementById("bottom-button-div-" + j).style.display = "block";
 									}
 								}
 							}
 							else{
 								for(let j = 0; j < 2; j++){
 									if(active_bottom_buttons[j]){
-										document.getElementById("bottom-button-container-" + j).style.display = "none";
+										document.getElementById("bottom-button-div-" + j).style.display = "none";
 									}
 								}
 							}
@@ -1785,7 +1785,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 	function clearBottomButton(index){
 		active_bottom_buttons[index] = false;
-		document.getElementById("bottom-button-container-" + index).style.display = "none";
+		document.getElementById("bottom-button-div-" + index).style.display = "none";
 		bottom_button_tabs = new Set();
 		document.getElementById("bottom-button-" + index).onclick = null;
 		document.getElementById("bottom-button-" + index).innerText = "";
@@ -1799,7 +1799,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 	function setBottomButton(button_index, str, full, offset, tabs, onclick, confirm, confirm_message){
 		let button = document.getElementById("bottom-button-" + button_index);
-		let container = document.getElementById("bottom-button-container-" + button_index);
+		let div = document.getElementById("bottom-button-div-" + button_index);
 		active_bottom_buttons[button_index] = true;
 		let width;
 		if(full){
@@ -1823,22 +1823,22 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 			button.onclick = onclick;
 		}
 		button.innerText = str;
-		container.style.width = width + "%";
+		div.style.width = width + "%";
 		if(offset){
-			container.style.left = (100 - width) + "%";
+			div.style.float = "right";
 		}
 		else{
-			container.style.left = 0;
+			div.style.float = "left";
 		}
 		bottom_button_tabs = new Set();
 		for(let i = 0; i < tabs.length; i++){
 			bottom_button_tabs.add(tabs[i]);
 		}
 		if(bottom_button_tabs.has(current_tab.main.id)){
-			container.style.display = "block";
+			div.style.display = "block";
 		}
 		else{
-			container.style.display = "none";
+			div.style.display = "none";
 		}
 	}
 
