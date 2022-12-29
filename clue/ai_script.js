@@ -361,7 +361,7 @@ function ai_main_function(current_player, data){
 					}, 4000);
 				}
 			}	
-			else if(turn.guess[0] == suspects.length){
+			else if(current_player != turn.player && turn.guess[0] == suspects.length){
 				updateMap(turn.player, calculatePath(turn.player, turn.roll, turn.map_room));
 				turn_queue.remove();
 			}
@@ -464,15 +464,36 @@ function ai_main_function(current_player, data){
 		//Check for max hand size of other players, fully white rows, if something is already the answer
 		for(let i = 0; i < players.length; i++){
 			let hand = 0;
+			let all_tags = new Set();
 			for(let j = 0; j < clues.length; j++){
 				if(boxes[i][j].status == 1){
 					hand++;
 				}
+				for(let tag of boxes[i][j].tags){
+					all_tags.add(tag);
+				}
 			}
-			if(hand == players[i].hand.length){
+			let counted_tags = new Set();
+			for(let tag of all_tags){
+				let overlap = false;
+				for(let id of active_tags[tag]){
+					let xy = id.split("d");
+					xy[0] = parseInt(xy[0]);
+					xy[1] = parseInt(xy[1]);
+					for(let tag1 of counted_tags){
+						if(boxes[xy[0]][xy[1]].tags.has(tag1)){
+							overlap = true;
+						}
+					}
+				}
+				if(!overlap){
+					counted_tags.add(tag);
+				}
+			}
+			if(hand + counted_tags.size == players[i].hand.length){
 				let add_pause = true;
 				for(let j = 0; j < clues.length; j++){
-					if(boxes[i][j].status == 2){
+					if(boxes[i][j].status == 2 && boxes[i][j].tags.size == 0){
 						queue.push([i, j, 0]);
 					}
 				}

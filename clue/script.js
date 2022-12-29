@@ -860,7 +860,7 @@ function main_function(){
 					}, true, "Confirm guessing the answer as: \n\n" + clues[current_guess[0]] + "\n" + clues[current_guess[1]] + "\n" + clues[current_guess[2]]);
 				});;
 			}
-			else if(turn.guess[0] == suspects.length){
+			else if(current_player != turn.player && turn.guess[0] == suspects.length){
 				updateMap(turn.player, calculatePath(turn.player, turn.roll, turn.map_room, false), true);
 				turn_queue.remove();
 			}
@@ -1106,15 +1106,36 @@ function main_function(){
 		//Check for max hand size of other players, fully white rows, if something is already the answer
 		for(let i = 0; i < players.length; i++){
 			let hand = 0;
+			let all_tags = new Set();
 			for(let j = 0; j < clues.length; j++){
 				if(boxes[i][j].status == 1){
 					hand++;
 				}
+				for(let tag of boxes[i][j].tags){
+					all_tags.add(tag);
+				}
 			}
-			if(hand == players[i].hand.length){
+			let counted_tags = new Set();
+			for(let tag of all_tags){
+				let overlap = false;
+				for(let id of active_tags[tag]){
+					let xy = id.split("d");
+					xy[0] = parseInt(xy[0]);
+					xy[1] = parseInt(xy[1]);
+					for(let tag1 of counted_tags){
+						if(boxes[xy[0]][xy[1]].tags.has(tag1)){
+							overlap = true;
+						}
+					}
+				}
+				if(!overlap){
+					counted_tags.add(tag);
+				}
+			}
+			if(hand + counted_tags.size == players[i].hand.length){
 				let add_pause = true;
 				for(let j = 0; j < clues.length; j++){
-					if(boxes[i][j].status == 2){
+					if(boxes[i][j].status == 2 && boxes[i][j].tags.size == 0){
 						if(pause && add_pause){
 							queue.push([]);
 							add_pause = false;
