@@ -3,7 +3,7 @@ var hsl =  [[58, 54, 50],//   Col. Mustard
 			[110, 45, 50],//  Mr. Green
 			[3, 57, 50],//    Miss Scarlet
 			[189, 77, 50],//  Mrs. Peacock
-			[38, 40, 78],//   Mrs. White
+			[38, 40, 89],//   Mrs. White
 			[304, 88, 75],//  Mme. Rose
 			[0, 0, 75],//     Sgt. Gray
 			[25, 17, 50],//     M. Brunette
