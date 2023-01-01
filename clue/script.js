@@ -471,7 +471,7 @@ function main_function(){
 						str = "You won!\n";
 					}
 					else{
-						str = "Player " + players[snapshot.val()].name + " has won.\n";
+						str = "Player " + players[snapshot.val()].name + " has won!\n";
 					}
 					for(let i = 0; i < 3; i++){
 						str += "\n" + clues[answers[i]];
@@ -483,7 +483,7 @@ function main_function(){
 						str = "You won!\n";
 					}
 					else{
-						str = "Player " + players[snapshot.val()].name + " has won.\n";
+						str = "Player " + players[snapshot.val()].name + " has won!\n";
 					}
 					str += clues[answers[0]] + ", " + clues[answers[1]] + ", " + clues[answers[2]];
 					document.getElementById("log-window").innerText = str;
