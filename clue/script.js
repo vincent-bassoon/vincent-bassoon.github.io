@@ -557,7 +557,7 @@ function main_function(){
 				}
 			}
 			else{
-				return "No players had any of the cars";
+				return "No players had any of the cards";
 			}
 			break;
 		case (players.length + 1):
