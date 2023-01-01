@@ -767,7 +767,7 @@ function main_function(){
 												updateTurnFirebase(encodeTurn(turn.player, -1, turn.roll, [], clues.length, room_index));
 											}
 											turn_queue.remove();
-										}, true, "Confirm move");
+										}, false, "");
 									}
 								};
 							}
@@ -937,8 +937,7 @@ function main_function(){
 								titles[shown].element.classList.add("title-guess-selected");
 							}
 							if(current_response != null){
-								let str = clues[current_response] + " to " + players[turn.player].name;
-								setBottomButton(0, "Show " + str, false, false, ["main-tab-chart"], function(){
+								setBottomButton(0, "Show " + clues[current_response] + " to " + players[turn.player].name, false, false, ["main-tab-chart"], function(){
 									clearBottomButtons();
 									titles[shown].element.classList.remove("title-guess-selected");
 									for(let j = 0; j < clues.length; j++){
@@ -947,7 +946,7 @@ function main_function(){
 									console.log("Showing card " + shown);
 									updateTurnFirebase(encodeTurn(turn.player, players.length, turn.roll, turn.guess, shown, turn.map_room));
 									turn_queue.remove();
-								}, true, "Confirm showing " + str);
+								}, false, "");
 							}
 							else{
 								clearBottomButtons();
@@ -1018,7 +1017,7 @@ function main_function(){
 			}
 			firebase.database().ref("/game/history/" + Date.now()).set(encodeTurn(turn.player, turn.phase, turn.roll, turn.guess, turn.shown, turn.map_room));
 			passTurn(turn);
-		}, true, "Confirm passing the turn");
+		}, false, "");
 	}
 
 	function passTurn(turn){
