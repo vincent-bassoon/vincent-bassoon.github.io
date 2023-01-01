@@ -251,7 +251,7 @@ function ai_main_function(current_player, data){
 						updateTurnFirebase(encodeTurn(turn.player, -2, turn.roll, [], clues.length, map_rooms));
 					}
 					turn_queue.remove();
-				}, 2000);
+				}, 500);
 			}
 			else{
 				turn_queue.remove();
@@ -308,7 +308,7 @@ function ai_main_function(current_player, data){
 						else{
 							updateTurnFirebase(encodeTurn(turn.player, -1, turn.roll, [], clues.length, desired_room));
 						}
-					}, 3000);
+					}, 1000);
 				}
 				else{
 					updateMap(turn.player, calculatePath(turn.player, turn.roll, turn.map_room));
@@ -328,7 +328,7 @@ function ai_main_function(current_player, data){
 					console.log(desired_guess);
 					updateTurnFirebase(encodeTurn(turn.player, (current_player + 1) % players.length, turn.roll, [desired_guess[0], desired_guess[1], desired_guess[2]], clues.length, turn.map_room));
 					turn_queue.remove();
-				}, 3000);
+				}, 1000);
 			}
 			else if(current_player != turn.player){
 				updateMap(turn.player, calculatePath(turn.player, turn.roll, turn.map_room));
@@ -345,7 +345,7 @@ function ai_main_function(current_player, data){
 					setTimeout(function(){
 						firebase.database().ref("/game/history/" + Date.now()).set(encodeTurn(turn.player, turn.phase, turn.roll, turn.guess, turn.shown, turn.map_room));
 						passTurn();
-					}, 3000);
+					}, 1000);
 				}
 				else{
 					setTimeout(function(){
@@ -376,7 +376,7 @@ function ai_main_function(current_player, data){
 					firebase.database().ref("/game/history/" + Date.now()).set(encodeTurn(turn.player, players.length + 1, turn.roll, turn.guess, -1, map_rooms));
 					passTurn(turn);
 					turn_queue.remove();
-				}, 4000);
+				}, 1000);
 			}
 			else{
 				turn_queue.remove();
@@ -416,7 +416,7 @@ function ai_main_function(current_player, data){
 						}
 						updateTurnFirebase(encodeTurn(turn.player, next_phase, turn.roll, turn.guess, clues.length, turn.map_room));
 						turn_queue.remove();
-					}, 2000);
+					}, 1000);
 				}
 				else{
 					let current_response = valid_responses[Math.floor(Math.random() * valid_responses.length)];
@@ -437,7 +437,7 @@ function ai_main_function(current_player, data){
 						console.log("Showing card " + current_response);
 						updateTurnFirebase(encodeTurn(turn.player, players.length, turn.roll, turn.guess, current_response, turn.map_room));
 						turn_queue.remove();
-					}, 3000);
+					}, 1000);
 				}
 			}
 			else{
