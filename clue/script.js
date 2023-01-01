@@ -1747,22 +1747,27 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		moves.push({"row": row2, "col": col2});
 	}
 
-	function checkRoomBorder(row1, col1, row2, col2){
+	function getRoomBorder(border, row1, col1, row2, col2){
 		if(row2 < 0 || row2 == map_data.length){
-			return false;
+			return "";
 		}
 		if(col2 < 0 || col2 == map_data[row1].length){
-			return false;
+			return "";
 		}
 		if(map_data[row1][col1].value[0] == "d"){
-			if(map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
-				return false;
+			if(map_data[row1][col1].value.substring(1) == map_data[row2][col2].value || "b" + map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
+				return "hidden";
 			}
 			if(/^[tb]$/.test(map_data[row2][col2].value[0]) && map_data[row1][col1].value.substring(1) == map_data[row2][col2].value.substring(1)){
-				return false;
+				return "";
 			}
 		}
-		return /^[tb]?\d+$/.test(map_data[row2][col2].value);
+		if(/^[tb]?\d+$/.test(map_data[row2][col2].value)){
+			return border;
+		}
+		else{
+			return "";
+		}
 	}
 
 	function createRoomBorders(item, row, col){
@@ -1773,18 +1778,10 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 			return;
 		}
 		let border = "2px solid black";
-		if(checkRoomBorder(row, col, row - 1, col)){
-			item.style.borderTop = border;
-		}
-		if(checkRoomBorder(row, col, row + 1, col)){
-			item.style.borderBottom = border;
-		}
-		if(checkRoomBorder(row, col, row, col - 1)){
-			item.style.borderLeft = border;
-		}
-		if(checkRoomBorder(row, col, row, col + 1)){
-			item.style.borderRight = border;
-		}
+		item.style.borderTop = getRoomBorder(border, row, col, row - 1, col);
+		item.style.borderBottom = getRoomBorder(border, row, col, row + 1, col);
+		item.style.borderLeft = getRoomBorder(border, row, col, row, col - 1);
+		item.style.borderRight = getRoomBorder(border, row, col, row, col + 1);
 	}
 
 	function setRoomEdgeBorders(item, room_index){
