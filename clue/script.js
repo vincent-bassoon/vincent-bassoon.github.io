@@ -911,7 +911,7 @@ function main_function(){
 				}
 				console.log("valid responses: ", valid_responses);
 				if(valid_responses.length == 0){
-					setBottomButton(0, "I have none", false, false, ["main-tab-chart"], function(){
+					/*setBottomButton(0, "I have none", false, false, ["main-tab-chart"], function(){
 						clearBottomButtons();
 						let next_phase = (turn.phase + 1) % players.length;
 						if(next_phase == turn.player){
@@ -919,7 +919,16 @@ function main_function(){
 						}
 						updateTurnFirebase(encodeTurn(turn.player, next_phase, turn.roll, turn.guess, clues.length, turn.map_room));
 						turn_queue.remove();
-					}, false, "");
+					}, false, "");*/
+					setTimeout(function(){
+						clearBottomButtons();
+						let next_phase = (turn.phase + 1) % players.length;
+						if(next_phase == turn.player){
+							next_phase = players.length;
+						}
+						updateTurnFirebase(encodeTurn(turn.player, next_phase, turn.roll, turn.guess, clues.length, turn.map_room));
+						turn_queue.remove();
+					}, 1000);
 				}
 				else{
 					let current_response = null;
