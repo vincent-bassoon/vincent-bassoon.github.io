@@ -1586,6 +1586,7 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		if(map_data[row][col].value == "d" + room_index){
 			item.style[property] = "2px solid white";
 			return;
+		}
 		if(/^[tb]?\d+$/.test(map_data[row][col].value)){
 			return;
 		}
