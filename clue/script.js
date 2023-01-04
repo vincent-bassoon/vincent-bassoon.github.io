@@ -13,6 +13,8 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 function main_function(){
+	const client_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
 	let game = [];
 	let log = [];
 	let players = [];
@@ -1532,7 +1534,9 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 			if(old_row != new_location.row || old_col != new_location.col){
 				map_data[old_row][old_col].players.delete(player);
 				setColor(map_data[old_row][old_col], player, "");
-				map_data[old_row][old_col].element.innerText = "";
+				if(map_data[old_row][old_col].value[0] != "t"){
+					map_data[old_row][old_col].element.innerText = "";
+				}
 				players[player].location = new_location;
 				map_data[players[player].location.row][players[player].location.col].players.add(player);
 				if(map_data[old_row][old_col].value[0] == "t"){
@@ -1569,6 +1573,27 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		}
 	}
 
+	function checkRoomBorder(item, property, room_index, row, col){
+		let border = "2.5px solid black";
+		if(row < 0 || row == map_data.length){
+			item.style[property] = border;
+			return;
+		}
+		if(col < 0 || col == map_data[row].length){
+			item.style[property] = border;
+			return;
+		}
+		if(map_data[row][col].value == "d" + room_index){
+			item.style[property] = "2px solid white";
+			return;
+		if(/^[tb]?\d+$/.test(map_data[row][col].value)){
+			return;
+		}
+		else{
+			item.style[property] = border;
+		}
+	}
+
 	function createMapTable(){
 
 		//create table
@@ -1578,48 +1603,60 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 		map_room_coords = {};
 		let item, room_index;
+
 		for(let row = 0; row < map_data.length; row++){
 			let row_element = document.createElement("tr");
 			for(let col = 0; col < map_data[row].length; col++){
-				switch(map_data[row][col].value[0]){
-					case "s":
-					case "p":
-					case "x":
-					case "d":
-						item = document.createElement("td");
-						if(map_data[row][col].value[0] != "x"){
-							map_data[row][col].element = item;
-						}
-						item.classList.add("map");
-						if(map_data[row][col].value[0] == "p"){
-							item.classList.add("passage");
-						}
-						else if(map_data[row][col].value[0] == "x"){
-							item.classList.add("wall");
-						}
-						else{
-							item.classList.add("square");
-						}
-						createRoomBorders(item, row, col);
-						row_element.appendChild(item);
-						break;
-					case "t":
-						item = document.createElement("td");
-						map_data[row][col].element = item;
-						item.classList.add("room");
+				if(/^[tb]?\d+/.test(map_data[row][col].value)){
+					if(/^[tb]/.test(map_data[row][col].value)){
 						room_index = parseInt(map_data[row][col].value.substring(1));
-						item.id = "room_" + room_index;
-						updateRoomText(map_data[row][col]);
-						setRoomEdgeBorders(item, room_index);
+					}
+					else{
+						room_index = parseInt(map_data[row][col].value);
+					}
+
+					item = document.createElement("td");
+					item.classList.add("room-square");
+					checkRoomBorder(item, "borderTop", room_index, row - 1, col);
+					checkRoomBorder(item, "borderBottom", room_index, row + 1, col);
+					checkRoomBorder(item, "borderLeft", room_index, row, col - 1);
+					checkRoomBorder(item, "borderRight", room_index, row, col + 1);
+					row_element.appendChild(item);
+
+					if(map_data[row][col].value[0] == "t"){
 						map_room_coords[room_index] = {"row": row, "col": col};
-						row_element.appendChild(item)
-						break;
-					case "b":
-						room_index = parseInt(map_data[row][col].value.substring(1));
-						document.getElementById("room_" + room_index).colSpan = 1 + col - map_room_coords[room_index].col;
-						document.getElementById("room_" + room_index).rowSpan = 1 + row - map_room_coords[room_index].row;
-						break;
-					default:
+
+						map_data[row][col].element = document.createElement("div");
+						item.appendChild(map_data[row][col].element);
+						item = map_data[row][col].element;
+						item.classList.add("room");
+						item.id = "room_" + room_index;
+						item.appendChild(document.createElement("div"));
+
+						updateRoomText(map_data[row][col]);
+					}
+					else if(map_data[row][col].value[0] == "b"){
+						console.log(client_width);
+						document.getElementById("room_" + room_index).style.width = client_width / map_data[0].length * (1 + col - map_room_coords[room_index].col) - 2.5 + "px";
+						document.getElementById("room_" + room_index).style.height = 20 * (1 + row - map_room_coords[room_index].row) - 2.5 + "px";
+					}
+				}
+				else{
+					item = document.createElement("td");
+					if(map_data[row][col].value[0] != "x"){
+						map_data[row][col].element = item;
+					}
+					item.classList.add("map");
+					if(map_data[row][col].value[0] == "p"){
+						item.classList.add("passage");
+					}
+					else if(map_data[row][col].value[0] == "x"){
+						item.classList.add("wall");
+					}
+					else{
+						item.classList.add("square");
+					}
+					row_element.appendChild(item);
 				}
 			}
 			table.appendChild(row_element);
@@ -1710,8 +1747,8 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 
 	let passage_names = {7: "1", 2: "1", 4: "2", 10: "2"};
 
-	function updateRoomText(map_data_element){
-		let room_index = parseInt(map_data_element.value.substring(1));
+	function updateRoomText(map_data_value){
+		let room_index = parseInt(map_data_value.value.substring(1));
 		let text;
 		if(room_index == 12){
 			text = "Cloak Room<br />";
@@ -1722,13 +1759,13 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 		if(room_index in passage_names){
 			text += "(passage " + passage_names[room_index] + ")<br />";
 		}
-		let occupants = Array.from(map_data_element.players);
+		let occupants = Array.from(map_data_value.players);
 		let occupant_names = [];
 		for(let i = 0; i < occupants.length; i++){
 			occupant_names.push("<mark style='background-color:" + colors[players[occupants[i]].character] + ";'>" + players[occupants[i]].name + "</mark>");
 		}
 		text += occupant_names.join(", ");
-		map_data_element.element.innerHTML = text;
+		map_data_value.element.children[0].innerHTML = text;
 	}
 
 	function checkMove(moves, row1, col1, row2, col2){
@@ -1745,61 +1782,6 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 			return;
 		}
 		moves.push({"row": row2, "col": col2});
-	}
-
-	function checkRoomBorder(row1, col1, row2, col2){
-		if(row2 < 0 || row2 == map_data.length){
-			return false;
-		}
-		if(col2 < 0 || col2 == map_data[row1].length){
-			return false;
-		}
-		if(map_data[row1][col1].value[0] == "d"){
-			if(map_data[row1][col1].value.substring(1) == map_data[row2][col2].value){
-				return false;
-			}
-			if(/^[tb]$/.test(map_data[row2][col2].value[0]) && map_data[row1][col1].value.substring(1) == map_data[row2][col2].value.substring(1)){
-				return false;
-			}
-		}
-		return /^[tb]?\d+$/.test(map_data[row2][col2].value);
-	}
-
-	function createRoomBorders(item, row, col){
-		if(map_data[row][col].value == "x"){
-			//item.style.border = "2px solid #777";
-		}
-		if(map_data[row][col].value[0] == "p"){
-			return;
-		}
-		let border = "2px solid black";
-		if(checkRoomBorder(row, col, row - 1, col)){
-			item.style.borderTop = border;
-		}
-		if(checkRoomBorder(row, col, row + 1, col)){
-			item.style.borderBottom = border;
-		}
-		if(checkRoomBorder(row, col, row, col - 1)){
-			item.style.borderLeft = border;
-		}
-		if(checkRoomBorder(row, col, row, col + 1)){
-			item.style.borderRight = border;
-		}
-	}
-
-	function setRoomEdgeBorders(item, room_index){
-		if(room_index >= 7 && room_index <= 11){
-			item.style.borderLeft = "2px solid black";
-		}
-		if(room_index >= 1 && room_index <= 5){
-			item.style.borderRight = "2px solid black";
-		}
-		if(room_index == 5){
-			item.style.borderTop = "2px solid black";
-		}
-		if(room_index == 1 || room_index == 11){
-			item.style.borderBottom = "2px solid black";
-		}
 	}
 
 
@@ -2004,14 +1986,14 @@ t11,11,11,11,11,11,11,x,0,0,0,0,0,0,0,b0,x,t1,1,1,1,1,1,1
 				document.getElementById("page-container").style.display = "none";
 			}, 500);
 			let first = true;
-				firebase.database().ref("/game/status").on('value', (snapshot) => {
-					if(first){
-						first = false;
-					}
-					else{
-						document.location.reload();
-					}
-				});
+			firebase.database().ref("/game/status").on('value', (snapshot) => {
+				if(first){
+					first = false;
+				}
+				else{
+					document.location.reload();
+				}
+			});
 		});
 	}
 

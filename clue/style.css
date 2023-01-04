@@ -25,10 +25,21 @@ td.square {
 	text-align: center;
 	padding: 2px;
 }
-td.room {
+div.room {
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	left: 0;
 	text-align: center;
-	padding: 3px;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	padding: 4px;
 	background-color: white;
+}
+td.room-square {
+	height: 20px;
+	position: relative;
 }
 td.passage {
 	border: 3px solid #008500;
@@ -168,6 +179,7 @@ MISC
 }
 .bottom-button-container {
 	position: sticky;
+	z-index: 12;
 	padding: 12px;
 	bottom: 0;
 	left: 0;
@@ -320,6 +332,7 @@ CONTAINERS
 .sticky-container {
 	position: sticky;
 	top: 0;
+	z-index: 12;
 }
 .log-window {
 	background-color: white;
