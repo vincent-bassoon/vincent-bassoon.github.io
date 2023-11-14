@@ -1,4 +1,4 @@
-var countDownDate = new Date("May 17, 2023 14:55:00 GMT-0700").getTime();
+var countDownDate = new Date("Nov 20, 2023 00:00:00 GMT-0800").getTime();
 var done = false;
 
 var x = setInterval(function() {
